@@ -11,7 +11,9 @@ cFrOSt is a community French project which goal is to create a free and Open-Sou
 
 ## How to run cFrOSt?
 
-You need to install [krasin/llvm-dcpu16](https://github.com/krasin/llvm-dcpu16/) and [binutils-dcpu16](https://github.com/frot/binutils-dcpu16). Further steps will be added to this README as we get used to them.
+* You need to download [llvm-dcpu16/llvm-dcpu16](https://github.com/llvm-dcpu16/llvm-dcpu16/) (you can download their sdk, complete with [binutils-dcpu16](https://github.com/frot/binutils-dcpu16), [here](https://github.com/llvm-dcpu16/llvm-dcpu16/downloads));
+* Extract the bin folder from the sdk here, or copy the binaries you compiled in a bin/ folder here. You should now have cFrost/bin/as, cFrOSt/bin/clang and cFrOSt/bin/ld;
+* Run `make`, then go to tools/ and run `./run.sh`.
 
 ## How can I develop a program for that OS?
 
