@@ -11,9 +11,16 @@ cFrOSt is a community French project which goal is to create a free and Open-Sou
 
 ## How to run cFrOSt?
 
-* You need to download [llvm-dcpu16/llvm-dcpu16](https://github.com/llvm-dcpu16/llvm-dcpu16/) (you can download their sdk, complete with [binutils-dcpu16](https://github.com/frot/binutils-dcpu16), [here](https://github.com/llvm-dcpu16/llvm-dcpu16/downloads));
-* Extract the bin folder from the sdk here, or copy the binaries you compiled in a bin/ folder here. You should now have cFrost/bin/as, cFrOSt/bin/clang and cFrOSt/bin/ld;
-* Run `make`, then go to tools/ and run `./run.sh`.
+### Windows
+
+* You need to download [llvm-dcpu16/llvm-dcpu16](https://github.com/llvm-dcpu16/llvm-dcpu16/) (you can download their sdk, complete with [binutils-dcpu16](https://github.com/frot/binutils-dcpu16), [here](https://github.com/llvm-dcpu16/llvm-dcpu16/downloads)) and [yamakaky/dcpu](https://github.com/yamakaky/dcpu);
+* Extract the bin folder from the sdk here, or copy the binaries you compiled in a bin/ folder here. You should now have cFrOSt/bin/clang.exe;
+* Install rust and build the assembler part of yamakaky/dcpu, and copy target/release/assembler.exe to the bin/ folder;
+* Compile by runing `bin/clang.exe include.c` then `bin/assembler.exe include.s` then `move FrOSt.bin tools/`, or if you have cygwin just run `make` then `make run`.
+
+### Linux x86 or x86_64
+
+* Run `make`, then `make run`.
 
 ## How can I develop a program for that OS?
 
@@ -26,8 +33,7 @@ The wiki contains all the information you need.
 
 We use git as a CVS (obviously).
 
-You can clone the repository and install llvm-dcpu16 and binutils-dcpu16 (as described in the "How to run cFrOSt?" section), then use your favorite C IDE and compile using the command line.
-
+You can use your favorite editor and then run the project as explained in the "How to run cFrOSt?" section.
 
 ### Syntax guidelines
 

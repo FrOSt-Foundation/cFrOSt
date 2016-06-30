@@ -1,0 +1,3 @@
+*.o
+*.s
+tools/FrOSt.bin
