@@ -1,7 +1,7 @@
 # cFrOSt
 
 
-FrOSt was a free operating system under the free license GNU GPL, made by a tiny group of french people. We worked hard on it, but now we decided to do it in C using the llvm-dcpu16 backend.
+FrOSt is a free operating system under the free license GNU GPL, made by a tiny group of french people. We are working hard on it, but  we decided to work harder and do it also in C using the llvm-dcpu16 backend.
 
 
 ## What is cFrOSt?
