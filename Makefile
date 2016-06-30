@@ -8,7 +8,7 @@ YAS = $(SDK_BIN_PATH)/assembler
 CFLAGS = -O2 -Wall
 LDFLAGS=
 
-SOURCES=include.c
+SOURCES=src/include.c
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=tools/FrOSt.bin
@@ -31,6 +31,6 @@ run:
 clean:
 #	rm kernel/*.o
 	rm *.o
-	rm kernel/*.s
-	rm drivers/*.s
-	rm $(EXECUTABLE)
+	rm src/kernel/*.s
+	rm src/drivers/*.s
+	rm src/$(EXECUTABLE)
