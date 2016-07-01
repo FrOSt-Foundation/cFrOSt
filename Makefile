@@ -5,7 +5,7 @@ CC = $(SDK_BIN_PATH)/clang
 LD = $(SDK_BIN_PATH)/ld
 YAS = $(SDK_BIN_PATH)/assembler
 
-CFLAGS = -O2 -Wall
+CFLAGS = -O0 -Wall
 LDFLAGS=
 
 SOURCES=src/include.c
