@@ -22,15 +22,15 @@ $(EXECUTABLE): $(OBJECTS)
 .c.o:
 	$(CC) $(CFLAGS) $< -ccc-host-triple dcpu16 -S -Iinclude -o $*.s
 	find ./ -name "*.s" -exec sed -i -re 's/\[(0x[0-9a-f]*)\+([A|B|C|X|Y|Z|I|J])\]/[\2+\1]/g' {} \;
+	find ./ -name "*.s" -exec sed -i -re 's/\.word/.dat/g' {} \;
 	#$(AS) -o $*.o $*.s
-	$(YAS) $*.s -o $*.o
+	#$(YAS) $*.s -o $*.o
+	java -jar tools/DCPU-Toolchain.jar assemble src/include.s src/include.o
 
 run:
 	cd tools && ./run.sh
 
 clean:
-#	rm kernel/*.o
-	rm *.o
-	rm src/kernel/*.s
-	rm src/drivers/*.s
-	rm src/$(EXECUTABLE)
+	find . -type f -name '*.s' -delete
+	find . -type f -name '*.o' -delete
+	#rm src/$(EXECUTABLE)

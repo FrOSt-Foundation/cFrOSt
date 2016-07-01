@@ -1,6 +1,7 @@
 #include "lem1802.h"
 
 u16 vram = 0x8000;
+u16 cursorPos = 0;
 
 void lem1802_init(u16 monitor) {
     u16 *p = (u16 *) 0xF000;
@@ -12,7 +13,8 @@ void lem1802_puts(char* s) {
     u16 offset = 0;
     u16* p = (u16 *) vram;
     do {
-        *(p + offset) = 0xF000 | *(s +offset);
+        *(p + cursorPos) = 0xF000 | *(s + offset);
         ++offset;
-    } while(*(s +offset) != 0);
+        ++cursorPos;
+    } while(*(s + offset) != 0);
 }
