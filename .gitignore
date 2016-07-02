@@ -1,3 +1,4 @@
 *.o
 *.s
+*.d
 bin/FrOSt.bin
