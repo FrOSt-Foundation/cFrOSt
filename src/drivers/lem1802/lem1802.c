@@ -10,7 +10,7 @@ void lem1802_init(u16 monitor) {
                     set B, 0x8000\n\t\
                     hwi %0\n\t\
                     set B, POP\n\t\
-                    set A, POP" :: "m" (monitor));
+                    set A, POP" :: "r" (monitor));
 }
 
 void lem1802_puts(char* s) {
