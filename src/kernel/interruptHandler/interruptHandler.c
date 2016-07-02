@@ -1,7 +1,13 @@
 void interruptHandler_init() {
-    __asm("IAS ____ptr_interruptHandler");
+    __asm volatile("IAS ____ptr_interruptHandler");
 
-    __asm("SET PC, interruptHandler_init___end \n :____ptr_interruptHandler \n set PUSH, ____ptr_interruptHandler_quit \n set PC, interruptHandler \n :____ptr_interruptHandler_quit \n RFI 0 \n :interruptHandler_init___end");
+    __asm volatile("SET PC, interruptHandler_init___end \n\t\
+                    :____ptr_interruptHandler \n\t\
+                    set PUSH, ____ptr_interruptHandler_quit \n\t\
+                    set PC, interruptHandler \n\t\
+                    :____ptr_interruptHandler_quit \n\t\
+                    RFI 0 \n\t\
+                    :interruptHandler_init___end");
 }
 
 #include "../../std/string.h"
@@ -10,7 +16,7 @@ void interrupt(u16 message) {
     u16* p = (u16*) 0xF000;
     *p = message;
 
-    __asm("int [0xF000]");
+    __asm volatile("int [0xF000]");
 }
 
 /*

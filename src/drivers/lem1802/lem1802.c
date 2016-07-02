@@ -6,7 +6,13 @@ u16 cursorPos = 0;
 void lem1802_init(u16 monitor) {
     u16 *p = (u16 *) 0xF000;
     *p = monitor;
-    asm("set PUSH, A \n set PUSH, B \n set A, 0 \n set B, 0x8000 \n hwi [0xF000] \n set B, POP \n set A, POP");
+    __asm volatile("set PUSH, A\n\t\
+                    set PUSH, B\n\t\
+                    set A, 0\n\t\
+                    set B, 0x8000\n\t\
+                    hwi [0xF000]\n\t\
+                    set B, POP\n\t\
+                    set A, POP");
 }
 
 void lem1802_puts(char* s) {

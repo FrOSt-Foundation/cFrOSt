@@ -7,14 +7,20 @@ u16 keyboard = 0xFFFF;
 u16 clock = 0xFFFF;
 
 void hardwareLoop() {
-    __asm("hwn [0xF000]");
+    __asm volatile("hwn [0xF000]");
     u16* p = (u16*) 0xF000;
     u16 n_devices = *p;
 
     u16 idA, idB;
     for(int device = 0; device < n_devices; ++device) {
         *p = device;
-        __asm("set PUSH, A \n set PUSH, B \n hwq [0xF000] \n set [0xF000], A \n set [0xF001], B \n set B, POP \n set A, POP");
+        __asm volatile("set PUSH, A \n\t\
+                        set PUSH, B \n\t\
+                        hwq [0xF000] \n\t\
+                        set [0xF000], A \n\t\
+                        set [0xF001], B \n\t\
+                        set B, POP \n\t\
+                        set A, POP");
         idA = *p;
         idB = *(p + 1);
         if(idB == 0x7349 && idA == 0xf615) { // Monitor
