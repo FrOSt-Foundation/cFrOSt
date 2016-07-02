@@ -2,7 +2,7 @@
 
 #include "include/types.h"
 
-extern u16 vram;
+extern u16 *vram;
 extern u16 cursorPos;
 
 void lem1802_init(u16 monitor);

@@ -37,7 +37,7 @@ void interrupt(u16 message) {
  */
 
 void interruptHandler() {
-    u16* p = (u16*) 0xF000;
+    u16* p = *((u16**) 0xF000);
     u16 interruptMessage = *p;
 
     u16 interruptClass = interruptMessage >> 8;
@@ -47,23 +47,23 @@ void interruptHandler() {
         case 0x00:
             switch (interruptFunction) {
                 case 0x00:
-                    lem1802_puts((char*) *(p + 1));
+                    lem1802_puts((char*) p + 1);
                     break;
             }
             break;
         case 0x01:
             switch(interruptFunction) {
                 case 0x00:
-                    *p = (u16) memoryManager_malloc((u16) *(p + 1));
+                    *p = (u16) memoryManager_malloc(*(p + 1));
                     break;
                 case 0x01:
-                    memoryManager_free((u16 *) *(p + 1));
+                    memoryManager_free(p + 1);
                     break;
                 case 0x02:
-                    memoryManager_clear((u16 *) *(p + 1));
+                    memoryManager_clear(p + 1);
                     break;
                 case 0x03:
-                    *p = memoryManager_size((u16 *) *(p + 1));
+                    *p = memoryManager_size(p + 1);
                     break;
             }
             break;
