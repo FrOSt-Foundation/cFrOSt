@@ -12,7 +12,7 @@ void hardwareLoop() {
     u16 n_devices = *p;
 
     u16 idA, idB;
-    for(int device = 0; device < n_devices; ++device) {
+    for(u16 device = 0; device < n_devices; ++device) {
         *p = device;
         __asm volatile("set PUSH, A \n\t\
                         set PUSH, B \n\t\
