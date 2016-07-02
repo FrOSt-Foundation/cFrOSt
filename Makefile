@@ -1,10 +1,8 @@
-SDK_BIN_PATH := bin
-
 ifeq ($(CC), cc)
-	CC := $(SDK_BIN_PATH)/clang
+	CC := tools/clang
 endif
 ifeq ($(AS), as)
-	AS := $(SDK_BIN_PATH)/assembler
+	AS := tools/assembler
 endif
 
 CFLAGS += -ccc-host-triple dcpu16 -O0 -Wall -Wextra -std=c11 -I src
@@ -22,7 +20,6 @@ $(BIN): $(ASM_FILES)
 %.s: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(OUTPUT_OPTION) -S $<
 	sed -i -re 's/\[(0x[0-9a-f]*)\+([A|B|C|X|Y|Z|I|J])\]/[\2+\1]/g' $@
-	touch $<
 
 %.s: %.dasm
 	cp -f $< $@
