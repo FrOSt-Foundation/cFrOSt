@@ -17,7 +17,7 @@ BIN ?= tools/FrOSt.bin
 all: $(BIN)
 
 $(BIN): $(ASM_FILES)
-	$(COMPILE.s) $(OUTPUT_OPTION) $^
+	$(COMPILE.s) $^ $(OUTPUT_OPTION)
 
 .c.o:
 	$(CC) $(CFLAGS) $< -S -Iinclude -o $*.s
