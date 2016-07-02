@@ -1,6 +1,6 @@
-#include "../include/types.h"
-#include "../include/defines.h"
+#include "include/defines.h"
 #include "hardware.h"
+#include "lem1802/lem1802.h"
 
 u16 monitor = 0xFFFF;
 u16 keyboard = 0xFFFF;

@@ -1,3 +1,6 @@
+#include "std/string.h"
+#include "interruptHandler.h"
+
 void interruptHandler_init() {
     __asm volatile("IAS ____ptr_interruptHandler");
 
@@ -9,8 +12,6 @@ void interruptHandler_init() {
                     RFI 0 \n\t\
                     :interruptHandler_init___end");
 }
-
-#include "../../std/string.h"
 
 void interrupt(u16 message) {
     u16* p = (u16*) 0xF000;

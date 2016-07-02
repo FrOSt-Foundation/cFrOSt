@@ -1,4 +1,5 @@
 #include "stdlib.h"
+#include "kernel/interruptHandler/interruptHandler.h"
 
 void memcpy(const void *from, void *to, u16 size) {
     for (u16 i = 0; i < size; i++) {
