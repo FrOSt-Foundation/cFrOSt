@@ -4,6 +4,10 @@
 void interruptHandler_init() {
     __asm volatile("IAS ____ptr_interruptHandler");
 
+    /*
+     * clang messes with the stack between the function call and the code we write ; therefore, we do a fake function call, with the return being a RFI.
+     * If we added __asm("RFI 0"); at the end of interruptHandler(), the stack wouldn't be restored and the OS would crash.
+     */
     __asm volatile("SET PC, interruptHandler_init___end \n\t\
                     :____ptr_interruptHandler \n\t\
                     set PUSH, ____ptr_interruptHandler_quit \n\t\
@@ -14,6 +18,10 @@ void interruptHandler_init() {
 }
 
 void interrupt(u16 message) {
+    /*
+     * We don't have a defined behavior for what happens between a function call and the code we write ; therefore, we cannot safely set a register to the interrupt message, so we pass it at [0xF000].
+     */
+
     u16* p = (u16*) 0xF000;
     *p = message;
 
