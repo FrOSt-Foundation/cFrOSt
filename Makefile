@@ -28,7 +28,7 @@ $(BIN): $(ASM_FILES)
 	java -jar tools/DCPU-Toolchain.jar assemble src/include.s src/include.o
 
 %.s: %.c
-	$(CC) $(CFLAGS) $(CPP_FLAGS) $(OUTPUT_OPTION) -S $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(OUTPUT_OPTION) -S $<
 	sed -i -re 's/\[(0x[0-9a-f]*)\+([A|B|C|X|Y|Z|I|J])\]/[\2+\1]/g' $@
 	touch $<
 
