@@ -12,7 +12,7 @@ void interrupt(u16 message) {
     __asm ("int %0"
            :
            :"X"(message)
-           : "A", "B", "C", "X", "Y", "Z", "I", "Y");
+           : "X", "Y", "Z", "I", "J");
 }
 
 
