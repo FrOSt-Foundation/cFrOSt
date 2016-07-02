@@ -10,7 +10,7 @@ CFLAGS += -ccc-host-triple dcpu16 -O0 -Wall -Wextra -std=c11 -I src
 C_FILES := src/include.c
 DASM_FILES :=
 ASM_FILES := $(C_FILES:.c=.s) $(DASM_FILES:.dasm=.s)
-BIN ?= tools/FrOSt.bin
+BIN ?= bin/FrOSt.bin
 
 all: $(BIN)
 
