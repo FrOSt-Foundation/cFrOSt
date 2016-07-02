@@ -1,32 +1,20 @@
 #include "std/string.h"
 #include "interruptHandler.h"
 
-void interruptHandler_init() {
-    __asm volatile("IAS ____ptr_interruptHandler");
+static void interruptHandler(u16 msg);
 
-    /*
-     * clang messes with the stack between the function call and the code we write ; therefore, we do a fake function call, with the return being a RFI.
-     * If we added __asm("RFI 0"); at the end of interruptHandler(), the stack wouldn't be restored and the OS would crash.
-     */
-    __asm volatile("SET PC, interruptHandler_init___end \n\t\
-                    :____ptr_interruptHandler \n\t\
-                    set PUSH, ____ptr_interruptHandler_quit \n\t\
-                    set PC, interruptHandler \n\t\
-                    :____ptr_interruptHandler_quit \n\t\
-                    RFI 0 \n\t\
-                    :interruptHandler_init___end");
+void interruptHandler_init() {
+    __asm ("IAS %0" :: "X"(&interruptHandler));
 }
 
 void interrupt(u16 message) {
-    /*
-     * We don't have a defined behavior for what happens between a function call and the code we write ; therefore, we cannot safely set a register to the interrupt message, so we pass it at [0xF000].
-     */
-
-    u16* p = (u16*) 0xF000;
-    *p = message;
-
-    __asm volatile("int [0xF000]");
+    // An int can modify all the registers
+    __asm ("int %0"
+           :
+           :"X"(message)
+           : "A", "B", "C", "X", "Y", "Z", "I", "Y");
 }
+
 
 /*
  *  The most significant eight bits of the interrupt message define its class. The following eight bits define the interrupt function within that class.
@@ -40,38 +28,39 @@ void interrupt(u16 message) {
  *      - 0x02: clearBlock
  *      - 0x03: size
  *
- *  Arguments are stored sequentially in [0xF001], [0xF002]...
+ *  Arguments are stored sequentially in [0xF000], [0xF001]...
  *  Values are stored sequentially in [0xF000], [0xF001]...
  */
+__attribute__ ((interrupt))
+static void interruptHandler(u16 msg) {
+    // the first argument is passed in A so it should be ok.
+    // TODO: make sure it's OK.
+    u16* args = (u16*) 0xF000;
 
-void interruptHandler() {
-    u16* p = (u16*) 0xF000;
-    u16 interruptMessage = *p;
-
-    u16 interruptClass = interruptMessage >> 8;
-    u16 interruptFunction = interruptMessage & 0xFF;
+    u16 interruptClass = msg >> 8;
+    u16 interruptFunction = msg & 0xFF;
 
     switch (interruptClass) {
         case 0x00:
             switch (interruptFunction) {
                 case 0x00:
-                    lem1802_puts((char*) *(p + 1));
+                    lem1802_puts((char*) args[0]);
                     break;
             }
             break;
         case 0x01:
             switch(interruptFunction) {
                 case 0x00:
-                    *p = (u16) memoryManager_malloc((u16) *(p + 1));
+                    args[0] = (u16) memoryManager_malloc(args[0]);
                     break;
                 case 0x01:
-                    memoryManager_free((u16 *) *(p + 1));
+                    memoryManager_free((u16 *) args[0]);
                     break;
                 case 0x02:
-                    memoryManager_clear((u16 *) *(p + 1));
+                    memoryManager_clear((u16 *) args[0]);
                     break;
                 case 0x03:
-                    *p = memoryManager_size((u16 *) *(p + 1));
+                    args[0] = memoryManager_size((u16 *) args[0]);
                     break;
             }
             break;
