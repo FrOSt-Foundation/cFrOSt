@@ -1,5 +1,4 @@
-#ifndef MEMORYMANAGER_H
-#define MEMORYMANAGER_H
+#pragma once
 
 /*
  * A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
@@ -12,6 +11,8 @@
 #define MEMORY_OWNER_FREE 0xFFFF
 #define MALLOC_ERROR 0xFFFF
 
+#include "include/types.h"
+
 extern u16 memoryManager_nFree;
 
 void memoryManager_init();
@@ -19,5 +20,3 @@ u16* memoryManager_malloc(u16 size);
 void memoryManager_free(u16* block);
 void memoryManager_clear(u16* block);
 u16 memoryManager_size(u16* block);
-
-#endif

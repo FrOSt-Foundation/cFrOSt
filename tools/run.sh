@@ -1,2 +1,2 @@
 #!/bin/sh
-java -jar DCPU-Toolchain.jar run FrOSt.bin --bootloader=FrOSt_header.bin --debugger --clock --keyboard --lem1802
+java -jar DCPU-Toolchain.jar run ../bin/FrOSt.bin --bootloader=../bin/FrOSt_header.bin --debugger --clock --keyboard --lem1802

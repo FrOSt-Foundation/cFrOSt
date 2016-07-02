@@ -22,6 +22,12 @@ cFrOSt is a community French project which goal is to create a free and Open-Sou
 
 * Run `make`, then `make run`.
 
+Useful env variables:
+
+* AS: the assembler to use
+* CC: the C compiler to use (must support the DCPU)
+* CFLAGS, CPPFLAGS, ASFLAGS: pass custom arguments
+
 ## How can I develop a program for that OS?
 
 The wiki contains all the information you need.

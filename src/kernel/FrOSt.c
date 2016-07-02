@@ -1,12 +1,12 @@
-#include "../include/types.h"
-#include "../include/defines.h"
-#include "../drivers/hardware.h"
+#include "include/types.h"
+#include "include/defines.h"
+#include "drivers/hardware.h"
 #include "memoryManager/memoryManager.h"
 #include "interruptHandler/interruptHandler.h"
 
-#include "../std/stdio.h"
-#include "../std/string.h"
-#include "../std/stdlib.h"
+#include "std/stdio.h"
+#include "std/string.h"
+#include "std/stdlib.h"
 
 int main(void) {
     hardwareLoop();
