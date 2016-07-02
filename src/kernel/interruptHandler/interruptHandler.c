@@ -11,8 +11,7 @@ void interrupt(u16 message) {
     // An int can modify all the registers
     __asm ("int %0"
            :
-           :"X"(message)
-           : "X", "Y", "Z", "I", "J");
+           :"X"(message));
 }
 
 
