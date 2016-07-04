@@ -43,23 +43,23 @@ static void interruptHandler(u16 msg) {
         case 0x00:
             switch (interruptFunction) {
                 case 0x00:
-                    lem1802_puts((char*) args[0]);
+                    lem1802_puts((char*) args[1]);
                     break;
             }
             break;
         case 0x01:
             switch(interruptFunction) {
                 case 0x00:
-                    args[0] = (u16) memoryManager_malloc(args[0]);
+                    args[0] = (u16) memoryManager_malloc(args[1]);
                     break;
                 case 0x01:
-                    memoryManager_free((u16 *) args[0]);
+                    memoryManager_free((u16 *) args[1]);
                     break;
                 case 0x02:
-                    memoryManager_clear((u16 *) args[0]);
+                    memoryManager_clear((u16 *) args[1]);
                     break;
                 case 0x03:
-                    args[0] = memoryManager_size((u16 *) args[0]);
+                    args[0] = memoryManager_size((u16 *) args[1]);
                     break;
             }
             break;
