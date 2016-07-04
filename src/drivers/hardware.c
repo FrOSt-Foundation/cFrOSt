@@ -18,10 +18,10 @@ void hardwareLoop() {
     for(u16 device = 0; device < nb_devices; ++device) {
         register u16 idA __asm ("A");
         register u16 idB __asm ("B");
-        __asm volatile("hwq %0"
+        __asm volatile("hwq %[device]"
                     : "=r" (idA),
                       "=r" (idB)
-                    : "X" (device)
+                    : [device] "X" (device)
                     : "C", "X", "Y");
         if(idB == 0x7349 && idA == 0xf615) { // Monitor
             monitor = device;
