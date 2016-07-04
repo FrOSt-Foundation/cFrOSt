@@ -1,5 +1,4 @@
-#include "include/types.h"
-#include "include/defines.h"
+#include "types.h"
 #include "drivers/hardware.h"
 #include "memoryManager/memoryManager.h"
 #include "interruptHandler/interruptHandler.h"

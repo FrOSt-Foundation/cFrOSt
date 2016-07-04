@@ -6,3 +6,4 @@
 #include "std/string.c"
 #include "std/stdio.c"
 #include "std/stdlib.c"
+#include "asm.c"

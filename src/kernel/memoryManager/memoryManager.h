@@ -11,7 +11,7 @@
 #define MEMORY_OWNER_FREE 0xFFFF
 #define MALLOC_ERROR 0xFFFF
 
-#include "include/types.h"
+#include "types.h"
 
 extern u16 memoryManager_nFree;
 

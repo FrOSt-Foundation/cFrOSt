@@ -1,6 +1,6 @@
 #pragma once
 
-#include "include/types.h"
+#include "types.h"
 
 void memcpy(const void *from, void *to, u16 size);
 u16 strlen(const char* s);

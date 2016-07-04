@@ -1,5 +1,5 @@
 #include "stdio.h"
-#include "include/types.h"
+#include "types.h"
 #include "kernel/interruptHandler/interruptHandler.h"
 
 void puts(char* s) {

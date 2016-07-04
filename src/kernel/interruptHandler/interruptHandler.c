@@ -1,19 +1,15 @@
 #include "std/string.h"
 #include "interruptHandler.h"
+#include "asm.h"
 
 static void interruptHandler(u16 msg);
 
 void interruptHandler_init() {
-    __asm ("IAS %0" :: "X"(&interruptHandler));
+    asm_ias((u16)&interruptHandler);
 }
 
 void interrupt(u16 message) {
-    // An int can modify all the registers, and modifies the memory for the
-    // return value
-    __asm ("int %0"
-           :
-           :"X"(message)
-           : "memory");
+    asm_int(message);
 }
 
 

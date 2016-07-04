@@ -1,6 +1,6 @@
 #pragma once
 
-#include "include/types.h"
+#include "types.h"
 
 void lem1802_init(u16 monitor);
 void lem1802_puts(char* s);

@@ -1,35 +1,28 @@
-#include "include/types.h"
-#include "include/defines.h"
+#include "types.h"
 #include "hardware.h"
 #include "lem1802/lem1802.h"
+#include "asm.h"
 
 u16 monitor = 0xFFFF;
 u16 keyboard = 0xFFFF;
 u16 clock = 0xFFFF;
 
-u16 get_number_devices() {
-    u16 nb_devices;
-    __asm("hwn %0" : "=r" (nb_devices));
-    return nb_devices;
-}
-
 void hardwareLoop() {
-    u16 nb_devices = get_number_devices();
+    u16 nb_devices = asm_hwn();
     for(u16 device = 0; device < nb_devices; ++device) {
-        register u16 idA __asm ("A");
-        register u16 idB __asm ("B");
-        __asm volatile("hwq %[device]"
-                    : "=r" (idA),
-                      "=r" (idB)
-                    : [device] "X" (device)
-                    : "C", "X", "Y");
-        if(idB == 0x7349 && idA == 0xf615) { // Monitor
-            monitor = device;
-            lem1802_init(monitor);
-        } else if(idB == 0x30cf && idA == 0x7406) { // Keyboard
-            keyboard = device;
-        } else if(idB == 0x12d0 && idA == 0xb402) { // Clock
-            clock = device;
+        hardware_infos infos = asm_hwq(device);
+
+        switch (infos.hardware_id) {
+            case 0x7349f615:
+                monitor = device;
+                lem1802_init(monitor);
+                break;
+            case 0x30cf7406:
+                keyboard = device;
+                break;
+            case 0x12d0b402:
+                clock = device;
+                break;
         }
     }
 }
