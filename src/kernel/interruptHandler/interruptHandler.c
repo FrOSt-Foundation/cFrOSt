@@ -12,7 +12,8 @@ void interrupt(u16 message) {
     // return value
     __asm ("int %0"
            :
-           :"X"(message), "memory");
+           :"X"(message)
+           : "memory");
 }
 
 
