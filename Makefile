@@ -31,7 +31,7 @@ bin/%.s: src/%.dasm Makefile
 	@mkdir -p $(@D)
 	cp -f $< $@
 
-run:
+run: all
 	cd tools && ./run.sh
 
 clean:
