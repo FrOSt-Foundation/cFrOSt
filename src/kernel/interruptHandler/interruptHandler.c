@@ -8,10 +8,11 @@ void interruptHandler_init() {
 }
 
 void interrupt(u16 message) {
-    // An int can modify all the registers
+    // An int can modify all the registers, and modifies the memory for the
+    // return value
     __asm ("int %0"
            :
-           :"X"(message));
+           :"X"(message), "memory");
 }
 
 
