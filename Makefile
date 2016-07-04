@@ -22,13 +22,13 @@ $(BIN): $(ASM_FILES)
 	@mkdir -p $(@D)
 	$(COMPILE.s) $^ $(OUTPUT_OPTION)
 
-bin/%.s: src/%.c
+bin/%.s: src/%.c Makefile
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -S $<
 	sed -i -re 's/\[(0x[0-9a-f]*)\+([A|B|C|X|Y|Z|I|J])\]/[\2+\1]/g' $@
 	sed -i -re 's/rfi/rfi 0/i' $@
 
-bin/%.s: src/%.dasm
+bin/%.s: src/%.dasm Makefile
 	@mkdir -p $(@D)
 	cp -f $< $@
 
