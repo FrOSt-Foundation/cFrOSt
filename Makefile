@@ -13,12 +13,17 @@ DASM_FILES :=
 ASM_FILES := $(patsubst src/%,bin/%,$(C_FILES:.c=.s)) \
 			$(patsubst src/%,bin/%,$(DASM_FILES:.dasm=.s))
 BIN ?= bin/FrOSt.bin
+BIN_HEADER ?= bin/FrOSt_header.bin
 
-all: $(BIN)
+all: $(BIN) $(BIN_HEADER)
 
 -include $(ASM_FILES:.s=.d)
 
 $(BIN): $(ASM_FILES)
+	@mkdir -p $(@D)
+	$(COMPILE.s) $^ $(OUTPUT_OPTION)
+
+$(BIN_HEADER): bin/FrOSt_header.s
 	@mkdir -p $(@D)
 	$(COMPILE.s) $^ $(OUTPUT_OPTION)
 
