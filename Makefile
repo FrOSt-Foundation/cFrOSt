@@ -6,7 +6,7 @@ ifeq ($(AS), as)
 endif
 
 CPPFLAGS += -MP -MD
-CFLAGS += -ccc-host-triple dcpu16 -O0 -Wall -Wextra -std=c11 -I src
+CFLAGS += -ccc-host-triple dcpu16 -Os -Wall -Wextra -std=c11 -I src
 
 C_FILES := src/include.c
 DASM_FILES :=
