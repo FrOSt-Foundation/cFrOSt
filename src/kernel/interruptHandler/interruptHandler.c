@@ -30,7 +30,7 @@ void interrupt(u16 message) {
  *  Arguments are stored sequentially in [0xF000], [0xF001]...
  *  Values are stored sequentially in [0xF000], [0xF001]...
  */
-__attribute__ ((interrupt))
+__attribute__ ((noinline,interrupt))
 static void interruptHandler(u16 msg) {
     // the first argument is passed in A so it should be ok.
     // TODO: make sure it's OK.
