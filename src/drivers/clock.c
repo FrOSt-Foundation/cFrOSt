@@ -3,7 +3,7 @@
 typedef enum {
     CHANGE_TICKRATE = 0,
     GET_TICKS_SINCE_LAST_CALL = 1,
-    SET_INT_MSG = 2,
+    CLOCK_SET_INT_MSG = 2,
 } command;
 
 void clock_set_tickrate(u16 clock, u16 rate) {
@@ -17,7 +17,7 @@ void clock_set_tickrate(u16 clock, u16 rate) {
 }
 
 u16 clock_ticks_since_last_call(u16 clock) {
-    register u16 action __asm("A") = CHANGE_TICKRATE;
+    register u16 action __asm("A") = GET_TICKS_SINCE_LAST_CALL;
     register u16 reg_c __asm("C");
     __asm("hwi %0"
           : "=r"(reg_c)
@@ -27,7 +27,7 @@ u16 clock_ticks_since_last_call(u16 clock) {
 }
 
 void clock_set_int_msg(u16 clock, u16 msg) {
-    register u16 action __asm("A") = CHANGE_TICKRATE;
+    register u16 action __asm("A") = CLOCK_SET_INT_MSG;
     register u16 reg_b __asm("B") = msg;
     __asm("hwi %0"
           :
