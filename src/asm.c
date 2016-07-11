@@ -1,9 +1,13 @@
 #include "asm.h"
 
-void asm_int(u16 message) {
+void asm_int(u16 message, u16 arg1, u16 arg2) {
+    register u16 reg_b __asm ("B") = arg1;
+    register u16 reg_c __asm ("C") = arg2;
     __asm ("int %0"
            :
-           :"X"(message)
+           :"X"(message),
+            "r"(reg_b),
+            "r"(reg_c)
            : "memory");
 }
 

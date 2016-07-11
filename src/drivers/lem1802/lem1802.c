@@ -13,8 +13,9 @@ typedef enum {
 static u16 vram[lem1802_vram_size] = {0};
 static u16 cursorPos = 0;
 
-void lem1802_init(u16 monitor) {
+IntHandler lem1802_init(u16 monitor, u16 msg __attribute__((unused))) {
     lem1802_set_vram(monitor, vram);
+    return NULL;
 }
 
 void lem1802_puts(char* s) {

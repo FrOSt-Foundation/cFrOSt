@@ -7,3 +7,5 @@ typedef unsigned long u32;
 typedef long long i64;
 typedef unsigned long long u64;
 typedef float f32;
+
+#define NULL ((void*)0)
