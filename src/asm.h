@@ -8,7 +8,7 @@ typedef struct {
     u32 manufacturer;
 } hardware_infos;
 
-void asm_int(u16);
+void asm_int(u16, u16, u16);
 u16 asm_iag();
 void asm_ias(u16);
 void asm_iaq(u16);

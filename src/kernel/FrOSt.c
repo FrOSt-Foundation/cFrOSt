@@ -2,15 +2,17 @@
 #include "drivers/hardware.h"
 #include "memoryManager/memoryManager.h"
 #include "interruptHandler/interruptHandler.h"
+#include "asm.h"
 
 #include "std/stdio.h"
 #include "std/string.h"
 #include "std/stdlib.h"
 
 int main(void) {
-    hardwareLoop();
     memoryManager_init();
-    interruptHandler_init();
+    IntHandler *hardware_int_table = int_handler_allocate(asm_hwn());
+    hardwareLoop(hardware_int_table);
+    int_handler_activate();
 
     char* loadedMessage = "cFrOSt loaded from disk, and interrupts enabled. Loading modules...";
     puts(loadedMessage);

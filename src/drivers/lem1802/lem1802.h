@@ -1,12 +1,15 @@
 #pragma once
 
 #include "types.h"
+#include "kernel/interruptHandler/interruptHandler.h"
+// circular dependency
+typedef void (*IntHandler)(u16, u16, u16);
 
 const u16 lem1802_vram_size = 386;
 const u16 lem1802_font_size = 256;
 const u16 lem1802_palette_size = 16;
 
-void lem1802_init(u16 monitor);
+IntHandler lem1802_init(u16 monitor, u16);
 void lem1802_puts(char* s);
 
 void lem1802_set_vram(u16 device, u16 vram[lem1802_vram_size]);

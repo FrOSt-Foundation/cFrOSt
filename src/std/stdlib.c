@@ -8,35 +8,23 @@ void memcpy(const void *from, void *to, u16 size) {
 }
 
 u16* malloc(u16 size) {
-    u16* p = (u16 *) 0xF000;
-    *(p + 1) = (u16) size;
-
-    interrupt(0x0100);
-
-    return (u16*) *p;
+    u16* p;
+    interrupt2(SOFTINT_MALLOC, size, (u16)&p);
+    return p;
 }
 
 void free(u16* block) {
-    u16* p = (u16 *) 0xF000;
-    *(p + 1) = (u16) block;
-
-    interrupt(0x0101);
+    interrupt1(SOFTINT_FREE, (u16)block);
 }
 
 void mclear(u16* block) {
-    u16* p = (u16 *) 0xF000;
-    *(p + 1) = (u16) block;
-
-    interrupt(0x0102);
+    interrupt1(SOFTINT_CLEAR, (u16)block);
 }
 
 u16 msize(u16* block) {
-    u16* p = (u16 *) 0xF000;
-    *(p + 1) = (u16) block;
-
-    interrupt(0x0103);
-
-    return *p;
+    u16 p;
+    interrupt2(SOFTINT_SIZE, (u16)block, (u16)&p);
+    return p;
 }
 
 u16* realloc(u16* block, u16 newSize) {
