@@ -9,7 +9,7 @@
 #include "std/stdlib.h"
 
 int main(void) {
-    memoryManager_init();
+    mm_init();
     IntHandler *hardware_int_table = int_handler_allocate(asm_hwn());
     hardwareLoop(hardware_int_table);
     int_handler_activate();

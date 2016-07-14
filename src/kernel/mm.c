@@ -13,21 +13,21 @@
 #define MALLOC_ERROR 0xFFFF
 
 
-u16 memoryManager_nFree = TOTAL_MEMORY;
+u16 nb_free = TOTAL_MEMORY;
 
-void memoryManager_init() {
+void mm_init() {
     u16* p = (u16 *) MEMORY_START;
     *p = MEMORY_OWNER_FREE;
     *(p + 1) = TOTAL_MEMORY;
 }
 
-u16* memoryManager_malloc(u16 size) {
-    if(size + 2 > memoryManager_nFree) // We use size + 2 because we also have to store the header (owner and size)
+u16* kmalloc(u16 size) {
+    if(size + 2 > nb_free) // We use size + 2 because we also have to store the header (owner and size)
         return (u16*) MALLOC_ERROR;
     if(size == 0) // u wot m8
         return (u16*) MALLOC_ERROR;
 
-    memoryManager_nFree -= size;
+    nb_free -= size;
 
     for(u16* p = MEMORY_START ; p < MEMORY_END; p += *(p + 1) + 2) {
         if(*p == MEMORY_OWNER_FREE && *(p + 1) >= size) { // If we have a big enough free block
@@ -46,7 +46,7 @@ u16* memoryManager_malloc(u16 size) {
     return (u16*) MALLOC_ERROR; // Could not find a big enough block
 }
 
-void memoryManager_free(u16* block) {
+void kfree(u16* block) {
     if(block < MEMORY_START || block > MEMORY_END)
         return;
 
@@ -57,5 +57,5 @@ void memoryManager_free(u16* block) {
     }
 
     *p = MEMORY_OWNER_FREE;
-    memoryManager_nFree += *(p + 1);
+    nb_free += *(p + 1);
 }

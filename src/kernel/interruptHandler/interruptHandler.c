@@ -15,7 +15,7 @@ static IntHandler *int_table;
 
 IntHandler *int_handler_allocate(u16 nb_hardware) {
     int_table_size = __SOFTINT_NB + nb_hardware;
-    int_table = (IntHandler*)memoryManager_malloc(int_table_size);
+    int_table = (IntHandler*)kmalloc(int_table_size);
     int_table[SOFTINT_PUTS] = lem_puts_handler;
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
@@ -50,9 +50,9 @@ static void lem_puts_handler(u16 UNUSED(msg), u16 raw_str, u16 UNUSED(arg2)) {
 
 static void mm_malloc_handler(u16 UNUSED(msg), u16 size, u16 raw_ptr) {
     u16 *ptr = (u16*)(long)raw_ptr;
-    *ptr = (u16)memoryManager_malloc(size);
+    *ptr = (u16)kmalloc(size);
 }
 
 static void mm_free_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2)) {
-    memoryManager_free((u16*)(long)raw_ptr);
+    kfree((u16*)(long)raw_ptr);
 }
