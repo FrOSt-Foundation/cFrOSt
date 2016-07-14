@@ -1,4 +1,4 @@
-#include "kernel/memoryManager/memoryManager.h"
+#include "kernel/mm.h"
 #include "std/string.h"
 #include "interruptHandler.h"
 #include "asm.h"

@@ -1,6 +1,6 @@
 #include "types.h"
 #include "drivers/hardware.h"
-#include "memoryManager/memoryManager.h"
+#include "mm.h"
 #include "interruptHandler/interruptHandler.h"
 #include "asm.h"
 

@@ -1,4 +1,4 @@
-#include "memoryManager.h"
+#include "mm.h"
 
 u16 memoryManager_nFree = TOTAL_MEMORY;
 

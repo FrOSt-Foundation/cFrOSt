@@ -1,7 +1,7 @@
 #pragma once
 
 #include "drivers/lem1802/lem1802.h"
-#include "kernel/memoryManager/memoryManager.h"
+#include "kernel/mm.h"
 
 typedef enum {
     SOFTINT_PUTS,

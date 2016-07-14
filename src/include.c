@@ -4,7 +4,7 @@
 #include "drivers/clock.c"
 #include "drivers/hardware.c"
 #include "kernel/interruptHandler/interruptHandler.c"
-#include "kernel/memoryManager/memoryManager.c"
+#include "kernel/mm.c"
 #include "std/string.c"
 #include "std/stdio.c"
 #include "std/stdlib.c"
