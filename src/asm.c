@@ -25,7 +25,7 @@ void asm_iaq(u16 val) {
     __asm ("IAQ %0" :: "X"(val));
 }
 
-hardware_infos asm_hwq(u16 id) {
+HardwareInfo asm_hwq(u16 id) {
     register u16 a __asm ("A");
     register u16 b __asm ("B");
     register u16 c __asm ("C");
@@ -38,7 +38,7 @@ hardware_infos asm_hwq(u16 id) {
                   "=r" (x),
                   "=r" (y)
                 : [device] "X" (id));
-    return (hardware_infos) {
+    return (HardwareInfo) {
         .hardware_id = (u32)a + ((u32)b << 16),
         .hardware_version = c,
         .manufacturer = (u32)x + ((u32)y << 16)

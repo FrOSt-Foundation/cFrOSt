@@ -11,7 +11,7 @@ u16 clock = 0xFFFF;
 void hardwareLoop(IntHandler *hardware_int_table) {
     u16 nb_devices = asm_hwn();
     for(u16 device = 0; device < nb_devices; ++device) {
-        hardware_infos infos = asm_hwq(device);
+        HardwareInfo infos = asm_hwq(device);
         hardware_int_table[device] = 0;
 
         switch (infos.hardware_id) {
