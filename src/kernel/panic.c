@@ -1,4 +1,4 @@
-#include "kpanic.h"
+#include "panic.h"
 
 __attribute__ ((noreturn))
 void kpanic(const char *data) {

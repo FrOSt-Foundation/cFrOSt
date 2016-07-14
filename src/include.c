@@ -9,3 +9,4 @@
 #include "std/stdio.c"
 #include "std/stdlib.c"
 #include "asm.c"
+#include "kernel/panic.c"
