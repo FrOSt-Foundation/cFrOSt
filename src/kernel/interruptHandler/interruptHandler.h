@@ -7,8 +7,6 @@ typedef enum {
     SOFTINT_PUTS,
     SOFTINT_MALLOC,
     SOFTINT_FREE,
-    SOFTINT_CLEAR,
-    SOFTINT_SIZE,
     __SOFTINT_NB,
 } SoftInt;
 

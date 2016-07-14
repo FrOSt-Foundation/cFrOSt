@@ -59,31 +59,3 @@ void memoryManager_free(u16* block) {
     *p = MEMORY_OWNER_FREE;
     memoryManager_nFree += *(p + 1);
 }
-
-void memoryManager_clear(u16* block) {
-    if(block < MEMORY_START || block > MEMORY_END)
-        return;
-
-    // We find the nearest block from the bottom
-    u16* p = (u16 *) MEMORY_START;
-    while(p + *(p + 1) + 2 < block) {
-        p += *(p + 1) + 2;
-    }
-
-    for(u16 i = 0; i < *(p + 1); ++i) {
-        *(p + i + 2) = 0;
-    }
-}
-
-u16 memoryManager_size(u16* block) {
-    if(block < MEMORY_START || block > MEMORY_END)
-        return MALLOC_ERROR;
-
-    // We find the nearest block from the bottom
-    u16* p = (u16 *) MEMORY_START;
-    while(p + *(p + 1) + 2 < block) {
-        p += *(p + 1) + 2;
-    }
-
-    return *(p + 1);
-}

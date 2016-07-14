@@ -9,8 +9,6 @@ static void interruptHandler(u16);
 static void lem_puts_handler(u16, u16 raw_str, u16 UNUSED(arg2));
 static void mm_malloc_handler(u16, u16 size, u16 raw_ptr);
 static void mm_free_handler(u16, u16 raw_ptr, u16 UNUSED(arg2));
-static void mm_clear_handler(u16, u16 raw_ptr, u16 UNUSED(arg2));
-static void mm_size_handler(u16, u16 raw_block, u16 raw_size_ptr);
 
 static u16 int_table_size;
 static IntHandler *int_table;
@@ -21,8 +19,6 @@ IntHandler *int_handler_allocate(u16 nb_hardware) {
     int_table[SOFTINT_PUTS] = lem_puts_handler;
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
-    int_table[SOFTINT_CLEAR] = mm_clear_handler;
-    int_table[SOFTINT_SIZE] = mm_size_handler;
     return int_table + __SOFTINT_NB;
 }
 
@@ -59,13 +55,4 @@ static void mm_malloc_handler(u16 UNUSED(msg), u16 size, u16 raw_ptr) {
 
 static void mm_free_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2)) {
     memoryManager_free((u16*)(long)raw_ptr);
-}
-
-static void mm_clear_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2)) {
-    memoryManager_clear((u16*)(long)raw_ptr);
-}
-
-static void mm_size_handler(u16 UNUSED(msg), u16 raw_block, u16 raw_size_ptr) {
-    u16 *ptr = (u16*)(long)raw_size_ptr;
-    *ptr = memoryManager_size((u16*)(long)raw_block);
 }
