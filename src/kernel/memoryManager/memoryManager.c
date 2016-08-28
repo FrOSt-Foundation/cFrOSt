@@ -1,5 +1,5 @@
-#include "mm.h"
-#include "panic.h"
+#include "memoryManager.h"
+#include "kernel/panic/panic.h"
 
 /*
  * A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
