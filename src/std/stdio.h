@@ -1,3 +1,6 @@
 #pragma once
 
-void puts(char* s);
+void printf(char* s);
+void printc(char c);
+void scroll(u16 lines);
+void newline();

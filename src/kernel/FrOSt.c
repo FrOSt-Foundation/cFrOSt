@@ -3,10 +3,13 @@
 #include "kernel/memoryManager/memoryManager.h"
 #include "interruptHandler/interruptHandler.h"
 #include "asm.h"
+#include "panic/panic.h"
 
 #include "std/stdio.h"
 #include "std/string.h"
 #include "std/stdlib.h"
+
+#include "kernel/stdio/stdio.h"
 
 int main(void) {
     mm_init();
@@ -14,13 +17,16 @@ int main(void) {
     hardwareLoop(hardware_int_table);
     int_handler_activate();
 
-    char* loadedMessage = "cFrOSt loaded from disk, and interrupts enabled. Loading modules...";
-    puts(loadedMessage);
+	stdio_init(lem1802);
+
+    printf("cFrOSt loaded from disk, and interrupts enabled. Loading modules...\n");
 
     char* buffer = (char*) malloc(6);
-    uitoa(12345, buffer);
-    puts(buffer);
+	uitoa(12345, buffer);
+    printf(buffer);
     free((u16*) buffer);
+
+	printf("\nHello, world!");
 
     while(1) {
 

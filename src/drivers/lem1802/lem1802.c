@@ -18,6 +18,25 @@ IntHandler lem1802_init(u16 monitor, u16 msg __attribute__((unused))) {
     return NULL;
 }
 
+void lem1802_loadBuffer(char* buffer) {
+	for(u16 i = 0; i < 0x180; ++i) {
+		vram[i] = 0xF000 | buffer[i];
+	}
+}
+
+void lem1802_putc(char c, u16 offset) {
+	vram[offset] = 0xF000 | c;
+}
+
+void lem1802_scroll() {
+	for(u16 i = 0; i < 0x160; ++i) {
+		vram[i] = vram[i + 0x20];
+	}
+	for(u16 i = 0x160; i < 0x180; ++i) {
+		vram[i] = 0;
+	}
+}
+
 void lem1802_puts(char* s) {
     u16 offset = 0;
     do {

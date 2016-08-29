@@ -10,3 +10,4 @@
 #include "std/stdlib.c"
 #include "asm.c"
 #include "kernel/panic/panic.c"
+#include "kernel/stdio/stdio.c"

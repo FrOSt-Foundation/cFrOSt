@@ -1,59 +1,59 @@
 #include "memoryManager.h"
 #include "kernel/panic/panic.h"
+#include "kernel/stdio/stdio.h"
 
 /*
  * A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
  */
 
-// Beggining of dynamically allocated memory by the kernel
-#define MEMORY_START ((void*) 0x1000)
-// End of dynamically allocated memory by the kernel (we don't want to interfere with the kernel stack, do we?)
-#define MEMORY_END ((void*) 0xE999)
-#define MEMORY_MIN_SIZE 16
-#define TOTAL_MEMORY (MEMORY_END - MEMORY_START)
-#define MEMORY_OWNER_FREE 0xFFFF
-
-typedef struct {
-    u16 size;
-    u16 user;
-    u16 data[];
-} KmallocHeader;
+static u16 freeMem = TOTAL_MEMORY;
 
 void mm_init() {
     KmallocHeader *p = (KmallocHeader *) MEMORY_START;
     *p = (KmallocHeader){
+		.user = MEMORY_OWNER_FREE,
         .size = TOTAL_MEMORY,
-        .user = MEMORY_OWNER_FREE,
     };
 }
 
-static u16 max(u16 a, u16 b) {
-    return a > b ? a : b;
-}
-
 void *kmalloc(u16 owner, u16 size) {
-    u16 realSize = max(sizeof(KmallocHeader) + size, MEMORY_MIN_SIZE);
+
+	u16 realSize = size + 2;
+
+	freeMem -= realSize;
+
+	if(size > freeMem) {
+		kpanic("Out of memory");
+	}
 
     KmallocHeader *chunk = MEMORY_START;
-    while (chunk->user != MEMORY_OWNER_FREE || chunk->size < realSize) {
-        if (chunk->size == 0) {
-            kpanic("heap corrupted");
+    for(u16 i = 0; i < 2; ++i) {
+        if ((void*) chunk >= MEMORY_END) {
+            kpanic("Out of memory");
         }
-        chunk = (KmallocHeader*)(chunk + chunk->size);
-        if ((void*)chunk >= MEMORY_END) {
-            kpanic("No memory left");
-        }
-        if (chunk->size - realSize < MEMORY_MIN_SIZE) {
-            // make sure to flag too small memory chunks
-            chunk->user = MEMORY_OWNER_FREE;
-        } else {
-            KmallocHeader *other = (chunk + realSize);
-            other->size = chunk->size - realSize;
-            other->user = MEMORY_OWNER_FREE;
-            chunk->size = realSize;
-            chunk->user = owner;
-        }
+
+		if (chunk->user == MEMORY_OWNER_FREE && chunk-> size == realSize) {
+			chunk->user = owner;
+			break;
+		} else if (chunk->user == MEMORY_OWNER_FREE && chunk->size > realSize) {
+			// We split the chunk in two
+			chunk->data[size] = MEMORY_OWNER_FREE;
+			chunk->data[size + 1] = chunk->size - realSize;
+
+			// And now it's ours
+			chunk->user = owner;
+			chunk->size = size;
+
+			break;
+		}
+
+		chunk = (KmallocHeader *) ((u16) chunk + chunk->size + 2);
     }
+
+	for (u16 i = 0; i < size; ++i) {
+		chunk->data[i] = 0;
+	}
+
     return chunk->data;
 }
 
@@ -65,9 +65,12 @@ void kfree(void *addr) {
     chunk->user = MEMORY_OWNER_FREE;
 
     KmallocHeader *other;
-    while ((other = (KmallocHeader*)(chunk + chunk->size))
-            && other < (KmallocHeader*)MEMORY_END
-            && other->user == MEMORY_OWNER_FREE) {
-        chunk->size += other->size;
-    }
+    do {
+		other = (KmallocHeader*) ((u16) chunk + chunk->size + 2);
+		asm_log(other);
+		asm_log(other->user);
+		if(other->user == MEMORY_OWNER_FREE) {
+			chunk->size += other->size;
+		}
+	} while(other < (KmallocHeader *) MEMORY_END && other->user == MEMORY_OWNER_FREE);
 }

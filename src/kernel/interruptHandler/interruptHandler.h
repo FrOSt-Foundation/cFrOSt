@@ -4,7 +4,10 @@
 #include "kernel/memoryManager/memoryManager.h"
 
 typedef enum {
-    SOFTINT_PUTS,
+    SOFTINT_PRINTF,
+	SOFTINT_PRINTC,
+	SOFTINT_SCROLL,
+	SOFTINT_NEWLINE,
     SOFTINT_MALLOC,
     SOFTINT_FREE,
     __SOFTINT_NB,

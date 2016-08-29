@@ -1,3 +1,4 @@
+#include "kernel/stdio/stdio.h"
 #include "kernel/memoryManager/memoryManager.h"
 #include "std/string.h"
 #include "interruptHandler.h"
@@ -6,7 +7,10 @@
 #define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 
 static void interruptHandler(u16);
-static void lem_puts_handler(u16, u16 raw_str, u16 UNUSED(arg2));
+static void stdio_printf_handler(u16 UNUSED(msg), u16 s, u16 UNUSED(arg2));
+static void stdio_printc_handler(u16 UNUSED(msg), u16 c, u16 UNUSED(arg2));
+static void stdio_scroll_handler(u16 UNUSED(msg), u16 lines, u16 UNUSED(arg2));
+static void stdio_newline_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(arg2));
 static void mm_malloc_handler(u16, u16 size, u16 raw_ptr);
 static void mm_free_handler(u16, u16 raw_ptr, u16 UNUSED(arg2));
 
@@ -16,7 +20,10 @@ static IntHandler *int_table;
 IntHandler *int_handler_allocate(u16 nb_hardware) {
     int_table_size = __SOFTINT_NB + nb_hardware;
     int_table = (IntHandler*)kmalloc(MEMORY_OWNER_KERNEL, int_table_size);
-    int_table[SOFTINT_PUTS] = lem_puts_handler;
+	int_table[SOFTINT_PRINTF] = stdio_printf_handler;
+	int_table[SOFTINT_PRINTC] = stdio_printc_handler;
+	int_table[SOFTINT_SCROLL] = stdio_scroll_handler;
+    int_table[SOFTINT_NEWLINE] = stdio_newline_handler;
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
     return int_table + __SOFTINT_NB;
@@ -44,8 +51,20 @@ static void interruptHandler(u16 msg) {
     int_table[msg](msg, reg_b, reg_c);
 }
 
-static void lem_puts_handler(u16 UNUSED(msg), u16 raw_str, u16 UNUSED(arg2)) {
-    lem1802_puts((char*)(long)raw_str);
+static void stdio_printf_handler(u16 UNUSED(msg), u16 s, u16 UNUSED(arg2)) {
+    stdio_printf((char*) s);
+}
+
+static void stdio_printc_handler(u16 UNUSED(msg), u16 c, u16 UNUSED(arg2)) {
+    stdio_printc((char) c);
+}
+
+static void stdio_scroll_handler(u16 UNUSED(msg), u16 lines, u16 UNUSED(arg2)) {
+    stdio_scroll(lines);
+}
+
+static void stdio_newline_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(arg2)) {
+    stdio_newline();
 }
 
 static void mm_malloc_handler(u16 UNUSED(msg), u16 size, u16 raw_ptr) {

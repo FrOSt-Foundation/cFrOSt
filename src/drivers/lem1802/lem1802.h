@@ -10,6 +10,8 @@ const u16 lem1802_font_size = 256;
 const u16 lem1802_palette_size = 16;
 
 IntHandler lem1802_init(u16 monitor, u16);
+void lem1802_loadBuffer(char* buffer);
+void lem1802_putc(char c, u16 offset);
 void lem1802_puts(char* s);
 
 void lem1802_set_vram(u16 device, u16 vram[lem1802_vram_size]);
