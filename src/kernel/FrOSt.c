@@ -1,15 +1,12 @@
 #include "types.h"
+#include "asm.h"
 #include "drivers/hardware.h"
 #include "kernel/memoryManager/memoryManager.h"
 #include "interruptHandler/interruptHandler.h"
-#include "asm.h"
-#include "panic/panic.h"
 
 #include "std/stdio.h"
 #include "std/string.h"
 #include "std/stdlib.h"
-
-#include "kernel/stdio/stdio.h"
 
 int main(void) {
     mm_init();

@@ -1,6 +1,5 @@
 #include "memoryManager.h"
 #include "kernel/panic/panic.h"
-#include "kernel/stdio/stdio.h"
 
 /*
  * A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
