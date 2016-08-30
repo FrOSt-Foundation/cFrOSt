@@ -20,13 +20,6 @@ int main(void) {
 	stdio_init_output(lem1802);
 	stdio_init_input(generic_keyboard);
 
-    printf("cFrOSt loaded from disk, and interrupts enabled. Loading modules...\n");
-
-    char* buffer = (char*) malloc(6);
-	uitoa(12345, buffer);
-    printf(buffer);
-    free((u16*) buffer);
-
 	console_main();
 
     while(1) {
