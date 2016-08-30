@@ -18,6 +18,18 @@ u16 strcmp(const char* str1, const char* str2) {
 	return *(const unsigned char* ) str1 - *(const unsigned char* ) str2;
 }
 
+// Implementation as described here: https://en.wikibooks.org/wiki/C_Programming/C_Reference/string.h/strcpy
+char* strcpy(char* dest, const char* source) {
+	u16 i;
+	for(i = 0; source[i] != '\0'; ++i) {
+		dest[i] = source[i];
+	}
+
+	dest[i] = '\0';
+
+	return dest;
+}
+
 /*
  *  K&R (Kernighan & Ritchie) implementation
  */
