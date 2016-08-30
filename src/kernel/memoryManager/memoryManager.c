@@ -26,7 +26,7 @@ void *kmalloc(u16 owner, u16 size) {
 	}
 
     KmallocHeader *chunk = MEMORY_START;
-    for(u16 i = 0; i < 2; ++i) {
+    while(true) {
         if ((void*) chunk >= MEMORY_END) {
             kpanic("Out of memory");
         }
@@ -66,8 +66,6 @@ void kfree(void *addr) {
     KmallocHeader *other;
     do {
 		other = (KmallocHeader*) ((u16) chunk + chunk->size + 2);
-		asm_log(other);
-		asm_log(other->user);
 		if(other->user == MEMORY_OWNER_FREE) {
 			chunk->size += other->size;
 		}
