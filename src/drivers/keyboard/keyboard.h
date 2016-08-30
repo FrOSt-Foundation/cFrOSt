@@ -14,8 +14,11 @@
 #define KEY_SHIFT       0x90
 #define KEY_CONTROL     0x91
 
-void keyboard_clear_buffer(u16 keyboard);
-char keyboard_get_next(u16 keyboard);
-bool keyboard_is_pressed(u16 keyboard, char key);
-void keyboard_set_int_msg(u16 keyboard, u16 msg);
-void keyboard_disable_int(u16 keyboard);
+void keyboard_init(u16 id);
+void keyboard_clear_buffer();
+char keyboard_get_next();
+bool keyboard_is_pressed(char key);
+void keyboard_set_int_msg(u16 msg);
+void keyboard_disable_int();
+
+char keyboard_getc();

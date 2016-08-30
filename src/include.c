@@ -11,3 +11,5 @@
 #include "asm.c"
 #include "kernel/panic/panic.c"
 #include "kernel/stdio/stdio.c"
+#include "usr/console/console.c"
+#include "usr/console/programs.c"

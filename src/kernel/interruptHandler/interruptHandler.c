@@ -11,6 +11,9 @@ static void stdio_printf_handler(u16 UNUSED(msg), u16 s, u16 UNUSED(arg2));
 static void stdio_printc_handler(u16 UNUSED(msg), u16 c, u16 UNUSED(arg2));
 static void stdio_scroll_handler(u16 UNUSED(msg), u16 lines, u16 UNUSED(arg2));
 static void stdio_newline_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(arg2));
+static void stdio_moveCursor_handler(u16 UNUSED(msg), u16 x, u16 y);
+static void stdio_clear_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(arg2));
+static void stdio_getc_handler(u16 UNUSED(msg), u16 ptr, u16 UNUSED(arg2));
 static void mm_malloc_handler(u16, u16 size, u16 raw_ptr);
 static void mm_free_handler(u16, u16 raw_ptr, u16 UNUSED(arg2));
 
@@ -23,7 +26,10 @@ IntHandler *int_handler_allocate(u16 nb_hardware) {
 	int_table[SOFTINT_PRINTF] = stdio_printf_handler;
 	int_table[SOFTINT_PRINTC] = stdio_printc_handler;
 	int_table[SOFTINT_SCROLL] = stdio_scroll_handler;
-    int_table[SOFTINT_NEWLINE] = stdio_newline_handler;
+	int_table[SOFTINT_NEWLINE] = stdio_newline_handler;
+	int_table[SOFTINT_MOVECURSOR] = stdio_moveCursor_handler;
+	int_table[SOFTINT_CLEAR] = stdio_clear_handler;
+    int_table[SOFTINT_GETC] = stdio_getc_handler;
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
     return int_table + __SOFTINT_NB;
@@ -65,6 +71,20 @@ static void stdio_scroll_handler(u16 UNUSED(msg), u16 lines, u16 UNUSED(arg2)) {
 
 static void stdio_newline_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(arg2)) {
     stdio_newline();
+}
+
+static void stdio_moveCursor_handler(u16 UNUSED(msg), u16 x, u16 y) {
+	stdio_moveCursor(x, y);
+}
+
+static void stdio_clear_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(arg2)) {
+	stdio_clear();
+}
+
+static void stdio_getc_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2)) {
+	char *ptr = (char *) raw_ptr;
+
+	*ptr = stdio_getc();
 }
 
 static void mm_malloc_handler(u16 UNUSED(msg), u16 size, u16 raw_ptr) {

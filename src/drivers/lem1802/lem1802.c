@@ -37,13 +37,10 @@ void lem1802_scroll() {
 	}
 }
 
-void lem1802_puts(char* s) {
-    u16 offset = 0;
-    do {
-        vram[cursorPos] = 0xF000 | s[offset];
-        ++offset;
-        ++cursorPos;
-    } while(s[offset] != 0);
+void lem1802_clear() {
+	for(u16 i = 0; i < 0x180; ++i) {
+		vram[i] = 0;
+	}
 }
 
 void lem1802_set_vram(u16 device, u16 vram[lem1802_vram_size]) {

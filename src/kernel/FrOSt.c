@@ -2,11 +2,14 @@
 #include "asm.h"
 #include "drivers/hardware.h"
 #include "kernel/memoryManager/memoryManager.h"
+#include "kernel/stdio/stdio.h"
 #include "interruptHandler/interruptHandler.h"
 
 #include "std/stdio.h"
 #include "std/string.h"
 #include "std/stdlib.h"
+
+#include "usr/console/console.h"
 
 int main(void) {
     mm_init();
@@ -14,7 +17,8 @@ int main(void) {
     hardwareLoop(hardware_int_table);
     int_handler_activate();
 
-	stdio_init(lem1802);
+	stdio_init_output(lem1802);
+	stdio_init_input(generic_keyboard);
 
     printf("cFrOSt loaded from disk, and interrupts enabled. Loading modules...\n");
 
@@ -23,7 +27,7 @@ int main(void) {
     printf(buffer);
     free((u16*) buffer);
 
-	printf("\nHello, world!");
+	console_main();
 
     while(1) {
 

@@ -21,6 +21,7 @@ void hardwareLoop(IntHandler *hardware_int_table) {
                 break;
             case 0x30cf7406:
                 keyboard = device;
+				keyboard_init(keyboard);
                 break;
             case 0x12d0b402:
                 clock = device;
