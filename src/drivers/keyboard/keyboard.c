@@ -53,11 +53,10 @@ void keyboard_clear_buffer(Keyboard_driverData* data) {
 char keyboard_get_next(Keyboard_driverData* data) {
     register u16 action __asm("A") = GET_NEXT_KEY;
     register char key __asm("C");
-    __asm("hwi %0"
-          :
+    __asm("hwi %1"
+          : "=r" (key)
           : "X"(data->keyboard),
             "r"(action));
-	__asm volatile("" : "=r" (key)); // As it was previously ("=r" (key) inside the hwi block), clang would fuck up and call HWI C instead of HWI B
     return key;
 }
 
@@ -65,7 +64,7 @@ bool keyboard_is_pressed(Keyboard_driverData* data, char key) {
     register u16 action __asm("A") = KEY_IS_PRESSED;
     register char arg_b __asm("B") = key;
     register u16 arg_c __asm("C");
-    __asm("hwi %0"
+    __asm("hwi %1"
           : "=r"(arg_c)
           : "X"(data->keyboard),
             "r"(action),

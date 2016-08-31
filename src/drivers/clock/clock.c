@@ -49,11 +49,10 @@ void clock_set_tickrate(Clock_driverData* data, u16 rate) {
 u16 clock_ticks_since_last_call(Clock_driverData* data) {
     register u16 action __asm("A") = GET_TICKS_SINCE_LAST_CALL;
     register u16 reg_c __asm("C");
-    __asm("hwi %0"
-          :
+	__asm("hwi %1"
+          : "=r" (reg_c)
           : "X"(data->clock),
             "r"(action));
-	__asm volatile("" : "=r" (reg_c));
     return reg_c;
 }
 
