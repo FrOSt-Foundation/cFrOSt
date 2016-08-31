@@ -8,7 +8,7 @@ u16 monitor = 0xFFFF;
 u16 keyboard = 0xFFFF;
 u16 clock = 0xFFFF;
 
-void hardwareLoop(IntHandler *hardware_int_table, Driver** drivers, u16 n_drivers) {
+void hardwareLoop(IntHandler *hardware_int_table, Driver* drivers[], u16 n_drivers) {
     u16 nb_devices = asm_hwn();
     for(u16 device = 0; device < nb_devices; ++device) {
         HardwareInfo infos = asm_hwq(device);

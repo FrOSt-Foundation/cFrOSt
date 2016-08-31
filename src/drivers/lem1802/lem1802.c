@@ -18,8 +18,8 @@ void* lem1802_init(u16 monitor) {
 	return data;
 }
 
-void lem1802_destroy(Lem1802_driverData* data) {
-	kfree(data->vram);
+void lem1802_destroy(void* data) {
+	kfree(((Lem1802_driverData*) data)->vram);
 }
 
 u16 lem1802_update_function(void* data, u16 message, u16 arg1, u16 arg2) {
@@ -83,7 +83,7 @@ void lem1802_clear(Lem1802_driverData* data) {
 	}
 }
 
-void lem1802_set_vram(Lem1802_driverData* data, u16 vram[lem1802_vram_size]) {
+void lem1802_set_vram(Lem1802_driverData* data, u16 vram[LEM1802_VRAM_SIZE]) {
     register u16 action __asm("A") = MEM_MAP_SCREEN;
     register u16 *vram_reg __asm("B") = vram;
     __asm("hwi %0"
@@ -95,7 +95,7 @@ void lem1802_set_vram(Lem1802_driverData* data, u16 vram[lem1802_vram_size]) {
 	data->vram = vram;
 }
 
-void lem1802_set_font(Lem1802_driverData* data, u16 font[lem1802_font_size]) {
+void lem1802_set_font(Lem1802_driverData* data, u16 font[LEM1802_FONT_SIZE]) {
     register u16 action __asm("A") = MEM_MAP_FONT;
     register u16 *reg_b __asm("B") = font;
     __asm("hwi %0"
@@ -105,7 +105,7 @@ void lem1802_set_font(Lem1802_driverData* data, u16 font[lem1802_font_size]) {
             "r"(reg_b));
 }
 
-void lem1802_set_palette(Lem1802_driverData* data, u16 palette[lem1802_palette_size]) {
+void lem1802_set_palette(Lem1802_driverData* data, u16 palette[LEM1802_PALETTE_SIZE]) {
     register u16 action __asm("A") = MEM_MAP_PALETTE;
     register u16 *reg_b __asm("B") = palette;
     __asm("hwi %0"
@@ -125,7 +125,7 @@ void lem1802_set_border_color(Lem1802_driverData* data, u16 color) {
             "r"(reg_b));
 }
 
-void lem1802_dump_font(Lem1802_driverData* data, u16 font[lem1802_font_size]) {
+void lem1802_dump_font(Lem1802_driverData* data, u16 font[LEM1802_FONT_SIZE]) {
     register u16 action __asm("A") = MEM_DUMP_FONT;
     register u16 *reg_b __asm("B") = font;
     __asm("hwi %0"
@@ -136,7 +136,7 @@ void lem1802_dump_font(Lem1802_driverData* data, u16 font[lem1802_font_size]) {
           : "memory");
 }
 
-void lem1802_dump_palette(Lem1802_driverData* data, u16 palette[lem1802_palette_size]) {
+void lem1802_dump_palette(Lem1802_driverData* data, u16 palette[LEM1802_PALETTE_SIZE]) {
     register u16 action __asm("A") = MEM_DUMP_PALETTE;
     register u16 *reg_b __asm("B") = palette;
     __asm("hwi %0"

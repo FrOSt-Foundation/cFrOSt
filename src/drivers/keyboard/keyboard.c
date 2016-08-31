@@ -9,87 +9,81 @@ typedef enum {
     SET_INT_MSG = 3,
 } message;
 
-static u16 keyboard_id = 0xFFFF;
+void* keyboard_init(u16 keyboard) {
+	Keyboard_driverData *data = kmalloc(0, sizeof(Keyboard_driverData));
+	data->keyboard = keyboard;
+	data->n_buffer = 0;
+	data->buffer = kmalloc(0, 64);
 
-static char* keyboard_buffer = NULL;
-static u16 keyboard_n_buffer = 0;
+	asm_log(data->keyboard);
 
-void keyboard_init(u16 id) {
-	keyboard_id = id;
-
-	if(keyboard_buffer != NULL) {
-		kfree(keyboard_buffer);
-	}
-
-	keyboard_buffer = kmalloc(0, 16);
-	keyboard_n_buffer = 0;
+	return data;
 }
 
-u16 keyboard_update_function(u16 message, u16 device, u16 arg1, u16 arg2) {
+void keyboard_destroy(void* data) {
+	kfree(((Keyboard_driverData*) data)->buffer);
+}
+
+u16 keyboard_update_function(void* data, u16 message, u16 arg1, u16 arg2) {
 	//switch(())
 }
 
-void keyboard_clear_buffer() {
+void keyboard_clear_buffer(Keyboard_driverData* data) {
     register u16 action __asm("A") = CLEAR_BUFFER;
     __asm("hwi %0"
           :
-          : "X"(keyboard_id),
+          : "X"(data->keyboard),
             "r"(action));
 }
 
-char keyboard_get_next() {
+char keyboard_get_next(Keyboard_driverData* data) {
     register u16 action __asm("A") = GET_NEXT_KEY;
     register char key __asm("C");
     __asm("hwi %0"
           :
-          : "X"(keyboard_id),
+          : "X"(data->keyboard),
             "r"(action));
 	__asm volatile("" : "=r" (key)); // As it was previously ("=r" (key) inside the hwi block), clang would fuck up and call HWI C instead of HWI B
     return key;
 }
 
-bool keyboard_is_pressed(char key) {
+bool keyboard_is_pressed(Keyboard_driverData* data, char key) {
     register u16 action __asm("A") = KEY_IS_PRESSED;
     register char arg_b __asm("B") = key;
     register u16 arg_c __asm("C");
     __asm("hwi %0"
           : "=r"(arg_c)
-          : "X"(keyboard_id),
+          : "X"(data->keyboard),
             "r"(action),
             "r"(arg_b));
     return arg_c;
 }
 
-void keyboard_set_int_msg(u16 msg) {
+void keyboard_set_int_msg(Keyboard_driverData* data, u16 msg) {
     register u16 action __asm("A") = SET_INT_MSG;
     register u16 arg_b __asm("B") = msg;
     __asm("hwi %0"
           :
-          : "X"(keyboard_id),
+          : "X"(data->keyboard),
             "r"(action),
             "r"(arg_b));
 }
 
-void keyboard_disable_int() {
-    keyboard_set_int_msg(0);
-}
-
-
-char keyboard_getc() {
-	if(keyboard_n_buffer != 0) {
-		return keyboard_buffer[--keyboard_n_buffer];
+char keyboard_getc(Keyboard_driverData* data) {
+	if(data->n_buffer != 0) {
+		return data->buffer[--data->n_buffer];
 	}
 
 	char c = '\0';
 
 	do {
-		c = keyboard_get_next();
+		c = keyboard_get_next(data);
 	} while(c == '\0');
 
 	do {
-		keyboard_buffer[keyboard_n_buffer++] = c;
-		c = keyboard_get_next();
+		data->buffer[data->n_buffer++] = c;
+		c = keyboard_get_next(data);
 	} while(c != '\0');
 
-	return keyboard_buffer[--keyboard_n_buffer];
+	return data->buffer[--data->n_buffer];
 }

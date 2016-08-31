@@ -3,8 +3,11 @@
 #include "stdbool.h"
 #include "types.h"
 
-void keyboard_init(u16 keyboard);
-u16 keyboard_update_function(u16 message, u16 device, u16 arg1, u16 arg2);
+typedef struct Keyboard_driverData Keyboard_driverData;
+
+void* keyboard_init(u16 keyboard);
+void keyboard_destroy(void* data);
+u16 keyboard_update_function(void* data, u16 message, u16 arg1, u16 arg2);
 
 #define KEY_BACKSPACE   0x10
 #define KEY_RETURN      0x11
@@ -17,11 +20,9 @@ u16 keyboard_update_function(u16 message, u16 device, u16 arg1, u16 arg2);
 #define KEY_SHIFT       0x90
 #define KEY_CONTROL     0x91
 
-void keyboard_init(u16 id);
-void keyboard_clear_buffer();
-char keyboard_get_next();
-bool keyboard_is_pressed(char key);
-void keyboard_set_int_msg(u16 msg);
-void keyboard_disable_int();
+void keyboard_clear_buffer(Keyboard_driverData* data);
+char keyboard_get_next(Keyboard_driverData* data);
+bool keyboard_is_pressed(Keyboard_driverData* data, char key);
+void keyboard_set_int_msg(Keyboard_driverData* data, u16 msg);
 
-char keyboard_getc();
+char keyboard_getc(Keyboard_driverData* data);

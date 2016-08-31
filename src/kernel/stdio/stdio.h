@@ -21,7 +21,7 @@ typedef enum {
 } OutputData;
 
 void stdio_init_output(Stdio_output_type type, Driver* driver);
-void stdio_init_input(Stdio_input_type type);
+void stdio_init_input(Stdio_input_type type, Driver* driver);
 void stdio_set_current_output(u16 output_number);
 void stdio_scroll(u16 lines);
 void stdio_newline();

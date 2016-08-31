@@ -11,25 +11,25 @@
 
 #include "usr/console/console.h"
 
-#define N_DRIVERS 1
+#define N_DRIVERS 2
 #include "drivers/lem1802/lem1802.h"
 #include "drivers/keyboard/keyboard.h"
 
 Driver driver_lem1802;
 Driver driver_keyboard;
 
+static Driver* drivers[] = {&driver_lem1802, &driver_keyboard};
+
 int main(void) {
     mm_init();
 
     IntHandler *hardware_int_table = int_handler_allocate(asm_hwn());
-
-	Driver* drivers[] = {&driver_lem1802};
 	hardwareLoop(hardware_int_table, drivers, N_DRIVERS);
 
 	int_handler_activate();
 
 	stdio_init_output(lem1802, &driver_lem1802);
-	stdio_init_input(generic_keyboard);
+	stdio_init_input(generic_keyboard, &driver_keyboard);
 
 	if(driver_lem1802.devicesList.nDevices == 1) {
 		console_main();
@@ -47,7 +47,6 @@ int main(void) {
 		char c = '\0';
 		do {
 			c = getc();
-			asm_log(c - '0');
 		} while((u16) (c - '0') > driver_lem1802.devicesList.nDevices);
 
 		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
@@ -81,6 +80,7 @@ Driver driver_lem1802 = (Driver) {
 	},
 	.updateFunction = lem1802_update_function,
 	.initFunction = lem1802_init,
+	.destroyFunction = lem1802_destroy,
 	.devicesList = (DevicesList) {
 		.nDevices = 0
 	}
@@ -91,7 +91,7 @@ typedef struct Lem1802_driverData {
 	u16* vram;
 } Lem1802_driverData;
 
-/* Driver driver_keyboard = (Driver) {
+Driver driver_keyboard = (Driver) {
 	.hardwareInfo = (HardwareInfo) {
 		.hardware_id_a = 0x7406,
 		.hardware_id_b = 0x30cf,
@@ -101,5 +101,14 @@ typedef struct Lem1802_driverData {
 	},
 	.updateFunction = keyboard_update_function,
 	.initFunction = keyboard_init,
-	.nDevices = 0
-}; */
+	.destroyFunction = keyboard_destroy,
+	.devicesList = (DevicesList) {
+		.nDevices = 0
+	}
+};
+
+typedef struct Keyboard_driverData {
+	u16 keyboard;
+	char* buffer;
+	u16 n_buffer;
+} Keyboard_driverData;

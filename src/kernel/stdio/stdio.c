@@ -6,11 +6,12 @@
 #include "drivers/keyboard/keyboard.h"
 
 static Stdio_output_type output_type = no_output;
-static Driver* output_driver;
+static Driver* output_driver, *input_driver;
 static Stdio_input_type input_type = no_input;
 
 static u16** outputData;
 static u16 currentOutput;
+static u16 currentInput;
 
 // You can init stdio with whatever output device you want!
 void stdio_init_output(Stdio_output_type t, Driver* d) {
@@ -44,12 +45,16 @@ void stdio_init_output(Stdio_output_type t, Driver* d) {
 	}
 }
 
-void stdio_init_input(Stdio_input_type t) {
+void stdio_init_input(Stdio_input_type t, Driver* d) {
 	input_type = t;
+
+	input_driver = d;
+
+	currentInput = 0;
 
 	switch(t) {
 		case generic_keyboard:
-			keyboard_clear_buffer();
+			keyboard_clear_buffer(input_driver->devicesList.data[currentInput]);
 			return;
 		case no_output:
 			break;
@@ -141,7 +146,7 @@ char stdio_getc() {
 	char c = '\0';
 	switch (input_type) {
 		case generic_keyboard:
-			c = keyboard_getc();
+			c = keyboard_getc(input_driver->devicesList.data[currentInput]);
 
 			break;
 		case no_input:
