@@ -39,9 +39,11 @@ HardwareInfo asm_hwq(u16 id) {
                   "=r" (y)
                 : [device] "X" (id));
     return (HardwareInfo) {
-        .hardware_id = (u32)a + ((u32)b << 16),
+        .hardware_id_a = a,
+		.hardware_id_b = b,
         .hardware_version = c,
-        .manufacturer = (u32)x + ((u32)y << 16)
+        .manufacturer_a = x,
+		.manufacturer_b = y
     };
 }
 

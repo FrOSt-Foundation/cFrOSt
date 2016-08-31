@@ -3,9 +3,11 @@
 #include "types.h"
 
 typedef struct {
-    u32 hardware_id;
+	u16 hardware_id_a;
+    u16 hardware_id_b;
     u16 hardware_version;
-    u32 manufacturer;
+	u16 manufacturer_a;
+    u16 manufacturer_b;
 } HardwareInfo;
 
 void asm_int(u16, u16, u16);
