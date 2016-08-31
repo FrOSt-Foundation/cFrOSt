@@ -4,6 +4,7 @@
 #include "kernel/memoryManager/memoryManager.h"
 #include "kernel/stdio/stdio.h"
 #include "interruptHandler/interruptHandler.h"
+#include "kernel/panic/panic.h"
 
 #include "std/stdio.h"
 #include "std/string.h"
@@ -11,14 +12,20 @@
 
 #include "usr/console/console.h"
 
-#define N_DRIVERS 2
 #include "drivers/lem1802/lem1802.h"
 #include "drivers/keyboard/keyboard.h"
+#include "drivers/clock/clock.h"
 
 Driver driver_lem1802;
 Driver driver_keyboard;
+Driver driver_clock;
 
-static Driver* drivers[] = {&driver_lem1802, &driver_keyboard};
+#define N_DRIVERS 3
+static Driver* drivers[] = {&driver_lem1802, &driver_keyboard, &driver_clock};
+
+typedef struct Clock_driverData {
+	u16 clock;
+} Clock_driverData;
 
 int main(void) {
     mm_init();
@@ -31,12 +38,22 @@ int main(void) {
 	stdio_init_output(lem1802, &driver_lem1802);
 	stdio_init_input(generic_keyboard, &driver_keyboard);
 
+	for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
+		stdio_set_current_output(i);
+		clear();
+	}
+
+	if(driver_clock.devicesList.nDevices == 0) {
+		kpanic("Error: At least one generic clock is needed. Please connect it to the DCPU and try again.");
+	}
+
+	clock_set_tickrate((Clock_driverData *) driver_clock.devicesList.data[0], 60);
+
 	if(driver_lem1802.devicesList.nDevices == 1) {
 		console_main();
 	} else if(driver_lem1802.devicesList.nDevices != 0) {
 		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 			stdio_set_current_output(i);
-			clear();
 			printf("Press 1, 2, ... to load console on corresponding screen.\nThis screen is number: ");
 			char* buffer = (char *) malloc(6); // 0xFFFF is only 5 digits in base 10
 			itoa(i + 1, buffer);
@@ -112,3 +129,19 @@ typedef struct Keyboard_driverData {
 	char* buffer;
 	u16 n_buffer;
 } Keyboard_driverData;
+
+Driver driver_clock = (Driver) {
+	.hardwareInfo = (HardwareInfo)  {
+		.hardware_id_a = 0xb402,
+		.hardware_id_b = 0x12d0,
+		.hardware_version = 1,
+		.manufacturer_a = 0x8b36,
+		.manufacturer_b = 0x1c6c
+	},
+	.updateFunction = clock_update_function,
+	.initFunction = clock_init,
+	.destroyFunction = clock_destroy,
+	.devicesList = (DevicesList) {
+		.nDevices = 0
+	}
+};

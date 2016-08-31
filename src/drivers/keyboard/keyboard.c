@@ -15,8 +15,6 @@ void* keyboard_init(u16 keyboard) {
 	data->n_buffer = 0;
 	data->buffer = kmalloc(0, 64);
 
-	asm_log(data->keyboard);
-
 	return data;
 }
 
