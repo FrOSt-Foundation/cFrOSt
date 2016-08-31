@@ -5,29 +5,46 @@
 #include "drivers/lem1802/lem1802.h"
 #include "drivers/keyboard/keyboard.h"
 
-static enum stdio_output_type output_type = no_output;
-static enum stdio_input_type input_type = no_input;
-static u16 rows = 0;
-static u16 cols = 0;
-static u16 row = 0;
-static u16 col = 0;
+static Stdio_output_type output_type = no_output;
+static Driver* output_driver;
+static Stdio_input_type input_type = no_input;
+
+static u16** outputData;
+static u16 currentOutput;
 
 // You can init stdio with whatever output device you want!
-void stdio_init_output(enum stdio_output_type t) {
+void stdio_init_output(Stdio_output_type t, Driver* d) {
 	output_type = t;
+
+	if(outputData != 0) {
+		for(u16 i = 0; i < output_driver->nDevices; ++i) {
+			kfree(outputData[i]);
+		}
+		kfree(outputData);
+	}
+
+	output_driver = d;
+
+	outputData = kmalloc(0, d->nDevices);
+
+	currentOutput = 0;
 
 	switch(t) {
 		case lem1802:
-			rows = 12;
-			cols = 32;
-			cursorPos = 0;
+			for(u16 i = 0; i < d->nDevices; ++i) {
+				outputData[i] = kmalloc(0, __OUTPUTDATA_SIZE);
+				outputData[i][ROWS] = 12;
+				outputData[i][COLS] = 32;
+				outputData[i][ROW] = 0;
+				outputData[i][COL] = 0;
+			}
 			return;
 		case no_output:
 			break;
 	}
 }
 
-void stdio_init_input(enum stdio_input_type t) {
+void stdio_init_input(Stdio_input_type t) {
 	input_type = t;
 
 	switch(t) {
@@ -39,11 +56,15 @@ void stdio_init_input(enum stdio_input_type t) {
 	}
 }
 
+void stdio_set_current_output(u16 output_number) {
+	currentOutput = output_number;
+}
+
 void stdio_scroll(u16 lines) {
 	for(u16 line = 0; line < lines; ++line) {
 		switch(output_type) {
 			case lem1802:
-				lem1802_scroll();
+				lem1802_scroll(currentOutput);
 				break;
 			case no_output:
 				break;
@@ -53,27 +74,27 @@ void stdio_scroll(u16 lines) {
 
 // Move cursor to a new row, at the first column.
 void stdio_newline() {
-	col = 0;
-	if(row == rows - 1) {
+	outputData[currentOutput][COL] = 0;
+	if(outputData[currentOutput][ROW] == outputData[currentOutput][ROWS] - 1) {
 		stdio_scroll(1);
 	} else {
-		row++;
+		outputData[currentOutput][ROW]++;
 	}
 }
 
 void stdio_printc(char c) {
-	if(col == cols)
+	if(outputData[currentOutput][COL] == outputData[currentOutput][COLS])
 		stdio_newline();
 
 	stdio_putc(c);
 
-	col++;
+	outputData[currentOutput][COL]++;
 }
 
 void stdio_putc(char c) {
 	switch(output_type) {
 		case lem1802:
-			lem1802_putc(c, row * 32 + col);
+			lem1802_putc(currentOutput, c, outputData[currentOutput][ROW] * 32 + outputData[currentOutput][COL]);
 			break;
 		case no_output:
 			break;
@@ -97,19 +118,19 @@ void stdio_printf(char* string) {
 }
 
 void stdio_moveCursor(u16 x, u16 y) {
-	if(x < cols)
-		col = x;
-	if(y < rows)
-		row = y;
+	if(x < outputData[currentOutput][COLS])
+		outputData[currentOutput][COL] = x;
+	if(y < outputData[currentOutput][ROWS])
+		outputData[currentOutput][ROW] = y;
 }
 
 void stdio_clear() {
-	row = 0;
-	col = 0;
+	outputData[currentOutput][ROW] = 0;
+	outputData[currentOutput][COL] = 0;
 
 	switch(output_type) {
 		case lem1802:
-			lem1802_clear();
+			lem1802_clear(currentOutput);
 			break;
 		case no_output:
 			break;

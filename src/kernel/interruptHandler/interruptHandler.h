@@ -15,10 +15,9 @@ typedef enum {
     __SOFTINT_NB,
 } SoftInt;
 
-typedef void (*IntHandler)(u16, u16, u16);
+typedef void (*IntHandler)(u16 message, u16 arg1, u16 arg2, u16 arg3);
 
 IntHandler *int_handler_allocate(u16 nb_hardware);
 void int_handler_activate();
-void interrupt1(u16 message, u16 arg_1);
-void interrupt2(u16 message, u16 arg_1, u16 arg_2);
+void interrupt(u16 message, u16 arg_1, u16 arg_2, u16 arg_3);
 // We don't reference interruptHandler() because it shouldn't ever be called directly.

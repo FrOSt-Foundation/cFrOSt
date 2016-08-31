@@ -9,10 +9,10 @@ void memcpy(const void *from, void *to, u16 size) {
 
 u16* malloc(u16 size) {
     u16* p;
-    interrupt2(SOFTINT_MALLOC, size, (u16)&p);
+    interrupt(SOFTINT_MALLOC, size, (u16)&p, 0);
     return p;
 }
 
 void free(u16* block) {
-    interrupt1(SOFTINT_FREE, (u16)block);
+    interrupt(SOFTINT_FREE, (u16)block, 0, 0);
 }

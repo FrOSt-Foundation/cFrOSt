@@ -10,7 +10,7 @@ typedef struct {
     u16 manufacturer_b;
 } HardwareInfo;
 
-void asm_int(u16, u16, u16);
+void asm_int(u16 message, u16 arg1, u16 arg2, u16 arg3);
 u16 asm_iag();
 void asm_ias(u16);
 void asm_iaq(u16);

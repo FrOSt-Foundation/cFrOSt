@@ -7,27 +7,27 @@
  */
 
 void printf(char* s) {
-	interrupt1(SOFTINT_PRINTF, (u16)s);
+	interrupt(SOFTINT_PRINTF, (u16)s, 0, 0);
 }
 
 void printc(char c) {
-	interrupt1(SOFTINT_PRINTC, (u16) c);
+	interrupt(SOFTINT_PRINTC, (u16) c, 0, 0);
 }
 
 void scroll(u16 lines) {
-	interrupt1(SOFTINT_SCROLL, lines);
+	interrupt(SOFTINT_SCROLL, lines, 0, 0);
 }
 
 void newline() {
-	interrupt1(SOFTINT_NEWLINE, 0);
+	interrupt(SOFTINT_NEWLINE, 0, 0, 0);
 }
 
 void moveCursor(u16 x, u16 y) {
-	interrupt2(SOFTINT_MOVECURSOR, x, y);
+	interrupt(SOFTINT_MOVECURSOR, x, y, 0);
 }
 
 void clear() {
-	interrupt1(SOFTINT_CLEAR, 0);
+	interrupt(SOFTINT_CLEAR, 0, 0, 0);
 }
 
 
@@ -37,7 +37,7 @@ void clear() {
 
 char getc() {
 	u16 c;
-	interrupt1(SOFTINT_GETC, (u16) &c);
+	interrupt(SOFTINT_GETC, (u16) &c, 0, 0);
 
 	return c;
 }
