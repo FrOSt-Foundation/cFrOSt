@@ -17,7 +17,7 @@ void stdio_init_output(Stdio_output_type t, Driver* d) {
 	output_type = t;
 
 	if(outputData != 0) {
-		for(u16 i = 0; i < output_driver->nDevices; ++i) {
+		for(u16 i = 0; i < output_driver->devicesList.nDevices; ++i) {
 			kfree(outputData[i]);
 		}
 		kfree(outputData);
@@ -25,13 +25,13 @@ void stdio_init_output(Stdio_output_type t, Driver* d) {
 
 	output_driver = d;
 
-	outputData = kmalloc(0, d->nDevices);
+	outputData = kmalloc(0, d->devicesList.nDevices);
 
 	currentOutput = 0;
 
 	switch(t) {
 		case lem1802:
-			for(u16 i = 0; i < d->nDevices; ++i) {
+			for(u16 i = 0; i < d->devicesList.nDevices; ++i) {
 				outputData[i] = kmalloc(0, __OUTPUTDATA_SIZE);
 				outputData[i][ROWS] = 12;
 				outputData[i][COLS] = 32;
@@ -64,7 +64,7 @@ void stdio_scroll(u16 lines) {
 	for(u16 line = 0; line < lines; ++line) {
 		switch(output_type) {
 			case lem1802:
-				lem1802_scroll(currentOutput);
+				lem1802_scroll(output_driver->devicesList.data[currentOutput]);
 				break;
 			case no_output:
 				break;
@@ -94,7 +94,7 @@ void stdio_printc(char c) {
 void stdio_putc(char c) {
 	switch(output_type) {
 		case lem1802:
-			lem1802_putc(currentOutput, c, outputData[currentOutput][ROW] * 32 + outputData[currentOutput][COL]);
+			lem1802_putc(output_driver->devicesList.data[currentOutput], c, outputData[currentOutput][ROW] * 32 + outputData[currentOutput][COL]);
 			break;
 		case no_output:
 			break;
@@ -130,7 +130,7 @@ void stdio_clear() {
 
 	switch(output_type) {
 		case lem1802:
-			lem1802_clear(currentOutput);
+			lem1802_clear(output_driver->devicesList.data[currentOutput]);
 			break;
 		case no_output:
 			break;

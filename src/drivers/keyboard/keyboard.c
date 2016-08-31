@@ -25,6 +25,10 @@ void keyboard_init(u16 id) {
 	keyboard_n_buffer = 0;
 }
 
+u16 keyboard_update_function(u16 message, u16 device, u16 arg1, u16 arg2) {
+	//switch(())
+}
+
 void keyboard_clear_buffer() {
     register u16 action __asm("A") = CLEAR_BUFFER;
     __asm("hwi %0"

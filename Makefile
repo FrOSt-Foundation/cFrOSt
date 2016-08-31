@@ -31,6 +31,7 @@ bin/%.s: src/%.c Makefile
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -S $<
 	sed -i -re 's/rfi/rfi 0/i' $@
+	sed -i -re 's/\.comm	.*$\//i' $@
 
 bin/%.s: src/%.dasm Makefile
 	@mkdir -p $(@D)

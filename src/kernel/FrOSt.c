@@ -13,8 +13,10 @@
 
 #define N_DRIVERS 1
 #include "drivers/lem1802/lem1802.h"
+#include "drivers/keyboard/keyboard.h"
 
 Driver driver_lem1802;
+Driver driver_keyboard;
 
 int main(void) {
     mm_init();
@@ -29,10 +31,10 @@ int main(void) {
 	stdio_init_output(lem1802, &driver_lem1802);
 	stdio_init_input(generic_keyboard);
 
-	if(driver_lem1802.nDevices == 1) {
+	if(driver_lem1802.devicesList.nDevices == 1) {
 		console_main();
-	} else if(driver_lem1802.nDevices != 0) {
-		for(u16 i = 0; i < driver_lem1802.nDevices; ++i) {
+	} else if(driver_lem1802.devicesList.nDevices != 0) {
+		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 			stdio_set_current_output(i);
 			clear();
 			printf("Press 1, 2, ... to load console on corresponding screen.\nThis screen is number: ");
@@ -46,9 +48,9 @@ int main(void) {
 		do {
 			c = getc();
 			asm_log(c - '0');
-		} while((u16) (c - '0') > driver_lem1802.nDevices);
+		} while((u16) (c - '0') > driver_lem1802.devicesList.nDevices);
 
-		for(u16 i = 0; i < driver_lem1802.nDevices; ++i) {
+		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 			if(i != (u16) (c - '0') - 1) {
 				stdio_set_current_output(i);
 				clear();
@@ -60,8 +62,8 @@ int main(void) {
 	}
 
     while(1) {
-		if(driver_lem1802.nDevices != 0) {
-			for(u16 i = 0; i < driver_lem1802.nDevices; ++i) {
+		if(driver_lem1802.devicesList.nDevices != 0) {
+			for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 				stdio_set_current_output(i);
 				printf("You can safely shut down the system.");
 			}
@@ -79,10 +81,17 @@ Driver driver_lem1802 = (Driver) {
 	},
 	.updateFunction = lem1802_update_function,
 	.initFunction = lem1802_init,
-	.nDevices = 0
+	.devicesList = (DevicesList) {
+		.nDevices = 0
+	}
 };
 
-/* Driver driver_keyborad = (Driver) {
+typedef struct Lem1802_driverData {
+	u16 monitor;
+	u16* vram;
+} Lem1802_driverData;
+
+/* Driver driver_keyboard = (Driver) {
 	.hardwareInfo = (HardwareInfo) {
 		.hardware_id_a = 0x7406,
 		.hardware_id_b = 0x30cf,
@@ -91,5 +100,6 @@ Driver driver_lem1802 = (Driver) {
 		.manufacturer_b = 0x1c6c
 	},
 	.updateFunction = keyboard_update_function,
-	.initFunction = keyboard_init;
-} */
+	.initFunction = keyboard_init,
+	.nDevices = 0
+}; */

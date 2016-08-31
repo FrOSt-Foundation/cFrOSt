@@ -3,6 +3,9 @@
 #include "stdbool.h"
 #include "types.h"
 
+void keyboard_init(u16 keyboard);
+u16 keyboard_update_function(u16 message, u16 device, u16 arg1, u16 arg2);
+
 #define KEY_BACKSPACE   0x10
 #define KEY_RETURN      0x11
 #define KEY_INSERT      0x12
