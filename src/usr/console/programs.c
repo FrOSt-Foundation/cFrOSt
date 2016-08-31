@@ -6,7 +6,7 @@
 ; // Fixes color syntax in atom-editor, no real use. Sorry :(
 
 void console_help(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {
-	printf("Commands: help, about, echo");
+	printf("Commands: help, about, echo, uptime");
 }
 
 void console_about(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {

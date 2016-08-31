@@ -3,6 +3,13 @@
 #include "stdbool.h"
 #include "types.h"
 
+typedef enum {
+	KEYBOARD_CLEAR_BUFFER,
+	KEYBOARD_GET_NEXT,
+	KEYBOARD_IS_PRESSED,
+	KEYBOARD_SET_INT_MSG
+} Keyboard_message;
+
 typedef struct Keyboard_driverData Keyboard_driverData;
 
 void* keyboard_init(u16 keyboard);

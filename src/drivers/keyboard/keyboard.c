@@ -2,12 +2,15 @@
 
 #include "kernel/memoryManager/memoryManager.h"
 
+#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+; // Fixes color syntax in atom-editor, no real use. Sorry :(
+
 typedef enum {
     CLEAR_BUFFER = 0,
     GET_NEXT_KEY = 1,
     KEY_IS_PRESSED = 2,
     SET_INT_MSG = 3,
-} message;
+} keyboard_action;
 
 void* keyboard_init(u16 keyboard) {
 	Keyboard_driverData *data = kmalloc(0, sizeof(Keyboard_driverData));
@@ -22,8 +25,21 @@ void keyboard_destroy(void* data) {
 	kfree(((Keyboard_driverData*) data)->buffer);
 }
 
-u16 keyboard_update_function(void* data, u16 message, u16 arg1, u16 arg2) {
-	//switch(())
+u16 keyboard_update_function(void* data, u16 message, u16 arg1, u16 UNUSED(arg2)) {
+	switch((Keyboard_message) message) {
+		case KEYBOARD_CLEAR_BUFFER:
+			keyboard_clear_buffer(data);
+			break;
+		case KEYBOARD_GET_NEXT:
+			keyboard_get_next(data);
+			break;
+		case KEYBOARD_IS_PRESSED:
+			return keyboard_is_pressed(data, arg1);
+		case KEYBOARD_SET_INT_MSG:
+			keyboard_set_int_msg(data, arg1);
+			break;
+	}
+	return 0;
 }
 
 void keyboard_clear_buffer(Keyboard_driverData* data) {
