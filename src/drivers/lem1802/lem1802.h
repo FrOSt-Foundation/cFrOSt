@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct Lem1802_driverData Lem1802_driverData;
 
-void* lem1802_init(u16 monitor);
+void* lem1802_init(u16 monitor, u16 int_number, IntHandler* int_handler_location);
 void lem1802_destroy(void* data);
 u16 lem1802_update_function(void* data, u16 arg1, u16 arg2, u16 arg3);
 

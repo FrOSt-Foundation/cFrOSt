@@ -1,0 +1,41 @@
+:scheduler_switch
+    ife [nProcesses], 1
+        set PC, POP
+
+    ; We don't push a to the stack, nor save it, because scheduler_switch should always be called via the interrupt handler, which already handles saving it
+    set A, [processes]
+    add A, [running_process]
+    set A, [A]
+
+    set [A + 1], B
+    set [A + 2], C
+    set [A + 3], X
+    set [A + 4], Y
+    set [A + 5], Z
+    set [A + 6], I
+    set [A + 7], J
+    set [A + 8], EX
+    set [A + 9], POP
+    set [A + 10], SP
+
+    add [running_process], 1
+    ife [running_process], [nProcesses]
+        set [running_process], 0
+    set A, [processes]
+    add A, [running_process]
+    set A, [A]
+
+    set B, [A + 1]
+    set C, [A + 2]
+    set X, [A + 3]
+    set Y, [A + 4]
+    set Z, [A + 5]
+    set I, [A + 6]
+    set J, [A + 7]
+    set EX, [A + 8]
+    set SP, [A + 10]
+
+    ; We do an "RFI" by ourselves since we f*cked up the stack
+    IAQ 0
+
+    set PC, [A + 9]

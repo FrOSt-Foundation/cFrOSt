@@ -12,7 +12,7 @@ typedef enum {
     SET_INT_MSG = 3,
 } keyboard_action;
 
-void* keyboard_init(u16 keyboard) {
+void* keyboard_init(u16 keyboard, u16 int_number, IntHandler* int_handler_location) {
 	Keyboard_driverData *data = kmalloc(0, sizeof(Keyboard_driverData));
 	data->keyboard = keyboard;
 	data->n_buffer = 0;
@@ -87,16 +87,15 @@ char keyboard_getc(Keyboard_driverData* data) {
 		return data->buffer[--data->n_buffer];
 	}
 
-	char c = '\0';
+	char c = keyboard_get_next(data);
 
-	do {
-		c = keyboard_get_next(data);
-	} while(c == '\0');
+    if(c == '\0')
+        return '\0';
 
-	do {
+	while(c != '\0') {
 		data->buffer[data->n_buffer++] = c;
 		c = keyboard_get_next(data);
-	} while(c != '\0');
+	}
 
 	return data->buffer[--data->n_buffer];
 }
