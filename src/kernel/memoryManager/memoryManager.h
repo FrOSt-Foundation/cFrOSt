@@ -25,3 +25,4 @@ typedef struct {
 void mm_init();
 void *kmalloc(u16 owner, u16 size);
 void kfree(void* block);
+void kfreePid(u16 pid);

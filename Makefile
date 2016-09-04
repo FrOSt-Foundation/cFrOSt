@@ -9,7 +9,8 @@ CPPFLAGS += -MP -MD
 CFLAGS += -ccc-host-triple dcpu16 -Os -Wall -Wextra -std=c11 -I src -I include
 
 C_FILES := src/include.c
-DASM_FILES := src/kernel/scheduler/scheduler_switch.dasm
+DASM_FILES := src/kernel/scheduler/scheduler_switch.dasm \
+              src/kernel/interruptHandler/interruptHandler_asm.dasm
 ASM_FILES := $(patsubst src/%,bin/%,$(C_FILES:.c=.s)) \
 			$(patsubst src/%,bin/%,$(DASM_FILES:.dasm=.s))
 BIN ?= bin/FrOSt.bin

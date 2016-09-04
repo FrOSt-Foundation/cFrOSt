@@ -11,13 +11,11 @@ typedef enum {
     CLOCK_ACTION_SET_INT_MSG = 2, // "_ACTION" is to avoid duplicate with CLOCK_SET_INT_MSG in Clock_message
 } Clock_action;
 
-void* clock_init(u16 clock, u16 int_number, IntHandler* int_handler_location) {
+void* clock_init(u16 clock, u16 UNUSED(int_number), IntHandler* UNUSED(int_handler_location)) {
 	Clock_driverData *data = kmalloc(0, sizeof(Clock_driverData));
 	data->clock = clock;
 
-    *int_handler_location = clock_intHandler;
-
-    clock_set_int_msg(data, int_number);
+    clock_set_int_msg(data, 0xFFFE);
 
 	return data;
 }
@@ -40,7 +38,7 @@ u16 clock_update_function(void* data, u16 message, u16 arg1, u16 UNUSED(arg2)) {
 	return 0;
 }
 
-void clock_intHandler(u16 message, u16 arg1, u16 arg2, u16 arg3) {
+void clock_intHandler(u16 UNUSED(message), u16 UNUSED(arg1), u16 UNUSED(arg2), u16 UNUSED(arg3)) {
     __asm("JSR scheduler_switch");
 }
 

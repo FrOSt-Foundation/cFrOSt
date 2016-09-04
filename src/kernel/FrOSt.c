@@ -29,6 +29,7 @@ typedef struct Clock_driverData {
 } Clock_driverData;
 
 void testProgram();
+void testProgram2();
 
 int main(void) {
     mm_init();
@@ -52,11 +53,11 @@ int main(void) {
 		kpanic("Error: At least one generic clock is needed. Please connect it to the DCPU and try again.");
 	}
 
-	if(driver_lem1802.devicesList.nDevices == 1) {
-		scheduler_addProcess(&testProgram, "test");
-		scheduler_addProcess(&console_main, "console");
-		scheduler_start(&driver_clock);
-	} else if(driver_lem1802.devicesList.nDevices != 0) {
+	addProcess(&testProgram, "test");
+	addProcess(&testProgram2, "test2");
+	addProcess(&console_main, "console");
+
+	if(driver_lem1802.devicesList.nDevices > 1) {
 		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 			stdio_set_current_output(i);
 			printf("Press 1, 2, ... to load console on corresponding screen.\nThis screen is number: ");
@@ -79,8 +80,9 @@ int main(void) {
 		}
 
 		stdio_set_current_output((u16) (c - '0' - 1));
-		console_main();
 	}
+
+	scheduler_start(&driver_clock);
 
 	if(driver_lem1802.devicesList.nDevices != 0) {
 		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
@@ -95,11 +97,17 @@ int main(void) {
 
 u16 test = 0;
 void testProgram() {
-	while(test < 0xFFFF) {
-		__asm("add [test], 1 \n");
+	asm_log((u16) &test);
+	while(true) {
+		__asm("add [test], 1 \n"); // Using assembly to bypass clang's loop unroll (the current clang version doesn't have the #pragma to disable unrolling yet)
 	}
-	asm_log(test);
-	asm_brk(0);
+}
+u16 test2 = 0;
+void testProgram2() {
+	asm_log((u16) &test2);
+	while(true) {
+		__asm("add [test2], 1 \n");
+	}
 }
 
 Driver driver_lem1802 = (Driver) {
