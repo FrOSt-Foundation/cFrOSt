@@ -8,18 +8,19 @@
     add A, [running_process]
     set A, [A]
 
+    set [__scheduler_buffer1], POP
+
     set [A], POP
-    set [A + 1], B
-    set [A + 2], C
-    set [A + 3], X
-    set [A + 4], Y
-    set [A + 5], Z
-    set [A + 6], I
-    set [A + 7], J
-    set [A + 8], EX
-    set [A + 9], PEEK
-    set [A + 10], SP
-    add [A + 10], 1 ; PC is still on the stack
+    set PUSH, [__scheduler_buffer1]
+    set PUSH, B
+    set PUSH, C
+    set PUSH, X
+    set PUSH, Y
+    set PUSH, Z
+    set PUSH, I
+    set PUSH, J
+    set PUSH, EX
+    set [A + 1], SP
 
     :scheduler_abort
 
@@ -30,20 +31,19 @@
     add A, [running_process]
     set A, [A]
 
-    set [__scheduler_buffer1], [A + 10]
-    set [__scheduler_buffer2], [A + 9]
+    set [__scheduler_buffer1], [A + 1]
+    set [__scheduler_buffer2], [A]
 
-    set PUSH, [A]
-    set B, [A + 1]
-    set C, [A + 2]
-    set X, [A + 3]
-    set Y, [A + 4]
-    set Z, [A + 5]
-    set I, [A + 6]
-    set J, [A + 7]
-    set EX, [A + 8]
-    set A, POP
     set SP, [__scheduler_buffer1]
+    set EX, POP
+    set J, POP
+    set I, POP
+    set Z, POP
+    set Y, POP
+    set X, POP
+    set C, POP
+    set B, POP
+    set A, POP
 
     ; We do an "RFI" by ourselves since we f*cked up the stack
     set PUSH, [__scheduler_buffer2]

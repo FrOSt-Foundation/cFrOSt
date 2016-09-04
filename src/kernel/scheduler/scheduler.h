@@ -3,11 +3,6 @@
 #define STACK_SIZE 0x100
 
 typedef struct {
-    u16 a, b, c, x, y, z, i, j, ex;
-} Registers;
-
-typedef struct {
-    Registers regs;
     u16 pc;
     u16 sp;
     void* stack;

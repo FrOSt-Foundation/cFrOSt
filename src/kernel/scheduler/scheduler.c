@@ -44,15 +44,12 @@ void scheduler_addProcess(void* location, char* name) {
     }
 
     Process *process = kmalloc(0, sizeof(Process));
-    process->regs = (Registers) {
-        .a = 0, .b = 0, .c = 0, .x = 0, .y = 0, .z = 0, .i = 0, .j = 0, .ex = 0
-    };
     process->pc = (u16) location;
     process->name = name;
     process->pid = pid;
 
     process->stack = kmalloc(pid, STACK_SIZE);
-    process->sp = (u16) process->stack + STACK_SIZE - 1;
+    process->sp = (u16) process->stack + STACK_SIZE - 1 - 10; // - 10 because of 10 registers (A -> J + EX)
 
     processes[nProcesses - 1] = process;
 
