@@ -12,8 +12,6 @@ typedef struct {
 extern u16 running_process;
 extern u16 nProcesses;
 extern Process **processes;
-extern u16 __scheduler_buffer1;
-extern u16 __scheduler_buffer2;
 
 void scheduler_init();
 void scheduler_start(Driver* driver_clock);

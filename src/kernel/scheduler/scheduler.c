@@ -8,9 +8,6 @@ u16 running_process = 0;
 u16 nProcesses = 0;
 Process **processes = NULL;
 
-u16 __scheduler_buffer1 = 0;
-u16 __scheduler_buffer2 = 0;
-
 void scheduler_init() {
 }
 
