@@ -21,10 +21,7 @@ void scheduler_start(Driver* driver_clock) {
     }
 
 
-    __asm("\
-    set SP, %0 \n \
-    set PC, %1 \n \
-    " :: "X" (processes[0]->sp), "X" (processes[0]->pc));
+    interrupt(0xFFFE, 0, 0, 0);
 }
 
 void scheduler_addProcess(void* location, char* name) {
@@ -44,11 +41,11 @@ void scheduler_addProcess(void* location, char* name) {
     }
 
     Process *process = kmalloc(0, sizeof(Process));
-    process->pc = (u16) location;
     process->name = name;
     process->pid = pid;
 
     process->stack = kmalloc(pid, STACK_SIZE);
+    process->stack[STACK_SIZE - 2] = (u16) location;
     process->sp = (u16) process->stack + STACK_SIZE - 1 - 10; // - 10 because of 10 registers (A -> J + EX)
 
     processes[nProcesses - 1] = process;

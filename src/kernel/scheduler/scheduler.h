@@ -3,9 +3,8 @@
 #define STACK_SIZE 0x100
 
 typedef struct {
-    u16 pc;
     u16 sp;
-    void* stack;
+    u16* stack;
     char* name;
     u16 pid;
 } Process;

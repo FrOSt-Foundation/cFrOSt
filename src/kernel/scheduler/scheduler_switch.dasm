@@ -8,10 +8,6 @@
     add A, [running_process]
     set A, [A]
 
-    set [__scheduler_buffer1], POP
-
-    set [A], POP
-    set PUSH, [__scheduler_buffer1]
     set PUSH, B
     set PUSH, C
     set PUSH, X
@@ -20,7 +16,7 @@
     set PUSH, I
     set PUSH, J
     set PUSH, EX
-    set [A + 1], SP
+    set [A], SP
 
     :scheduler_abort
 
@@ -31,10 +27,7 @@
     add A, [running_process]
     set A, [A]
 
-    set [__scheduler_buffer1], [A + 1]
-    set [__scheduler_buffer2], [A]
-
-    set SP, [__scheduler_buffer1]
+    set SP, [A]
     set EX, POP
     set J, POP
     set I, POP
@@ -43,11 +36,6 @@
     set X, POP
     set C, POP
     set B, POP
-    set A, POP
-
-    ; We do an "RFI" by ourselves since we f*cked up the stack
-    set PUSH, [__scheduler_buffer2]
-    set PUSH, A
 
     :scheduler_switch_end
     rfi 0
