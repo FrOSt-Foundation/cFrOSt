@@ -22,8 +22,8 @@ cFrOSt is a community French project which goal is to create a free and Open-Sou
 
 ### Linux x86 or x86_64
 
-* Run `git clone https://github.com/azertyfun/DCPU-Toolchain --depth=1` to download cFrOSt ;
-* Run `cd tools && ./download-toolchain.sh` to download DCPU-Toolchain ;
+* Run `git clone https://github.com/FrOSt-Foundation/cFrOSt --depth=1` to download cFrOSt ;
+* Run `cd cFrOSt/tools && ./download-toolchain.sh` to download DCPU-Toolchain ;
 * Run `make`, then `make run`.
 
 Useful env variables:
