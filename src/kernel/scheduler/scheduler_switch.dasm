@@ -21,6 +21,8 @@
     :scheduler_abort
 
     add [running_process], 1
+
+    :scheduler_start_asm
     ife [running_process], [nProcesses]
         set [running_process], 0
     set A, [processes]

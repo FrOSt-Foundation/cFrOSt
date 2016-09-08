@@ -8,8 +8,7 @@ u16 running_process = 0;
 u16 nProcesses = 0;
 Process **processes = NULL;
 
-void scheduler_init() {
-}
+void scheduler_start_asm();
 
 void scheduler_start(Driver* driver_clock) {
     clock_set_tickrate(driver_clock->devicesList.data[0], 2);
@@ -17,8 +16,7 @@ void scheduler_start(Driver* driver_clock) {
         kpanic("No processes added to scheduler!");
     }
 
-
-    interrupt(0xFFFE, 0, 0, 0);
+    scheduler_start_asm();
 }
 
 void scheduler_addProcess(void* location, char* name) {

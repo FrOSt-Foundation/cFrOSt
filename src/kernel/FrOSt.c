@@ -28,9 +28,6 @@ typedef struct Clock_driverData {
 	u16 clock;
 } Clock_driverData;
 
-void testProgram();
-void testProgram2();
-
 int main(void) {
     mm_init();
 
@@ -38,8 +35,6 @@ int main(void) {
 	hardwareLoop(hardware_int_table, drivers, N_DRIVERS);
 
 	int_handler_activate();
-
-	scheduler_init();
 
 	stdio_init_output(lem1802, &driver_lem1802);
 	stdio_init_input(generic_keyboard, &driver_keyboard);
@@ -53,8 +48,6 @@ int main(void) {
 		kpanic("Error: At least one generic clock is needed. Please connect it to the DCPU and try again.");
 	}
 
-	addProcess(&testProgram, "test");
-	addProcess(&testProgram2, "test2");
 	addProcess(&console_main, "console");
 
 	if(driver_lem1802.devicesList.nDevices > 1) {
@@ -93,21 +86,6 @@ int main(void) {
     while(1) {
 
     }
-}
-
-u16 test = 0;
-void testProgram() {
-	asm_log((u16) &test);
-	while(true) {
-		__asm("add [test], 1 \n"); // Using assembly to bypass clang's loop unroll (the current clang version doesn't have the #pragma to disable unrolling yet)
-	}
-}
-u16 test2 = 0;
-void testProgram2() {
-	asm_log((u16) &test2);
-	while(true) {
-		__asm("add [test2], 1 \n");
-	}
 }
 
 Driver driver_lem1802 = (Driver) {

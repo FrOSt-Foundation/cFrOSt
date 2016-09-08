@@ -13,7 +13,6 @@ extern u16 running_process;
 extern u16 nProcesses;
 extern Process **processes;
 
-void scheduler_init();
 void scheduler_start(Driver* driver_clock);
 void scheduler_addProcess();
 void scheduler_switch();
