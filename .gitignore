@@ -1,4 +1,6 @@
 *.o
 *.s
 *.d
+*.zip
+*.jar
 bin/
