@@ -4,3 +4,4 @@
 *.zip
 *.jar
 bin/
+tools/native
