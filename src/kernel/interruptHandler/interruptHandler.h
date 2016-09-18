@@ -12,10 +12,15 @@ typedef enum {
 	SOFTINT_GETC,
     SOFTINT_MALLOC,
     SOFTINT_FREE,
+    SOFTINT_ADDPROCESS,
+    SOFTINT_KILL,
+    SOFTINT_GET_PROCESSES_LIST,
     __SOFTINT_NB,
 } SoftInt;
 
 typedef void (*IntHandler)(u16 message, u16 arg1, u16 arg2, u16 arg3);
+
+static void interruptHandler(u16); // DO NOT CALL DIRECTLY, it is for the purpose of interruptHandler_asm only
 
 IntHandler *int_handler_allocate(u16 nb_hardware);
 void int_handler_activate();

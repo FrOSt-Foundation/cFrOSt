@@ -6,7 +6,7 @@
 
 #define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 
-static void interruptHandler(u16);
+void interruptHandler_asm(); // Declared in interruptHandler.dasm
 static void stdio_printf_handler(u16 UNUSED(msg), u16 s, u16 UNUSED(arg2), u16 UNUSED(arg3));
 static void stdio_printc_handler(u16 UNUSED(msg), u16 c, u16 UNUSED(arg2), u16 UNUSED(arg3));
 static void stdio_scroll_handler(u16 UNUSED(msg), u16 lines, u16 UNUSED(arg2), u16 UNUSED(arg3));
@@ -16,6 +16,9 @@ static void stdio_clear_handler(u16 UNUSED(msg), u16 UNUSED(arg1), u16 UNUSED(ar
 static void stdio_getc_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2), u16 UNUSED(arg3));
 static void mm_malloc_handler(u16 UNUSED(msg), u16 size, u16 raw_ptr, u16 UNUSED(arg3));
 static void mm_free_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2), u16 UNUSED(arg3));
+static void scheduler_kill_handler(u16 UNUSED(msg), u16 pid, u16 returnValue, u16 UNUSED(arg3));
+static void scheduler_addProcess_handler(u16 UNUSED(msg), u16 location, u16 name, u16 UNUSED(arg3));
+static void scheduler_getProcessesList_handler(u16 UNUSED(msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3);
 
 static u16 int_table_size;
 static IntHandler *int_table;
@@ -32,11 +35,14 @@ IntHandler *int_handler_allocate(u16 nb_hardware) {
     int_table[SOFTINT_GETC] = stdio_getc_handler;
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
+    int_table[SOFTINT_KILL] = scheduler_kill_handler;
+    int_table[SOFTINT_ADDPROCESS] = scheduler_addProcess_handler;
+    int_table[SOFTINT_GET_PROCESSES_LIST] = scheduler_getProcessesList_handler;
     return int_table + __SOFTINT_NB;
 }
 
 void int_handler_activate() {
-    asm_ias((u16)&interruptHandler);
+    asm_ias((u16)&interruptHandler_asm);
 }
 
 void interrupt(u16 message, u16 arg1, u16 arg2, u16 arg3) {
@@ -91,4 +97,20 @@ static void mm_malloc_handler(u16 UNUSED(msg), u16 size, u16 raw_ptr, u16 UNUSED
 
 static void mm_free_handler(u16 UNUSED(msg), u16 raw_ptr, u16 UNUSED(arg2), u16 UNUSED(arg3)) {
     kfree((u16*)(long)raw_ptr);
+}
+
+static void scheduler_kill_handler(u16 UNUSED(msg), u16 pid, u16 raw_ptr, u16 UNUSED(arg3)) {
+    u16 *returnValue = (u16*) raw_ptr;
+    *returnValue = scheduler_kill(pid);
+}
+
+static void scheduler_addProcess_handler(u16 UNUSED(msg), u16 location, u16 name, u16 UNUSED(arg3)) {
+    scheduler_addProcess((void*) location, (char*) name);
+}
+
+static void scheduler_getProcessesList_handler(u16 UNUSED(msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3) {
+    u16* n = (u16*) raw_ptr1;
+    char*** names = (char***) raw_ptr2;
+    u16** pids = (u16**) raw_ptr3;
+    *n = scheduler_getProcessesList(names, pids);
 }

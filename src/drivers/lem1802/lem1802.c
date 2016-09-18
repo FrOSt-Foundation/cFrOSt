@@ -9,7 +9,7 @@ typedef enum {
    MEM_DUMP_PALETTE = 5,
 } lem1802_action ;
 
-void* lem1802_init(u16 monitor) {
+void* lem1802_init(u16 monitor, u16 UNUSED(int_number), IntHandler* UNUSED(int_handler_location)) {
 	Lem1802_driverData *data = kmalloc(0, sizeof(Lem1802_driverData));
 	data->monitor = monitor;
 

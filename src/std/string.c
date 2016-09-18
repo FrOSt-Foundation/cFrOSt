@@ -62,6 +62,17 @@ void uitoa(u16 n, char* s) {
     reverse(s);
 }
 
+u16 atoui(char* s) {
+    u16 i = 0;
+
+    while(*s) {
+        i = 10*i + (*s) - '0';
+        s++;
+    }
+
+    return i;
+}
+
 /*
  *  K&R (Kernighan & Ritchie) implementation
  */

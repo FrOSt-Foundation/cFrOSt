@@ -12,7 +12,7 @@ typedef struct {
 
 typedef struct {
 	HardwareInfo hardwareInfo;
-	void* (*initFunction)(u16 id);
+	void* (*initFunction)(u16 id, u16 int_number, IntHandler* int_handler_location);
 	void (*destroyFunction)(void* data);
 	u16 (*updateFunction)(void* data, u16 arg1, u16 arg2, u16 arg3);
 

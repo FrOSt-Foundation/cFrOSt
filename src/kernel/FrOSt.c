@@ -4,6 +4,7 @@
 #include "kernel/memoryManager/memoryManager.h"
 #include "kernel/stdio/stdio.h"
 #include "interruptHandler/interruptHandler.h"
+#include "kernel/scheduler/scheduler.h"
 #include "kernel/panic/panic.h"
 
 #include "std/stdio.h"
@@ -47,11 +48,9 @@ int main(void) {
 		kpanic("Error: At least one generic clock is needed. Please connect it to the DCPU and try again.");
 	}
 
-	clock_set_tickrate((Clock_driverData *) driver_clock.devicesList.data[0], 60);
+	addProcess(&console_main, "console");
 
-	if(driver_lem1802.devicesList.nDevices == 1) {
-		console_main();
-	} else if(driver_lem1802.devicesList.nDevices != 0) {
+	if(driver_lem1802.devicesList.nDevices > 1) {
 		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 			stdio_set_current_output(i);
 			printf("Press 1, 2, ... to load console on corresponding screen.\nThis screen is number: ");
@@ -74,16 +73,18 @@ int main(void) {
 		}
 
 		stdio_set_current_output((u16) (c - '0' - 1));
-		console_main();
 	}
 
-    while(1) {
-		if(driver_lem1802.devicesList.nDevices != 0) {
-			for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
-				stdio_set_current_output(i);
-				printf("You can safely shut down the system.");
-			}
+	scheduler_start(&driver_clock);
+
+	if(driver_lem1802.devicesList.nDevices != 0) {
+		for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
+			stdio_set_current_output(i);
+			printf("You can safely shut down the system.");
 		}
+	}
+    while(1) {
+
     }
 }
 
