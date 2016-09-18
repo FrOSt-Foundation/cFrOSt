@@ -13,10 +13,11 @@
 static void console_help(u16 UNUSED(n_arguments), char** UNUSED(arguments));
 static void console_about(u16 UNUSED(n_arguments), char** UNUSED(arguments));
 static void console_echo(u16 n_arguments, char** arguments);
-static void console_uptime(u16 UNUSED(n_arguments), char** UNUSED(arguments));
+static void console_ps(u16 UNUSED(n_arguments), char** UNUSED(arguments));
+static void console_kill(u16 n_arguments, char** arguments);
 static void console_no_such_command(u16 UNUSED(n_arguments), char** UNUSED(arguments));
 
-static const char* console_commands[4];
+static const char* console_commands[__PROGRAMS_SIZE];
 
 static Console_program *console_commands_ptr;
 
@@ -24,13 +25,15 @@ void console_main() {
 	console_commands[0] = "help";
 	console_commands[1] = "about";
 	console_commands[2] = "echo";
-	console_commands[3] = "uptime";
+	console_commands[3] = "ps";
+	console_commands[4] = "kill";
 
 	console_commands_ptr = (Console_program *) malloc(__PROGRAMS_SIZE);
 	console_commands_ptr[PROGRAM_HELP] = console_help;
 	console_commands_ptr[PROGRAM_ABOUT] = console_about;
 	console_commands_ptr[PROGRAM_ECHO] = console_echo;
-	console_commands_ptr[PROGRAM_UPTIME] = console_uptime;
+	console_commands_ptr[PROGRAM_PS] = console_ps;
+	console_commands_ptr[PROGRAM_KILL] = console_kill;
 	console_commands_ptr[PROGRAM_NO_SUCH_COMMAND] = console_no_such_command;
 
 	clear();

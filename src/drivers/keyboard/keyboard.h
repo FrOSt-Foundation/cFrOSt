@@ -12,7 +12,7 @@ typedef enum {
 
 typedef struct Keyboard_driverData Keyboard_driverData;
 
-void* keyboard_init(u16 keyboard);
+void* keyboard_init(u16 keyboard, u16 int_number, IntHandler* int_handler_location);
 void keyboard_destroy(void* data);
 u16 keyboard_update_function(void* data, u16 message, u16 arg1, u16 arg2);
 

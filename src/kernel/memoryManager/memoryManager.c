@@ -31,7 +31,7 @@ void *kmalloc(u16 owner, u16 size) {
             kpanic("Out of memory");
         }
 
-		if (chunk->user == MEMORY_OWNER_FREE && chunk-> size == realSize) {
+		if (chunk->user == MEMORY_OWNER_FREE && chunk->size == realSize) {
 			chunk->user = owner;
 			break;
 		} else if (chunk->user == MEMORY_OWNER_FREE && chunk->size > realSize) {
@@ -67,7 +67,19 @@ void kfree(void *addr) {
     do {
 		other = (KmallocHeader*) ((u16) chunk + chunk->size + 2);
 		if(other->user == MEMORY_OWNER_FREE) {
-			chunk->size += other->size;
+			chunk->size += other->size + 2;
 		}
 	} while(other < (KmallocHeader *) MEMORY_END && other->user == MEMORY_OWNER_FREE);
+}
+
+void kfreePid(u16 pid) {
+    KmallocHeader *chunk = (KmallocHeader *) MEMORY_START;
+
+    u16 s = chunk->size;
+
+    if(chunk->user == pid) {
+        kfree(chunk);
+    }
+
+    chunk += s + 2;
 }

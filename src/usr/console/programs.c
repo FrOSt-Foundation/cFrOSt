@@ -6,7 +6,7 @@
 ; // Fixes color syntax in atom-editor, no real use. Sorry :(
 
 void console_help(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {
-	printf("Commands: help, about, echo, uptime");
+	printf("Commands: help, about, echo, ps, kill");
 }
 
 void console_about(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {
@@ -22,14 +22,33 @@ void console_echo(u16 n_arguments, char** arguments) {
 	}
 }
 
-void console_uptime(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {
-	u16 uptime = clock_ticks_since_last_call(driver_clock.devicesList.data[0]); // TODO : Do it correctly
+void console_ps(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {
+	char** processes;
+	u16* pids;
+	u16 n_processes = getProcessesList(&processes, &pids);
+
 	char* buffer = (char*) malloc(6);
-	itoa(uptime, buffer);
-	printf("Uptime: ");
-	printf(buffer);
-	printf(" s");
+
+	for(u16 i = 0; i < n_processes; ++i) {
+		uitoa(pids[i], buffer);
+		printf(buffer);
+		printf(": ");
+		printf(processes[i]);
+		printf("\n");
+	}
+
 	free((u16*) buffer);
+	free((u16*) pids);
+	for(u16 i = 0; i < n_processes; ++i) {
+		free((u16*) processes[i]);
+	}
+	free((u16*) processes);
+}
+
+void console_kill(u16 n_arguments, char** arguments) {
+	for(u16 i = 0; i < n_arguments; ++i) {
+		kill(atoui(arguments[i]));
+	}
 }
 
 void console_no_such_command(u16 UNUSED(n_arguments), char** UNUSED(arguments)) {

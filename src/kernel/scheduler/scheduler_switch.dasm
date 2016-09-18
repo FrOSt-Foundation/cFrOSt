@@ -1,0 +1,43 @@
+; At this point: PEEK = A, PICK 1 = PC
+:scheduler_switch
+    ;brk 0
+    ife [nProcesses], 1
+        set PC, scheduler_switch_end
+
+    set A, [processes]
+    add A, [running_process]
+    set A, [A]
+
+    set PUSH, B
+    set PUSH, C
+    set PUSH, X
+    set PUSH, Y
+    set PUSH, Z
+    set PUSH, I
+    set PUSH, J
+    set PUSH, EX
+    set [A], SP
+
+    :scheduler_abort
+
+    add [running_process], 1
+
+    :scheduler_start_asm
+    ife [running_process], [nProcesses]
+        set [running_process], 0
+    set A, [processes]
+    add A, [running_process]
+    set A, [A]
+
+    set SP, [A]
+    set EX, POP
+    set J, POP
+    set I, POP
+    set Z, POP
+    set Y, POP
+    set X, POP
+    set C, POP
+    set B, POP
+
+    :scheduler_switch_end
+    rfi 0

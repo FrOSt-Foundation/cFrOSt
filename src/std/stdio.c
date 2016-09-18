@@ -37,7 +37,9 @@ void clear() {
 
 char getc() {
 	u16 c;
-	interrupt(SOFTINT_GETC, (u16) &c, 0, 0);
+	do {
+		interrupt(SOFTINT_GETC, (u16) &c, 0, 0);
+	} while(c == '\0');
 
 	return c;
 }
