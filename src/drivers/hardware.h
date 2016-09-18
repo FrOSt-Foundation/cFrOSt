@@ -1,8 +1,23 @@
 #pragma once
 
 #include "types.h"
+
 #include "kernel/interruptHandler/interruptHandler.h"
 
-extern u16 monitor, keyboard, clock;
+typedef struct {
+	u16 nDevices;
+	u16* ids;
+	void** data;
+} DevicesList;
 
-void hardwareLoop(IntHandler *hardware_int_table);
+typedef struct {
+	HardwareInfo hardwareInfo;
+	void* (*initFunction)(u16 id);
+	void (*destroyFunction)(void* data);
+	u16 (*updateFunction)(void* data, u16 arg1, u16 arg2, u16 arg3);
+
+	// Must be initialized with nDevices = 0
+	DevicesList devicesList;
+} Driver;
+
+void hardwareLoop(IntHandler *hardware_int_table, Driver** drivers, u16 n_drivers);

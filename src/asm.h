@@ -3,17 +3,19 @@
 #include "types.h"
 
 typedef struct {
-    u32 hardware_id;
+	u16 hardware_id_a;
+    u16 hardware_id_b;
     u16 hardware_version;
-    u32 manufacturer;
-} hardware_infos;
+	u16 manufacturer_a;
+    u16 manufacturer_b;
+} HardwareInfo;
 
-void asm_int(u16, u16, u16);
+void asm_int(u16 message, u16 arg1, u16 arg2, u16 arg3);
 u16 asm_iag();
 void asm_ias(u16);
 void asm_iaq(u16);
 u16 asm_hwn();
-hardware_infos asm_hwq(u16);
+HardwareInfo asm_hwq(u16);
 void asm_hwi(u16);
 void asm_log(u16);
 void asm_brk(u16);

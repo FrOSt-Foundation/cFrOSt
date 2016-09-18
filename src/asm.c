@@ -1,13 +1,15 @@
 #include "asm.h"
 
-void asm_int(u16 message, u16 arg1, u16 arg2) {
+void asm_int(u16 message, u16 arg1, u16 arg2, u16 arg3) {
     register u16 reg_b __asm ("B") = arg1;
-    register u16 reg_c __asm ("C") = arg2;
+	register u16 reg_c __asm ("C") = arg2;
+    register u16 reg_x __asm ("X") = arg3;
     __asm ("int %0"
            :
            :"X"(message),
             "r"(reg_b),
-            "r"(reg_c)
+            "r"(reg_c),
+			"r"(reg_x)
            : "memory");
 }
 
@@ -25,7 +27,7 @@ void asm_iaq(u16 val) {
     __asm ("IAQ %0" :: "X"(val));
 }
 
-hardware_infos asm_hwq(u16 id) {
+HardwareInfo asm_hwq(u16 id) {
     register u16 a __asm ("A");
     register u16 b __asm ("B");
     register u16 c __asm ("C");
@@ -38,10 +40,12 @@ hardware_infos asm_hwq(u16 id) {
                   "=r" (x),
                   "=r" (y)
                 : [device] "X" (id));
-    return (hardware_infos) {
-        .hardware_id = (u32)a + ((u32)b << 16),
+    return (HardwareInfo) {
+        .hardware_id_a = a,
+		.hardware_id_b = b,
         .hardware_version = c,
-        .manufacturer = (u32)x + ((u32)y << 16)
+        .manufacturer_a = x,
+		.manufacturer_b = y
     };
 }
 

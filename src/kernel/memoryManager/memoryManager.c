@@ -1,76 +1,73 @@
 #include "memoryManager.h"
+#include "kernel/panic/panic.h"
 
-u16 memoryManager_nFree = TOTAL_MEMORY;
+/*
+ * A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
+ */
 
-void memoryManager_init() {
-    u16* p = (u16 *) MEMORY_START;
-    *p = MEMORY_OWNER_FREE;
-    *(p + 1) = TOTAL_MEMORY;
+static u16 freeMem = TOTAL_MEMORY;
+
+void mm_init() {
+    KmallocHeader *p = (KmallocHeader *) MEMORY_START;
+    *p = (KmallocHeader){
+		.user = MEMORY_OWNER_FREE,
+        .size = TOTAL_MEMORY,
+    };
 }
 
-u16* memoryManager_malloc(u16 size) {
-    if(size + 2 > memoryManager_nFree) // We use size + 2 because we also have to store the header (owner and size)
-        return (u16*) MALLOC_ERROR;
-    if(size == 0) // u wot m8
-        return (u16*) MALLOC_ERROR;
+void *kmalloc(u16 owner, u16 size) {
 
-    memoryManager_nFree -= size;
+	u16 realSize = size + 2;
 
-    for(u16* p = MEMORY_START ; p < MEMORY_END; p += *(p + 1) + 2) {
-        if(*p == MEMORY_OWNER_FREE && *(p + 1) >= size) { // If we have a big enough free block
-            *p = 0; // TODO: Update ownership system when we have multiple processes support
-            *(p + 1) = size;
+	freeMem -= realSize;
 
-            // We clear the memory block before usage
-            for(u16 i = 0; i < size; ++i) {
-                *(p + i + 2) = 0;
-            }
+	if(size > freeMem) {
+		kpanic("Out of memory");
+	}
 
-            return p + 2;
+    KmallocHeader *chunk = MEMORY_START;
+    while(true) {
+        if ((void*) chunk >= MEMORY_END) {
+            kpanic("Out of memory");
         }
+
+		if (chunk->user == MEMORY_OWNER_FREE && chunk-> size == realSize) {
+			chunk->user = owner;
+			break;
+		} else if (chunk->user == MEMORY_OWNER_FREE && chunk->size > realSize) {
+			// We split the chunk in two
+			chunk->data[size] = MEMORY_OWNER_FREE;
+			chunk->data[size + 1] = chunk->size - realSize;
+
+			// And now it's ours
+			chunk->user = owner;
+			chunk->size = size;
+
+			break;
+		}
+
+		chunk = (KmallocHeader *) ((u16) chunk + chunk->size + 2);
     }
 
-    return (u16*) MALLOC_ERROR; // Could not find a big enough block
+	for (u16 i = 0; i < size; ++i) {
+		chunk->data[i] = 0;
+	}
+
+    return chunk->data;
 }
 
-void memoryManager_free(u16* block) {
-    if(block < MEMORY_START || block > MEMORY_END)
+void kfree(void *addr) {
+    if (addr < MEMORY_START || addr > MEMORY_END) {
         return;
-
-    // We find the nearest block from the bottom
-    u16* p = (u16 *) MEMORY_START;
-    while(p + *(p + 1) + 2 < block) {
-        p += *(p + 1) + 2;
     }
+    KmallocHeader *chunk = (addr - sizeof(KmallocHeader));
+    chunk->user = MEMORY_OWNER_FREE;
 
-    *p = MEMORY_OWNER_FREE;
-    memoryManager_nFree += *(p + 1);
-}
-
-void memoryManager_clear(u16* block) {
-    if(block < MEMORY_START || block > MEMORY_END)
-        return;
-
-    // We find the nearest block from the bottom
-    u16* p = (u16 *) MEMORY_START;
-    while(p + *(p + 1) + 2 < block) {
-        p += *(p + 1) + 2;
-    }
-
-    for(u16 i = 0; i < *(p + 1); ++i) {
-        *(p + i + 2) = 0;
-    }
-}
-
-u16 memoryManager_size(u16* block) {
-    if(block < MEMORY_START || block > MEMORY_END)
-        return MALLOC_ERROR;
-
-    // We find the nearest block from the bottom
-    u16* p = (u16 *) MEMORY_START;
-    while(p + *(p + 1) + 2 < block) {
-        p += *(p + 1) + 2;
-    }
-
-    return *(p + 1);
+    KmallocHeader *other;
+    do {
+		other = (KmallocHeader*) ((u16) chunk + chunk->size + 2);
+		if(other->user == MEMORY_OWNER_FREE) {
+			chunk->size += other->size;
+		}
+	} while(other < (KmallocHeader *) MEMORY_END && other->user == MEMORY_OWNER_FREE);
 }

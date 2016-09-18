@@ -1,22 +1,27 @@
 #pragma once
 
+#include "types.h"
+
 /*
  * A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
  */
 
+// Beggining of dynamically allocated memory by the kernel
+#define MEMORY_START ((void*) 0x1000)
+// End of dynamically allocated memory by the kernel (we don't want to interfere with the kernel stack, do we?)
+#define MEMORY_END ((void*) 0xE999)
+#define TOTAL_MEMORY (MEMORY_END - MEMORY_START)
 
-#define MEMORY_START (u16*) 0x1000 // Beggining of dynamically allocated memory by the kernel
-#define MEMORY_END (u16*) 0xE999 // End of dynamically allocated memory by the kernel (we don't want to interfere with the kernel stack, do we?)
-#define TOTAL_MEMORY MEMORY_END - MEMORY_START
 #define MEMORY_OWNER_FREE 0xFFFF
-#define MALLOC_ERROR 0xFFFF
+#define MEMORY_OWNER_KERNEL 0
+#define MEMORY_OWNER_UNKNOWN 0xfffe
 
-#include "types.h"
+typedef struct {
+    u16 user;
+    u16 size;
+    u16 data[];
+} KmallocHeader;
 
-extern u16 memoryManager_nFree;
-
-void memoryManager_init();
-u16* memoryManager_malloc(u16 size);
-void memoryManager_free(u16* block);
-void memoryManager_clear(u16* block);
-u16 memoryManager_size(u16* block);
+void mm_init();
+void *kmalloc(u16 owner, u16 size);
+void kfree(void* block);
