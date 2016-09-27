@@ -11,6 +11,7 @@ void kpanic(char *data) {
 		stdio_printf(data);
 	}
 
+	asm_log((u16) data);
 	asm_brk(0);
 	asm_iaq(1);
 
