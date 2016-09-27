@@ -44,8 +44,8 @@ int main(void) {
 		clear();
 	}
 
-	if(driver_clock.devicesList.nDevices == 0) {
-		kpanic("Error: At least one generic clock is needed. Please connect it to the DCPU and try again.");
+	if(driver_clock.devicesList.nDevices == 0 || driver_lem1802.devicesList.nDevices == 0) {
+		kpanic("Error: At least one generic clock and one LEM1802 are needed. Please connect it/them to the DCPU and try again.");
 	}
 
 	addProcess(&console_main, "console");
