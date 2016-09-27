@@ -36,16 +36,16 @@ int main(void) {
 
 	int_handler_activate();
 
+	if(driver_clock.devicesList.nDevices == 0 || driver_lem1802.devicesList.nDevices == 0) {
+		kpanic("Error: At least one generic clock and one LEM1802 are needed. Please connect it/them to the DCPU and try again.");
+	}
+
 	stdio_init_output(lem1802, &driver_lem1802);
 	stdio_init_input(generic_keyboard, &driver_keyboard);
 
 	for(u16 i = 0; i < driver_lem1802.devicesList.nDevices; ++i) {
 		stdio_set_current_output(i);
 		clear();
-	}
-
-	if(driver_clock.devicesList.nDevices == 0 || driver_lem1802.devicesList.nDevices == 0) {
-		kpanic("Error: At least one generic clock and one LEM1802 are needed. Please connect it/them to the DCPU and try again.");
 	}
 
 	addProcess(&console_main, "console");
