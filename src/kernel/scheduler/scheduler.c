@@ -1,8 +1,10 @@
+#include <stdbool.h>
 #include "scheduler.h"
 
 #include "kernel/memoryManager/memoryManager.h"
 #include "kernel/panic/panic.h"
 #include "std/string.h"
+#include "drivers/clock/clock.h"
 
 u16 running_process = 0;
 u16 nProcesses = 0;

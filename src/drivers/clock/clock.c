@@ -2,9 +2,6 @@
 
 #include "kernel/memoryManager/memoryManager.h"
 
-#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
-; // Fixes color syntax in atom-editor, no real use. Sorry :(
-
 typedef enum {
     CHANGE_TICKRATE = 0,
     GET_TICKS_SINCE_LAST_CALL = 1,

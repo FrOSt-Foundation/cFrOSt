@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 #define CURSOR_CHAR (char) 0xDF
 #define INPUT_BUFFER_SIZE 29
 

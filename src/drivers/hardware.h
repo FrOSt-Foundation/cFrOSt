@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-
+#include "asm.h"
 #include "kernel/interruptHandler/interruptHandler.h"
 
 typedef struct {

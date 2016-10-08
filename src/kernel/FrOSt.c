@@ -24,10 +24,6 @@ Driver driver_clock;
 #define N_DRIVERS 3
 static Driver* drivers[] = {&driver_lem1802, &driver_keyboard, &driver_clock};
 
-typedef struct Clock_driverData {
-	u16 clock;
-} Clock_driverData;
-
 int main(void) {
     mm_init();
 
@@ -104,11 +100,6 @@ Driver driver_lem1802 = (Driver) {
 	}
 };
 
-typedef struct Lem1802_driverData {
-	u16 monitor;
-	u16* vram;
-} Lem1802_driverData;
-
 Driver driver_keyboard = (Driver) {
 	.hardwareInfo = (HardwareInfo) {
 		.hardware_id_a = 0x7406,
@@ -124,12 +115,6 @@ Driver driver_keyboard = (Driver) {
 		.nDevices = 0
 	}
 };
-
-typedef struct Keyboard_driverData {
-	u16 keyboard;
-	char* buffer;
-	u16 n_buffer;
-} Keyboard_driverData;
 
 Driver driver_clock = (Driver) {
 	.hardwareInfo = (HardwareInfo)  {

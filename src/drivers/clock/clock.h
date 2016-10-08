@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "kernel/interruptHandler/interruptHandler.h"
 
 typedef enum {
 	CLOCK_SET_TICKRATE,
@@ -8,10 +9,9 @@ typedef enum {
 	CLOCK_SET_INT_MSG
 } Clock_message;
 
-#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
-; // Fixes color syntax in atom-editor, no real use. Sorry :(
-
-typedef struct Clock_driverData Clock_driverData;
+typedef struct {
+	u16 clock;
+} Clock_driverData;
 
 void* clock_init(u16 clock, u16 int_number, IntHandler* int_handler_location);
 void clock_destroy(void* UNUSED(data));

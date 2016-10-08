@@ -1,10 +1,10 @@
 #include "kernel/stdio/stdio.h"
 #include "kernel/memoryManager/memoryManager.h"
+#include "kernel/scheduler/scheduler.h"
 #include "std/string.h"
 #include "interruptHandler.h"
 #include "asm.h"
-
-#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#include "types.h"
 
 void interruptHandler_asm(); // Declared in interruptHandler.dasm
 static void stdio_printf_handler(u16 UNUSED(msg), u16 s, u16 UNUSED(arg2), u16 UNUSED(arg3));

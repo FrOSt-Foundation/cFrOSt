@@ -1,21 +1,12 @@
 #include "console.h"
 
+#include <stdbool.h>
 #include "types.h"
 #include "std/stdio.h"
 #include "std/stdlib.h"
 #include "std/string.h"
 
 #include "programs.h"
-
-#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
-; // Fixes color syntax in atom-editor, no real use. Sorry :(
-
-static void console_help(u16 UNUSED(n_arguments), char** UNUSED(arguments));
-static void console_about(u16 UNUSED(n_arguments), char** UNUSED(arguments));
-static void console_echo(u16 n_arguments, char** arguments);
-static void console_ps(u16 UNUSED(n_arguments), char** UNUSED(arguments));
-static void console_kill(u16 n_arguments, char** arguments);
-static void console_no_such_command(u16 UNUSED(n_arguments), char** UNUSED(arguments));
 
 static const char* console_commands[__PROGRAMS_SIZE];
 

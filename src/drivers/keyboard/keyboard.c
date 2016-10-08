@@ -1,9 +1,7 @@
 #include "keyboard.h"
 
+#include "drivers/keyboard/keyboard.h"
 #include "kernel/memoryManager/memoryManager.h"
-
-#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
-; // Fixes color syntax in atom-editor, no real use. Sorry :(
 
 typedef enum {
     CLEAR_BUFFER = 0,

@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "memoryManager.h"
 #include "kernel/panic/panic.h"
 

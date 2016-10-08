@@ -9,3 +9,4 @@ typedef unsigned long long u64;
 typedef float f32;
 
 #define NULL ((void*)0)
+#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))

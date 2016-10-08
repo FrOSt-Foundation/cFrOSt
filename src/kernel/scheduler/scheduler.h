@@ -1,5 +1,8 @@
 #pragma once
 
+#include "types.h"
+#include "drivers/hardware.h"
+
 #define STACK_SIZE 0x100
 
 typedef struct {

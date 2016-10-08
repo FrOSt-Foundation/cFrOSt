@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 //OUTPUT
 
 void printf(char* s);

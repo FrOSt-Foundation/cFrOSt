@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "drivers/hardware.h"
 
 typedef enum {
 	no_output = 0,

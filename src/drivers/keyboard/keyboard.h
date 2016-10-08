@@ -2,6 +2,7 @@
 
 #include "stdbool.h"
 #include "types.h"
+#include "kernel/interruptHandler/interruptHandler.h"
 
 typedef enum {
 	KEYBOARD_CLEAR_BUFFER,
@@ -10,7 +11,11 @@ typedef enum {
 	KEYBOARD_SET_INT_MSG
 } Keyboard_message;
 
-typedef struct Keyboard_driverData Keyboard_driverData;
+typedef struct {
+	u16 keyboard;
+	char* buffer;
+	u16 n_buffer;
+} Keyboard_driverData;
 
 void* keyboard_init(u16 keyboard, u16 int_number, IntHandler* int_handler_location);
 void keyboard_destroy(void* data);
