@@ -32,6 +32,7 @@ $(TARGETS):
 	@$(COMPILE.s) $@.s $(OUTPUT_OPTION)
 
 bin/prelude.s:
+	mkdir bin
 	@echo -e "\tSET\tPC, main" > $@
 
 bin/%.s: src/%.c Makefile
