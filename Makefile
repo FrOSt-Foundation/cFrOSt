@@ -40,7 +40,7 @@ bin/%.s: src/%.c Makefile
 	@echo "CC   $@"
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -S $<
 	@sed -i -re 's/rfi/rfi 0/i' $@
-	@sed -i -re "s/_L/$(shell echo $@ | sed -re 's|/|_|g')/" $@
+	@sed -i -re "s/_L/_$(shell echo $@ | sed -re 's|/|_|g')/" $@
 
 bin/%.s: src/%.dasm Makefile
 	@mkdir -p $(@D)
