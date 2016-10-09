@@ -11,7 +11,7 @@ CFLAGS += -ccc-host-triple dcpu16 -Os -Wall -Wextra -std=c11 -I src -I include
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 C_FILES := $(call rwildcard,src/,*.c)
 DASM_FILES := src/kernel/scheduler/scheduler_switch.dasm \
-              src/kernel/interruptHandler/interruptHandler_asm.dasm
+			  src/kernel/interrupt_handler/interrupt_handler_asm.dasm
 ASM_FILES := $(patsubst src/%,bin/%,$(C_FILES:.c=.s)) \
              $(patsubst src/%,bin/%,$(DASM_FILES:.dasm=.s))
 BIN ?= bin/FrOSt.bin
@@ -51,5 +51,8 @@ run: all
 
 clean:
 	rm -rf bin/
+
+format:
+	find src -name "*.c" -exec clang-format -i --style=file {} \;
 
 .PHONY: all clean run

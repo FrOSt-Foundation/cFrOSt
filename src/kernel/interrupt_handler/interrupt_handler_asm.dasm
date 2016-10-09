@@ -1,0 +1,4 @@
+:interrupt_handler_asm
+    ife A, 0xFFFE
+        set PC, scheduler_switch
+    set PC, interrupt_handler

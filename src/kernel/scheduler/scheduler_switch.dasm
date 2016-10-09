@@ -1,7 +1,7 @@
 ; At this point: PEEK = A, PICK 1 = PC
 :scheduler_switch
     ;brk 0
-    ife [nProcesses], 1
+    ife [n_processes], 1
         set PC, scheduler_switch_end
 
     set A, [processes]
@@ -23,7 +23,7 @@
     add [running_process], 1
 
     :scheduler_start_asm
-    ife [running_process], [nProcesses]
+    ife [running_process], [n_processes]
         set [running_process], 0
     set A, [processes]
     add A, [running_process]
