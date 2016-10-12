@@ -146,7 +146,7 @@ char stdio_getc () {
     char c = '\0';
     switch (input_type) {
         case generic_keyboard:
-            c = keyboard_getc (input_driver->devices_list.data[current_input]);
+            c = keyboard_get_next(input_driver->devices_list.data[current_input]);
 
             break;
         case no_input:

@@ -13,8 +13,6 @@ typedef enum {
 
 typedef struct {
     u16 keyboard;
-    char *buffer;
-    u16 n_buffer;
 } Keyboard_driver_data;
 
 void *keyboard_init (u16 keyboard, u16 int_number, Int_handler *int_handler_location);

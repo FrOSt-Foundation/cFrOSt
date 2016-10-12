@@ -13,14 +13,11 @@ typedef enum {
 void *keyboard_init (u16 keyboard, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {
     Keyboard_driver_data *data = kmalloc (0, sizeof (Keyboard_driver_data));
     data->keyboard = keyboard;
-    data->n_buffer = 0;
-    data->buffer = kmalloc (0, 64);
 
     return data;
 }
 
-void keyboard_destroy (void *data) {
-    kfree (((Keyboard_driver_data *)data)->buffer);
+void keyboard_destroy (void *UNUSED(data)) {
 }
 
 u16 keyboard_update_function (void *data, u16 message, u16 arg1, u16 UNUSED (arg2)) {
@@ -80,20 +77,3 @@ void keyboard_set_int_msg (Keyboard_driver_data *data, u16 msg) {
             "r"(arg_b));
 }
 
-char keyboard_getc (Keyboard_driver_data *data) {
-    if (data->n_buffer != 0) {
-        return data->buffer[--data->n_buffer];
-    }
-
-    char c = keyboard_get_next (data);
-
-    if (c == '\0')
-        return '\0';
-
-    while (c != '\0') {
-        data->buffer[data->n_buffer++] = c;
-        c = keyboard_get_next (data);
-    }
-
-    return data->buffer[--data->n_buffer];
-}
