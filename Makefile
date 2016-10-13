@@ -27,9 +27,9 @@ $(BIN): bin/prelude.s $(ASM_FILES)
 
 $(TARGETS):
 	@mkdir -p $(@D)
-	@echo "AS   $^"
+	@echo "AS   $@"
 	@cat $^ > $@.s
-	@$(COMPILE.s) $@.s $(OUTPUT_OPTION)
+	@$(COMPILE.s) $@.s --symbols $@.sym $(OUTPUT_OPTION)
 
 bin/prelude.s:
 	mkdir bin
