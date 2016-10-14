@@ -8,8 +8,20 @@
 
 static u16 free_mem = TOTAL_MEMORY;
 
+static Kmalloc_header *next(Kmalloc_header *current) {
+    return (Kmalloc_header*)((u16)current + current->size + sizeof(Kmalloc_header));
+}
+
+static Kmalloc_header *get_header(void *addr) {
+    return (Kmalloc_header*)(addr - sizeof(Kmalloc_header));
+}
+
+static u16 get_real_size(u16 size) {
+    return size + sizeof(Kmalloc_header);
+}
+
 void mm_init () {
-    Kmalloc_header *p = (Kmalloc_header *)MEMORY_START;
+    Kmalloc_header *p = MEMORY_START;
     *p = (Kmalloc_header){
         .user = MEMORY_OWNER_FREE,
         .size = TOTAL_MEMORY,
@@ -18,7 +30,7 @@ void mm_init () {
 
 void *kmalloc (u16 owner, u16 size) {
 
-    u16 real_size = size + 2;
+    u16 real_size = get_real_size(size);
 
     free_mem -= real_size;
 
@@ -47,7 +59,7 @@ void *kmalloc (u16 owner, u16 size) {
             break;
         }
 
-        chunk = (Kmalloc_header *)((u16)chunk + chunk->size + 2);
+        chunk = next(chunk);
     }
 
     for (u16 i = 0; i < size; ++i) {
@@ -61,20 +73,20 @@ void kfree (void *addr) {
     if (addr < MEMORY_START || addr > MEMORY_END) {
         return;
     }
-    Kmalloc_header *chunk = (addr - sizeof (Kmalloc_header));
+    Kmalloc_header *chunk = get_header(addr);
     chunk->user = MEMORY_OWNER_FREE;
 
     Kmalloc_header *other;
     do {
-        other = (Kmalloc_header *)((u16)chunk + chunk->size + 2);
+        other = next(chunk);
         if (other->user == MEMORY_OWNER_FREE) {
-            chunk->size += other->size + 2;
+            chunk->size += get_real_size(other->size);
         }
     } while (other < (Kmalloc_header *)MEMORY_END && other->user == MEMORY_OWNER_FREE);
 }
 
 void kfree_pid (u16 pid) {
-    Kmalloc_header *chunk = (Kmalloc_header *)MEMORY_START;
+    Kmalloc_header *chunk = MEMORY_START;
 
     u16 s = chunk->size;
 
@@ -82,5 +94,5 @@ void kfree_pid (u16 pid) {
         kfree (chunk);
     }
 
-    chunk += s + 2;
+    chunk += get_real_size(s);
 }
