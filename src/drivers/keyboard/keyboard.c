@@ -17,7 +17,7 @@ void *keyboard_init (u16 keyboard, u16 UNUSED (int_number), Int_handler *UNUSED 
     return data;
 }
 
-void keyboard_destroy (void *UNUSED(data)) {
+void keyboard_destroy (void *UNUSED (data)) {
 }
 
 u16 keyboard_update_function (void *data, u16 message, u16 arg1, u16 UNUSED (arg2)) {
@@ -76,4 +76,3 @@ void keyboard_set_int_msg (Keyboard_driver_data *data, u16 msg) {
             "r"(action),
             "r"(arg_b));
 }
-

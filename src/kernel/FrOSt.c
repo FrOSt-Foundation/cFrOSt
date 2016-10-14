@@ -14,15 +14,17 @@
 #include "usr/console/console.h"
 
 #include "drivers/clock/clock.h"
+#include "drivers/iacm/iacm.h"
 #include "drivers/keyboard/keyboard.h"
 #include "drivers/lem1802/lem1802.h"
 
+Driver driver_iacm;
 Driver driver_lem1802;
 Driver driver_keyboard;
 Driver driver_clock;
 
-#define N_DRIVERS 3
-static Driver *drivers[] = { &driver_lem1802, &driver_keyboard, &driver_clock };
+#define N_DRIVERS 4
+static Driver *drivers[] = { &driver_iacm, &driver_lem1802, &driver_keyboard, &driver_clock };
 
 int main (void) {
     mm_init ();
@@ -82,6 +84,18 @@ int main (void) {
     while (1) {
     }
 }
+
+Driver driver_iacm = (Driver){
+    .hardware_info = (Hardware_info){.hardware_id_a = 0xdacc,
+                                     .hardware_id_b = 0x11e0,
+                                     .hardware_version = 0x0004,
+                                     .manufacturer_a = 0x0000, // Vendor code is defined as "(Various)"
+                                     .manufacturer_b = 0x0000 },
+    .update_function = iacm_update_function,
+    .init_function = iacm_init,
+    .destroy_function = iacm_destroy,
+    .devices_list = (Devices_list){.n_devices = 0 }
+};
 
 Driver driver_lem1802 = (Driver){
     .hardware_info = (Hardware_info){.hardware_id_a = 0xf615,
