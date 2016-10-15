@@ -21,7 +21,7 @@ static void scheduler_kill_handler (u16 UNUSED (msg), u16 pid, u16 return_value,
 static void scheduler_add_process_handler (u16 UNUSED (msg), u16 location, u16 name, u16 UNUSED (arg3));
 static void scheduler_get_processes_list_handler (u16 UNUSED (msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3);
 
-static u16 int_table_size;
+u16 int_table_size;
 static Int_handler *int_table;
 
 Int_handler *int_handler_allocate (u16 nb_hardware) {

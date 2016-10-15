@@ -1,4 +1,6 @@
 :interrupt_handler_asm
     ife A, 0xFFFE
         set PC, scheduler_switch
-    set PC, interrupt_handler
+    ifl A, int_table_size ; Protection against interrupts that don't exist
+        set PC, interrupt_handler
+    rfi 0
