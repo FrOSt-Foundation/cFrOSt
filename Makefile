@@ -22,20 +22,23 @@ all: $(TARGETS)
 
 -include $(ASM_FILES:.s=.d)
 
+tools/assembler tools/DCPU-Toolchain.jar:
+	@echo "Downloading the toolchain..."
+	@cd tools; ./download-toolchain.sh
 $(BIN_HEADER): bin/FrOSt_header.s
 $(BIN): bin/prelude.s $(ASM_FILES)
 
-$(TARGETS):
+$(TARGETS): $(AS)
 	@mkdir -p $(@D)
 	@echo "AS   $@"
-	@cat $^ > $@.s
+	@cat $(filter %.s,$^) > $@.s
 	@$(COMPILE.s) $@.s --symbols $@.sym $(OUTPUT_OPTION)
 
 bin/prelude.s:
 	mkdir bin
 	@echo -e "\tSET\tPC, main" > $@
 
-bin/%.s: src/%.c Makefile
+bin/%.s: src/%.c Makefile $(CC)
 	@mkdir -p $(@D)
 	@echo "CC   $@"
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -S $<
@@ -46,7 +49,7 @@ bin/%.s: src/%.dasm Makefile
 	@mkdir -p $(@D)
 	@cp -f $< $@
 
-run: all
+run: all tools/DCPU-Toolchain.jar
 	cd tools && ./run.sh
 
 clean:
