@@ -4,6 +4,8 @@
     ife [n_processes], 1
         set PC, scheduler_switch_end
 
+    set PUSH, EX
+
     set A, [processes]
     add A, [running_process]
     set A, [A]
@@ -15,7 +17,6 @@
     set PUSH, Z
     set PUSH, I
     set PUSH, J
-    set PUSH, EX
     set [A], SP
 
     :scheduler_abort
@@ -30,7 +31,6 @@
     set A, [A]
 
     set SP, [A]
-    set EX, POP
     set J, POP
     set I, POP
     set Z, POP
@@ -38,6 +38,8 @@
     set X, POP
     set C, POP
     set B, POP
+
+    set EX, POP
 
     :scheduler_switch_end
     rfi 0
