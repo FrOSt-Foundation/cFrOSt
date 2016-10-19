@@ -17,14 +17,17 @@
 #include "drivers/iacm/iacm.h"
 #include "drivers/keyboard/keyboard.h"
 #include "drivers/lem1802/lem1802.h"
+#include "drivers/mackapar/mackapar.h"
 
 Driver driver_iacm;
 Driver driver_lem1802;
 Driver driver_keyboard;
 Driver driver_clock;
+Driver driver_m35fd;
+Driver driver_m525hd;
 
-#define N_DRIVERS 4
-static Driver *drivers[] = { &driver_iacm, &driver_lem1802, &driver_keyboard, &driver_clock };
+#define N_DRIVERS 6
+static Driver *drivers[] = { &driver_iacm, &driver_lem1802, &driver_keyboard, &driver_clock, &driver_m35fd, &driver_m525hd };
 
 int main (void) {
     mm_init ();
@@ -130,5 +133,29 @@ Driver driver_clock = (Driver){
     .update_function = clock_update_function,
     .init_function = clock_init,
     .destroy_function = clock_destroy,
+    .devices_list = (Devices_list){.n_devices = 0 }
+};
+
+Driver driver_m35fd = (Driver){
+    .hardware_info = (Hardware_info){.hardware_id_a = 0x24c5,
+                                     .hardware_id_b = 0x4fd5,
+                                     .hardware_version = 0xb,
+                                     .manufacturer_a = 0x7e91,
+                                     .manufacturer_b = 0x1eb3},
+    .update_function = mackapar_update_function,
+    .init_function = mackapar_init_m35fd,
+    .destroy_function = mackapar_destroy,
+    .devices_list = (Devices_list){.n_devices = 0 }
+};
+
+Driver driver_m525hd = (Driver){
+    .hardware_info = (Hardware_info){.hardware_id_a = 0x525d,
+                                     .hardware_id_b = 0x4ac5,
+                                     .hardware_version = 1,
+                                     .manufacturer_a = 0x7e91,
+                                     .manufacturer_b = 0x1eb3},
+    .update_function = mackapar_update_function,
+    .init_function = mackapar_init_m525hd,
+    .destroy_function = mackapar_destroy,
     .devices_list = (Devices_list){.n_devices = 0 }
 };
