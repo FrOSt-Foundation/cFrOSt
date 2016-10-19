@@ -18,7 +18,7 @@ void *iacm_init (u16 iacm, u16 UNUSED (int_number), Int_handler *UNUSED (int_han
 }
 
 
-void iacm_destroy (Iacm_driver_data *UNUSED (data)) {
+void iacm_destroy (void *UNUSED (data)) {
     // Nothing to free
 }
 
