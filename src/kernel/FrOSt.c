@@ -19,13 +19,6 @@
 #include "drivers/lem1802/lem1802.h"
 #include "drivers/mackapar/mackapar.h"
 
-Driver driver_iacm;
-Driver driver_lem1802;
-Driver driver_keyboard;
-Driver driver_clock;
-Driver driver_m35fd;
-Driver driver_m525hd;
-
 #define N_DRIVERS 6
 static Driver *drivers[] = { &driver_iacm, &driver_lem1802, &driver_keyboard, &driver_clock, &driver_m35fd, &driver_m525hd };
 
@@ -87,75 +80,3 @@ int main (void) {
     while (1) {
     }
 }
-
-Driver driver_iacm = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0xdacc,
-                                     .hardware_id_b = 0x11e0,
-                                     .hardware_version = 0x0004,
-                                     .manufacturer_a = 0x0000, // Vendor code is defined as "(Various)"
-                                     .manufacturer_b = 0x0000 },
-    .update_function = iacm_update_function,
-    .init_function = iacm_init,
-    .destroy_function = iacm_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
-};
-
-Driver driver_lem1802 = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0xf615,
-                                     .hardware_id_b = 0x7349,
-                                     .hardware_version = 0x1802,
-                                     .manufacturer_a = 0x8b36,
-                                     .manufacturer_b = 0x1c6c },
-    .update_function = lem1802_update_function,
-    .init_function = lem1802_init,
-    .destroy_function = lem1802_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
-};
-
-Driver driver_keyboard = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0x7406,
-                                     .hardware_id_b = 0x30cf,
-                                     .hardware_version = 1,
-                                     .manufacturer_a = 0x8b36,
-                                     .manufacturer_b = 0x1c6c },
-    .update_function = keyboard_update_function,
-    .init_function = keyboard_init,
-    .destroy_function = keyboard_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
-};
-
-Driver driver_clock = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0xb402,
-                                     .hardware_id_b = 0x12d0,
-                                     .hardware_version = 1,
-                                     .manufacturer_a = 0x8b36,
-                                     .manufacturer_b = 0x1c6c },
-    .update_function = clock_update_function,
-    .init_function = clock_init,
-    .destroy_function = clock_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
-};
-
-Driver driver_m35fd = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0x24c5,
-                                     .hardware_id_b = 0x4fd5,
-                                     .hardware_version = 0xb,
-                                     .manufacturer_a = 0x7e91,
-                                     .manufacturer_b = 0x1eb3 },
-    .update_function = mackapar_update_function,
-    .init_function = mackapar_init_m35fd,
-    .destroy_function = mackapar_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
-};
-
-Driver driver_m525hd = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0x525d,
-                                     .hardware_id_b = 0x4ac5,
-                                     .hardware_version = 1,
-                                     .manufacturer_a = 0x7e91,
-                                     .manufacturer_b = 0x1eb3 },
-    .update_function = mackapar_update_function,
-    .init_function = mackapar_init_m525hd,
-    .destroy_function = mackapar_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
-};

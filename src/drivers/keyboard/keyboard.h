@@ -1,5 +1,6 @@
 #pragma once
 
+#include "drivers/hardware.h"
 #include "kernel/interrupt_handler/interrupt_handler.h"
 #include "stdbool.h"
 #include "types.h"
@@ -14,6 +15,8 @@ typedef enum {
 typedef struct {
     u16 keyboard;
 } Keyboard_driver_data;
+
+extern Driver driver_keyboard;
 
 void *keyboard_init (u16 keyboard, u16 int_number, Int_handler *int_handler_location);
 void keyboard_destroy (void *data);

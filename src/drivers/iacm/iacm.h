@@ -1,3 +1,4 @@
+#include "drivers/hardware.h"
 #include "kernel/interrupt_handler/interrupt_handler.h"
 #include "types.h"
 
@@ -14,6 +15,8 @@ typedef enum {
 typedef struct {
     u16 iacm;
 } Iacm_driver_data;
+
+extern Driver driver_iacm;
 
 
 void *iacm_init (u16 iacm, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location));

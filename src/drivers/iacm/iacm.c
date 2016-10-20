@@ -10,6 +10,18 @@ typedef enum {
     ACTION_RESET_SYSTEM = 0x505
 } iacm_action;
 
+Driver driver_iacm = (Driver){
+    .hardware_info = (Hardware_info){.hardware_id_a = 0xdacc,
+                                     .hardware_id_b = 0x11e0,
+                                     .hardware_version = 0x0004,
+                                     .manufacturer_a = 0x0000, // Vendor code is defined as "(Various)"
+                                     .manufacturer_b = 0x0000 },
+    .update_function = iacm_update_function,
+    .init_function = iacm_init,
+    .destroy_function = iacm_destroy,
+    .devices_list = (Devices_list){.n_devices = 0 }
+};
+
 void *iacm_init (u16 iacm, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {
     Iacm_driver_data *data = kmalloc (0, sizeof (Iacm_driver_data));
     data->iacm = iacm;

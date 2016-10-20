@@ -1,3 +1,4 @@
+#include "drivers/hardware.h"
 #include "kernel/interrupt_handler/interrupt_handler.h"
 #include "types.h"
 
@@ -19,6 +20,9 @@ typedef struct {
     u16 mackapar;
     Mackapar_type type;
 } Mackapar_driver_data;
+
+extern Driver driver_m35fd;
+extern Driver driver_m525hd;
 
 
 void *mackapar_init_m35fd (u16 mackapar, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location));

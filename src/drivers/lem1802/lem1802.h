@@ -1,5 +1,6 @@
 #pragma once
 
+#include "drivers/hardware.h"
 #include "kernel/interrupt_handler/interrupt_handler.h"
 #include "types.h"
 
@@ -22,6 +23,8 @@ typedef struct {
     u16 monitor;
     u16 *vram;
 } Lem1802_driver_data;
+
+extern Driver driver_lem1802;
 
 void *lem1802_init (u16 monitor, u16 int_number, Int_handler *int_handler_location);
 void lem1802_destroy (void *data);

@@ -9,6 +9,18 @@ typedef enum {
     CLOCK_ACTION_SET_INT_MSG = 2, // "_ACTION" is to avoid duplicate with CLOCK_SET_INT_MSG in Clock_message
 } Clock_action;
 
+Driver driver_clock = (Driver){
+    .hardware_info = (Hardware_info){.hardware_id_a = 0xb402,
+                                     .hardware_id_b = 0x12d0,
+                                     .hardware_version = 1,
+                                     .manufacturer_a = 0x8b36,
+                                     .manufacturer_b = 0x1c6c },
+    .update_function = clock_update_function,
+    .init_function = clock_init,
+    .destroy_function = clock_destroy,
+    .devices_list = (Devices_list){.n_devices = 0 }
+};
+
 void *clock_init (u16 clock, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {
     Clock_driver_data *data = kmalloc (0, sizeof (Clock_driver_data));
     data->clock = clock;
