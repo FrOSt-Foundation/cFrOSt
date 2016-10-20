@@ -22,9 +22,23 @@ Driver driver_iacm = (Driver){
     .devices_list = (Devices_list){.n_devices = 0 }
 };
 
-void *iacm_init (u16 iacm, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {
+void iacm_int_handler (u16 message, u16 UNUSED (arg1), u16 UNUSED (arg2), u16 UNUSED (arg3)) {
+    for (u16 i = 0; i < driver_iacm.devices_list.n_devices; ++i) {
+        if (((Iacm_driver_data *)driver_iacm.devices_list.data[i])->interrupt == message) {
+            iacm_set_mode (driver_iacm.devices_list.data[i], ((Iacm_driver_data *)driver_iacm.devices_list.data[i])->reduced_mode = !((Iacm_driver_data *)driver_iacm.devices_list.data[i])->reduced_mode); // reduced_mode = !reduced_mode
+            break;
+        }
+    }
+}
+
+void *iacm_init (u16 iacm, u16 int_number, Int_handler *int_handler_location) {
     Iacm_driver_data *data = kmalloc (0, sizeof (Iacm_driver_data));
     data->iacm = iacm;
+    data->interrupt = int_number;
+    data->reduced_mode = 0;
+
+    *int_handler_location = iacm_int_handler;
+    iacm_set_interrupt_message (data, 1, int_number);
 
     return data;
 }
@@ -46,7 +60,7 @@ u16 iacm_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
             iacm_set_sleep_time (data, arg1);
             break;
         case IACM_SET_INTERRUPT_MESSAGE:
-            iacm_set_interrupt_message (data, arg1);
+            iacm_set_interrupt_message (data, arg1, arg2);
             break;
         case IACM_GET_CLOCK_RATE:
             iacm_get_clock_rate (data, (u16 *)arg1, (u16 *)arg2);
@@ -96,14 +110,16 @@ void iacm_set_sleep_time (Iacm_driver_data *data, u16 time) {
 }
 
 
-void iacm_set_interrupt_message (Iacm_driver_data *data, u16 message) {
+void iacm_set_interrupt_message (Iacm_driver_data *data, u16 type, u16 message) {
     register u16 action __asm("A") = ACTION_SET_INTERRUPT_MESSAGE;
     register u16 arg_b __asm("B") = message;
+    register u16 arg_c __asm("C") = type;
     __asm volatile("hwi %0"
                    :
                    : "X"(data->iacm),
                      "r"(action),
-                     "r"(arg_b));
+                     "r"(arg_b),
+                     "r"(arg_c));
 }
 
 
