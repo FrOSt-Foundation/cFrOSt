@@ -78,6 +78,35 @@ u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
     return 0;
 }
 
+void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length) {
+    u16 sector = (u16) (location / WORDS_PER_SECTOR);
+    u16 offset = (u16) (location % WORDS_PER_SECTOR);
+
+    u16 buffer_size = length + offset + ((length + offset) % WORDS_PER_SECTOR);
+    u16 n_sectors = buffer_size / WORDS_PER_SECTOR;
+
+    u16 *buffer = kmalloc (0, buffer_size);
+
+    for (u16 i = 0; i < n_sectors; ++i) {
+        mackapar_read_sector (data, sector + i, buffer + i * WORDS_PER_SECTOR);
+        mackapar_wait_until_ready (data);
+    }
+
+    if (offset != 0 || length % WORDS_PER_SECTOR != 0) { // If we didn't read a sector (so we have a partial read on either the first or last sector)
+        u16 *final_buffer = kmalloc (0, length);
+
+        for (u16 i = 0; i < length; ++i) {
+            final_buffer[i] = buffer[i + offset];
+        }
+
+        kfree (buffer);
+
+        return final_buffer;
+    } else {
+        return buffer;
+    }
+}
+
 void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d) {
     // TODO : Retrieve data first on partial sector writes
 
@@ -144,18 +173,19 @@ void mackapar_read_sector (Mackapar_driver_data *data, u16 sector, void *buffer)
     register u16 action __asm("A") = ACTION_READ_SECTOR;
     register u16 arg1 __asm("X") = sector;
     register void *arg2 __asm("Y") = buffer;
-    __asm volatile("hwi %1"
-                   : "=r"(arg2)
+    __asm volatile("brk 0 \n hwi %0"
+                   :
                    : "X"(data->mackapar),
                      "r"(action),
-                     "r"(arg1));
+                     "r"(arg1),
+                     "r"(arg2));
 }
 
 void mackapar_write_sector (Mackapar_driver_data *data, u16 sector, void *buffer) {
     register u16 action __asm("A") = ACTION_WRITE_SECTOR;
     register u16 arg1 __asm("X") = sector;
     register void *arg2 __asm("Y") = buffer;
-    __asm volatile("hwi %1"
+    __asm volatile("hwi %0"
                    :
                    : "X"(data->mackapar),
                      "r"(action),

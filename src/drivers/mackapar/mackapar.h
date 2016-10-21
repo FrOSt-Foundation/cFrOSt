@@ -56,6 +56,7 @@ void mackapar_destroy (void *UNUSED (data));
 u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2);
 
 void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d);
+void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length);
 
 void mackapar_wait_until_ready (Mackapar_driver_data *data);
 void mackapar_poll_device (Mackapar_driver_data *data, u16 *state, u16 *error);
