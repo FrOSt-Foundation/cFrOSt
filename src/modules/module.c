@@ -1,6 +1,6 @@
 #include "asm.h"
 #include "types.h"
-#include "kernel/mm/mm.h"
+#include "kernel/memory_manager/memory_manager.h"
 #include "modules/module.h"
 
 Module *module_create(Hardware_info *hw, void (*init)(Module*), void (*clean)(Module*)) {
