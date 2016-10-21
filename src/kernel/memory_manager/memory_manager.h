@@ -22,7 +22,7 @@ typedef struct {
     u16 data[];
 } Kmalloc_header;
 
-void mm_init ();
+void mm_init (void);
 void *kmalloc (u16 owner, u16 size);
 void kfree (void *block);
 void kfree_pid (u16 pid);

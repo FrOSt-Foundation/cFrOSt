@@ -6,7 +6,7 @@ ifeq ($(AS), as)
 endif
 
 CPPFLAGS += -MP -MD
-CFLAGS += -ccc-host-triple dcpu16 -Os -Wall -Wextra -std=c11 -I src -I include
+CFLAGS += -ccc-host-triple dcpu16 -Os -Weverything -std=c11 -I src -I include
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 C_FILES := $(call rwildcard,src/,*.c)

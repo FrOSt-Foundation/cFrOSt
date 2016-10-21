@@ -23,6 +23,6 @@ typedef void (*Int_handler) (u16 message, u16 arg1, u16 arg2, u16 arg3);
 extern u16 int_table_size;
 
 Int_handler *int_handler_allocate (u16 nb_hardware);
-void int_handler_activate ();
+void int_handler_activate (void);
 void interrupt (u16 message, u16 arg_1, u16 arg_2, u16 arg_3);
 // We don't reference interrupt_handler() because it shouldn't ever be called directly.
