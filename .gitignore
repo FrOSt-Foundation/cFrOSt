@@ -6,3 +6,4 @@
 bin/
 tools/
 debug_history
+*.sw*

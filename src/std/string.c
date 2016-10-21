@@ -62,9 +62,8 @@ void uitoa (u16 n, char *s) {
     reverse (s);
 }
 
-u16 atoui (const char *c) {
+u16 atoui (char *s) {
     u16 i = 0;
-    char *s = c;
 
     while (*s) {
         i = 10 * i + (*s) - '0';
