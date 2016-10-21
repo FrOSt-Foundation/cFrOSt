@@ -46,7 +46,6 @@ void *mackapar_init (u16 mackapar, Mackapar_type type) {
     data->type = type;
 
     mackapar_spin_up (data); // No need to check the type, at worst this function doesn't do anything
-    mackapar_write (data, 0x100, 4, "Cela");
 
     return data;
 }
