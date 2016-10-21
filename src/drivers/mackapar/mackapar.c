@@ -47,8 +47,6 @@ void *mackapar_init (u16 mackapar, Mackapar_type type) {
 
     mackapar_spin_up (data); // No need to check the type, at worst this function doesn't do anything
 
-    mackapar_write (data, 0x100, 17, "Ceci est un test");
-
     return data;
 }
 
@@ -81,15 +79,26 @@ u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
 }
 
 void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d) {
+    // TODO : Retrieve data first on partial sector writes
+
     u16 sector = (u16) (location / WORDS_PER_SECTOR);
     u16 offset = (u16) (location % WORDS_PER_SECTOR);
+
+    if (offset != 0) {
+        u16 *md = (u16 *)kmalloc (0, length + offset + ((length + offset) % WORDS_PER_SECTOR));
+        for (u16 i = 0; i < length; ++i) {
+            md[i + offset] = *((u16 *)d + i);
+        }
+        d = (void *)md;
+        length = length + offset + ((length + offset) % WORDS_PER_SECTOR);
+    }
 
     for (u16 i = 0; i < length / WORDS_PER_SECTOR; ++i) {
         mackapar_write_sector (data, sector + i, d + i * WORDS_PER_SECTOR);
         mackapar_wait_until_ready (data);
     }
 
-    if (length % WORDS_PER_SECTOR != 0) { // If there is an incomplete sector to write
+    if (offset == 0 && length % WORDS_PER_SECTOR != 0) { // If there is an incomplete sector to write
         u16 *msector = (u16 *)kmalloc (0, WORDS_PER_SECTOR);
         for (u16 i = 0; i < length % WORDS_PER_SECTOR; ++i) {
             msector[i] = (u16) * ((u16 *)d + length - (length % WORDS_PER_SECTOR) + i);
@@ -97,6 +106,8 @@ void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void 
         mackapar_write_sector (data, sector + (length / WORDS_PER_SECTOR), msector);
         mackapar_wait_until_ready (data);
         kfree (msector);
+    } else if (offset != 0) {
+        kfree (d);
     }
 }
 
