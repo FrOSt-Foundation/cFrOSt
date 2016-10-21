@@ -47,6 +47,8 @@ void *mackapar_init (u16 mackapar, Mackapar_type type) {
 
     mackapar_spin_up (data); // No need to check the type, at worst this function doesn't do anything
 
+    mackapar_write (data, 0x100, 17, "Ceci est un test");
+
     return data;
 }
 
@@ -78,7 +80,33 @@ u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
     return 0;
 }
 
-// TODO
+void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d) {
+    u16 sector = (u16) (location / WORDS_PER_SECTOR);
+    u16 offset = (u16) (location % WORDS_PER_SECTOR);
+
+    for (u16 i = 0; i < length / WORDS_PER_SECTOR; ++i) {
+        mackapar_write_sector (data, sector + i, d + i * WORDS_PER_SECTOR);
+        mackapar_wait_until_ready (data);
+    }
+
+    if (length % WORDS_PER_SECTOR != 0) { // If there is an incomplete sector to write
+        u16 *msector = (u16 *)kmalloc (0, WORDS_PER_SECTOR);
+        for (u16 i = 0; i < length % WORDS_PER_SECTOR; ++i) {
+            msector[i] = (u16) * ((u16 *)d + length - (length % WORDS_PER_SECTOR) + i);
+        }
+        mackapar_write_sector (data, sector + (length / WORDS_PER_SECTOR), msector);
+        mackapar_wait_until_ready (data);
+        kfree (msector);
+    }
+}
+
+void mackapar_wait_until_ready (Mackapar_driver_data *data) {
+    Mackapar_state state;
+    Mackapar_error error;
+    do {
+        mackapar_poll_device (data, &state, &error);
+    } while (state != STATE_READY && state != STATE_READY_WP);
+}
 
 void mackapar_poll_device (Mackapar_driver_data *data, u16 *state, u16 *error) {
     register u16 action __asm("A") = ACTION_POLL_DEVICE;
@@ -117,10 +145,11 @@ void mackapar_write_sector (Mackapar_driver_data *data, u16 sector, void *buffer
     register u16 arg1 __asm("X") = sector;
     register void *arg2 __asm("Y") = buffer;
     __asm volatile("hwi %1"
-                   : "=r"(arg2)
+                   :
                    : "X"(data->mackapar),
                      "r"(action),
-                     "r"(arg1));
+                     "r"(arg1),
+                     "r"(arg2));
 }
 
 void mackapar_spin_down (Mackapar_driver_data *data) {
