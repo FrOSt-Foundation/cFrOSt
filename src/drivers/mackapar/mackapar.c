@@ -46,6 +46,7 @@ void *mackapar_init (u16 mackapar, Mackapar_type type) {
     data->type = type;
 
     mackapar_spin_up (data); // No need to check the type, at worst this function doesn't do anything
+    mackapar_write (data, 0x100, 4, "Cela");
 
     return data;
 }
@@ -108,8 +109,6 @@ void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length) {
 }
 
 void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d) {
-    // TODO : Retrieve data first on partial sector writes
-
     u16 sector = (u16) (location / WORDS_PER_SECTOR);
     u16 offset = (u16) (location % WORDS_PER_SECTOR);
 
@@ -118,6 +117,22 @@ void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void 
         for (u16 i = 0; i < length; ++i) {
             md[i + offset] = *((u16 *)d + i);
         }
+
+        // There may already have been stuff written on the beggining of the first sector (between location and location + offset), so we save it
+        u16 *previousData = mackapar_read (data, sector * WORDS_PER_SECTOR, offset);
+        for (u16 i = 0; i < offset; ++i) {
+            md[i] = previousData[i];
+        }
+        kfree (previousData);
+
+        if ((length + offset) % WORDS_PER_SECTOR != 0) { // Like before, if we are writing to a partial sector, we need to save the rest
+            previousData = mackapar_read (data, sector * WORDS_PER_SECTOR + length + offset, WORDS_PER_SECTOR - ((length + offset) % WORDS_PER_SECTOR));
+            for (u16 i = 0; i < WORDS_PER_SECTOR - ((length + offset) % WORDS_PER_SECTOR); ++i) {
+                md[length + offset + i] = previousData[i];
+            }
+            kfree (previousData);
+        }
+
         d = (void *)md;
         length = length + offset + ((length + offset) % WORDS_PER_SECTOR);
     }
@@ -173,7 +188,7 @@ void mackapar_read_sector (Mackapar_driver_data *data, u16 sector, void *buffer)
     register u16 action __asm("A") = ACTION_READ_SECTOR;
     register u16 arg1 __asm("X") = sector;
     register void *arg2 __asm("Y") = buffer;
-    __asm volatile("brk 0 \n hwi %0"
+    __asm volatile("hwi %0"
                    :
                    : "X"(data->mackapar),
                      "r"(action),
