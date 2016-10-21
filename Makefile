@@ -35,7 +35,7 @@ $(TARGETS): $(AS)
 	@$(COMPILE.s) $@.s --symbols $@.sym $(OUTPUT_OPTION)
 
 bin/prelude.s:
-	mkdir bin
+	mkdir -p bin
 	@echo -e "\tSET\tPC, main" > $@
 
 bin/%.s: src/%.c Makefile $(CC)
