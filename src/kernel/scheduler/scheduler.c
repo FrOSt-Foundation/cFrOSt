@@ -12,8 +12,8 @@ Process **processes = NULL;
 
 void scheduler_start_asm ();
 
-void scheduler_start (Driver *driver_clock) {
-    clock_set_tickrate (driver_clock->devices_list.data[0], 2);
+void scheduler_start (Driver *clock) {
+    clock_set_tickrate (clock->devices_list.data[0], 2);
     if (n_processes == 0) {
         kpanic ("No processes added to scheduler!");
     }

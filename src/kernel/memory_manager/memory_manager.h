@@ -10,7 +10,7 @@
 #define MEMORY_START ((void *)0x1000)
 // End of dynamically allocated memory by the kernel (we don't want to interfere with the kernel stack, do we?)
 #define MEMORY_END ((void *)0xE999)
-#define TOTAL_MEMORY (MEMORY_END - MEMORY_START)
+#define TOTAL_MEMORY ((u16)MEMORY_END - (u16)MEMORY_START)
 
 #define MEMORY_OWNER_FREE 0xFFFF
 #define MEMORY_OWNER_KERNEL 0
@@ -22,7 +22,7 @@ typedef struct {
     u16 data[];
 } Kmalloc_header;
 
-void mm_init ();
+void mm_init (void);
 void *kmalloc (u16 owner, u16 size);
 void kfree (void *block);
 void kfree_pid (u16 pid);

@@ -13,6 +13,8 @@ static const char *console_commands[__PROGRAMS_SIZE];
 
 static Console_program *console_commands_ptr;
 
+void console_main (void) __attribute__((noreturn));
+
 void console_main () {
     console_commands[0] = "help";
     console_commands[1] = "about";

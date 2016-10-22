@@ -13,7 +13,7 @@ static Kmalloc_header *next (Kmalloc_header *current) {
 }
 
 static Kmalloc_header *get_header (void *addr) {
-    return (Kmalloc_header *)(addr - sizeof (Kmalloc_header));
+    return (Kmalloc_header *)((u16*)addr - sizeof (Kmalloc_header));
 }
 
 static u16 get_real_size (u16 size) {

@@ -10,6 +10,8 @@ typedef enum {
     ACTION_RESET_SYSTEM = 0x505
 } iacm_action;
 
+void iacm_int_handler (u16 message, u16 UNUSED (arg1), u16 arg2, u16 arg3);
+
 Driver driver_iacm = (Driver){
     .hardware_info = (Hardware_info){.hardware_id_a = 0xdacc,
                                      .hardware_id_b = 0x11e0,
