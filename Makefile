@@ -12,12 +12,13 @@ rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 C_FILES := $(call rwildcard,src/,*.c)
 DASM_FILES := src/kernel/scheduler/scheduler_switch.dasm \
 			  src/kernel/interrupt_handler/interrupt_handler_asm.dasm
+CASM_FILES := $(patsubst src/%,bin/%,$(C_FILES:.c=.s))
 ASM_FILES := $(patsubst src/%,bin/%,$(DASM_FILES:.dasm=.s))
 BIN ?= bin/FrOSt.bin
 BIN_HEADER ?= bin/FrOSt_header.bin
 TARGETS := $(BIN) $(BIN_HEADER)
 
-all: $(ASM_FILES) $(TARGETS)
+all: $(CASM_FILES) $(TARGETS)
 
 -include $(ASM_FILES:.s=.d)
 
