@@ -1,4 +1,5 @@
 #include "string.h"
+#include "std/stdlib.h"
 
 u16 strlen (const char *s) {
     u16 len = 0;
@@ -86,4 +87,9 @@ void reverse (char *s) {
         s[i] = s[j];
         s[j] = c;
     }
+}
+
+char *strdup(const char *s) {
+    char *tmp = malloc(strlen(s));
+    return strcpy(tmp, s);
 }

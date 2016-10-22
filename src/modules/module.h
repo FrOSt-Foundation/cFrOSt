@@ -2,17 +2,27 @@
 #ifndef _MODULE_H_
 # define _MODULE_H_
 
-struct Hardware_info;
+#include "stdbool.h"
 
-typedef struct Module {
-    Hardware_info *hw;
-    void *data;
+#define MODULE_LEN_NAME 8
 
-    void (*init)(struct Module *self);
-    void (*clean)(struct Module *self);
+typedef struct {
+    void (*init)(void);
+    void (*clean)(void);
+    char name[MODULE_LEN_NAME];
 } Module;
 
-Module *module_create(Hardware_info *hw, void (*init)(Module*), void (*clean)(Module*));
-void module_delete(Module *module);
+/*
+ * Each module will call register functions as needed
+ * for example if the want to be registered for an INT then in the init() they'll call interrupt_handler_register(INT_VALUE, &some_function);
+ * Data structures are provided by the OS when necessary
+ *
+ */
+
+bool module_load(const char name[MODULE_LEN_NAME], void (*init)(void), void (*clean)(void));
+void module_unload(const char name[MODULE_LEN_NAME]);
+void module_reload(const char name[MODULE_LEN_NAME]);
+void module_delete();
+char **module_get_names();
 
 #endif /* !_MODULE_H_ */

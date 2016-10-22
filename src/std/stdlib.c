@@ -7,7 +7,7 @@ void memcpy (const void *from, void *to, u16 size) {
     }
 }
 
-u16 *malloc (u16 size) {
+void *malloc (u16 size) {
     u16 *p;
     interrupt (SOFTINT_MALLOC, size, (u16)&p, 0);
     return p;
