@@ -42,14 +42,14 @@ int main (void) {
         clear ();
     }
 
-    add_process (&console_main, "console");
+    add_process ((void*)&console_main, "console");
 
     if (driver_lem1802.devices_list.n_devices > 1) {
         for (u16 i = 0; i < driver_lem1802.devices_list.n_devices; ++i) {
             stdio_set_current_output (i);
             printf ("Press 1, 2, ... to load console on corresponding screen.\nThis screen is number: ");
             char *buffer = (char *)malloc (6); // 0xFFFF is only 5 digits in base 10
-            itoa (i + 1, buffer);
+            uitoa (i + 1, buffer);
             printf (buffer);
             free ((u16 *)buffer);
         }

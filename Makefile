@@ -43,7 +43,9 @@ bin/FrOSt.c: $(C_FILES)
 
 bin/FrOSt.s: bin/FrOSt.c Makefile $(CC)
 	@echo "CC   $<"
-	@$(COMPILE.c) -o $@ -S $<
+	@# No shadow since we cat all the c files in one file. That's why we also
+	@# build the individual .c files
+	@$(COMPILE.c) -Wno-shadow -o $@ -S $<
 	@sed -i -re 's/rfi/rfi 0/i' $@
 	@sed -i -re "s/_L/_$(shell echo $@ | sed -re 's|/|_|g')/" $@
 
