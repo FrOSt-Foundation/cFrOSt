@@ -38,7 +38,7 @@ typedef enum {
     ERROR_PARKED = 4,
     ERROR_EJECT = 4,
     ERROR_BAD_SECTOR = 5,
-    ERROR_BROKEN = 0xFFFF
+    ERROR_BROKEN = (int)(0xFFFF)
 } Mackapar_error;
 
 typedef struct {
@@ -57,11 +57,11 @@ void *mackapar_init (u16 mackapar, Mackapar_type type);
 void mackapar_destroy (void *UNUSED (data));
 u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2);
 
-void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d);
+void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *d);
 void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length);
 
 void mackapar_wait_until_ready (Mackapar_driver_data *data);
-void mackapar_poll_device (Mackapar_driver_data *data, u16 *state, u16 *error);
+void mackapar_poll_device (Mackapar_driver_data *data, Mackapar_state *state, Mackapar_error *error);
 void mackapar_set_interrupt (Mackapar_driver_data *data, u16 interrupt);
 void mackapar_read_sector (Mackapar_driver_data *data, u16 sector, void *buffer);
 void mackapar_write_sector (Mackapar_driver_data *data, u16 sector, void *buffer);

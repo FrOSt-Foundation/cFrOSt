@@ -56,7 +56,7 @@ void mackapar_destroy (void *UNUSED (data)) {
 u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
     switch ((Mackapar_message)message) {
         case MACKAPAR_POLL_DEVICE:
-            mackapar_poll_device (data, (u16 *)arg1, (u16 *)arg2);
+            mackapar_poll_device (data, (Mackapar_state *)arg1, (Mackapar_error *)arg2);
             break;
         case MACKAPAR_SET_INTERRUPT:
             mackapar_set_interrupt (data, arg1);
@@ -107,14 +107,14 @@ void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length) {
     }
 }
 
-void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void *d) {
+void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *d) {
     u16 sector = (u16) (location / WORDS_PER_SECTOR);
     u16 offset = (u16) (location % WORDS_PER_SECTOR);
 
     if (offset != 0) {
         u16 *md = (u16 *)kmalloc (0, length + offset + ((length + offset) % WORDS_PER_SECTOR));
         for (u16 i = 0; i < length; ++i) {
-            md[i + offset] = *((u16 *)d + i);
+            md[i + offset] = *(d + i);
         }
 
         // There may already have been stuff written on the beggining of the first sector (between location and location + offset), so we save it
@@ -132,7 +132,7 @@ void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, void 
             kfree (previousData);
         }
 
-        d = (void *)md;
+        d = md;
         length = length + offset + ((length + offset) % WORDS_PER_SECTOR);
     }
 
@@ -162,10 +162,10 @@ void mackapar_wait_until_ready (Mackapar_driver_data *data) {
     } while (state != STATE_READY && state != STATE_READY_WP);
 }
 
-void mackapar_poll_device (Mackapar_driver_data *data, u16 *state, u16 *error) {
+void mackapar_poll_device (Mackapar_driver_data *data, Mackapar_state *state, Mackapar_error *error) {
     register u16 action __asm("A") = ACTION_POLL_DEVICE;
-    register u16 *arg1 __asm("X") = state;
-    register u16 *arg2 __asm("X") = error;
+    register u16 *arg1 __asm("B") = (u16 *)state;
+    register u16 *arg2 __asm("C") = (u16 *)error;
     __asm volatile("hwi %2"
                    : "=r"(arg1),
                      "=r"(arg2)
