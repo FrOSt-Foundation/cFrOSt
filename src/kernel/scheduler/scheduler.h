@@ -5,11 +5,14 @@
 
 #define STACK_SIZE 0x100
 
+struct VConsole;
+
 typedef struct {
     u16 sp;
     u16 *stack;
     char *name;
     u16 pid;
+    struct VConsole *console;
 } Process;
 
 extern u16 running_process;
