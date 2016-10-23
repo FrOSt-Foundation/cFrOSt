@@ -32,3 +32,7 @@ u16 get_processes_list (char ***names, u16 **pids) {
     interrupt (SOFTINT_GET_PROCESSES_LIST, (u16)&n, (u16)names, (u16)pids);
     return n;
 }
+
+void yield (void) {
+    interrupt (SOFTINT_YIELD, 0, 0, 0);
+}

@@ -41,6 +41,8 @@ char getc () {
     char c;
     do {
         interrupt (SOFTINT_GETC, (u16)&c, 0, 0);
+        if (c == '\0')
+            yield ();
     } while (c == '\0');
 
     return c;

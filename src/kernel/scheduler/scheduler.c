@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "drivers/clock/clock.h"
+#include "drivers/iacm/iacm.h"
 #include "kernel/memory_manager/memory_manager.h"
 #include "kernel/panic/panic.h"
 #include "std/string.h"
@@ -96,6 +97,15 @@ u16 scheduler_kill (u16 pid) {
     }
 
     return false;
+}
+
+void scheduler_yield (void) {
+    if (n_processes == 1 && driver_iacm.devices_list.n_devices > 0) {
+        iacm_set_mode (driver_iacm.devices_list.data[0], 3);
+        iacm_set_mode (driver_iacm.devices_list.data[0], 1);
+    } else {
+        asm_int (0xFFFE, 0, 0, 0);
+    }
 }
 
 // Returns the number of processes, the list of PIDs in *p and the list of process names in *n

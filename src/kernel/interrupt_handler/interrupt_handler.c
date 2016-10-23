@@ -18,6 +18,7 @@ static void stdio_getc_handler (u16 UNUSED (msg), u16 raw_ptr, u16 UNUSED (arg2)
 static void mm_malloc_handler (u16 UNUSED (msg), u16 size, u16 raw_ptr, u16 UNUSED (arg3));
 static void mm_free_handler (u16 UNUSED (msg), u16 raw_ptr, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_kill_handler (u16 UNUSED (msg), u16 pid, u16 return_value, u16 UNUSED (arg3));
+static void scheduler_yield_handler (u16 UNUSED (msg), u16 UNUSED (arg1), u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_lsdrives_handler (u16 UNUSED (msg), u16 drives_list, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_driveread_handler (u16 UNUSED (msg), u16 drive_read_arguments, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_drivewrite_handler (u16 UNUSED (msg), u16 drive_write_arguments, u16 UNUSED (arg2), u16 UNUSED (arg3));
@@ -40,6 +41,7 @@ Int_handler *int_handler_allocate (u16 nb_hardware) {
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
     int_table[SOFTINT_KILL] = scheduler_kill_handler;
+    int_table[SOFTINT_YIELD] = scheduler_yield_handler;
     int_table[SOFTINT_LSDRIVES] = scheduler_lsdrives_handler;
     int_table[SOFTINT_DRIVEREAD] = scheduler_driveread_handler;
     int_table[SOFTINT_DRIVEWRITE] = scheduler_drivewrite_handler;
@@ -109,6 +111,10 @@ static void mm_free_handler (u16 UNUSED (msg), u16 raw_ptr, u16 UNUSED (arg2), u
 static void scheduler_kill_handler (u16 UNUSED (msg), u16 pid, u16 raw_ptr, u16 UNUSED (arg3)) {
     u16 *return_value = (u16 *)raw_ptr;
     *return_value = scheduler_kill (pid);
+}
+
+static void scheduler_yield_handler (u16 UNUSED (msg), u16 UNUSED (arg1), u16 UNUSED (arg2), u16 UNUSED (arg3)) {
+    scheduler_yield ();
 }
 
 static void scheduler_lsdrives_handler (u16 UNUSED (msg), u16 drives_list, u16 UNUSED (arg2), u16 UNUSED (arg3)) {

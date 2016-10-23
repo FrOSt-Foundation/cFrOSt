@@ -11,3 +11,4 @@ u16 *realloc (u16 *block, u16 new_size);
 u16 kill (u16 pid);
 void add_process (void *location, char *name);
 u16 get_processes_list (char ***names, u16 **pids);
+void yield (void);

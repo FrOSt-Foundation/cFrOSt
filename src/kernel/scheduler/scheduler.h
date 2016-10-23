@@ -21,4 +21,5 @@ void scheduler_add_process (void *location, char *name);
 void scheduler_switch (void);
 void scheduler_abort (void);
 u16 scheduler_kill (u16 pid);
+void scheduler_yield (void);
 u16 scheduler_get_processes_list (char ***names, u16 **pids);
