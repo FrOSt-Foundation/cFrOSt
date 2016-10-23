@@ -100,9 +100,8 @@ u16 scheduler_kill (u16 pid) {
 }
 
 void scheduler_yield (void) {
-    if (n_processes == 1 && driver_iacm.devices_list.n_devices > 0) {
-        iacm_set_mode (driver_iacm.devices_list.data[0], 3);
-        iacm_set_mode (driver_iacm.devices_list.data[0], 1);
+    if (n_processes == 1) {
+        asm_hlt ();
     } else {
         asm_int (0xFFFE, 0, 0, 0);
     }
