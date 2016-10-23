@@ -79,6 +79,18 @@ u16 mackapar_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
 }
 
 void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length) {
+    Mackapar_state state;
+    Mackapar_error error;
+    mackapar_poll_device (data, &state, &error);
+    if (state == STATE_NO_MEDIA)
+        return 0;
+    else if (state == STATE_BUSY || state == STATE_INIT || state == STATE_INIT_WP)
+        mackapar_wait_until_ready (data);
+    else if (state == STATE_PARKED || state == STATE_PARKED_WP) {
+        mackapar_spin_up (data);
+        mackapar_wait_until_ready (data);
+    }
+
     u16 sector = (u16) (location / WORDS_PER_SECTOR);
     u16 offset = (u16) (location % WORDS_PER_SECTOR);
 
@@ -107,7 +119,19 @@ void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length) {
     }
 }
 
-void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *d) {
+bool mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *d) {
+    Mackapar_state state;
+    Mackapar_error error;
+    mackapar_poll_device (data, &state, &error);
+    if (state == STATE_NO_MEDIA || state == STATE_INIT_WP || state == STATE_PARKED_WP || state == STATE_READY_WP)
+        return false;
+    else if (state == STATE_BUSY || state == STATE_INIT)
+        mackapar_wait_until_ready (data);
+    else if (state == STATE_PARKED) {
+        mackapar_spin_up (data);
+        mackapar_wait_until_ready (data);
+    }
+
     u16 sector = (u16) (location / WORDS_PER_SECTOR);
     u16 offset = (u16) (location % WORDS_PER_SECTOR);
 
@@ -152,6 +176,8 @@ void mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *
     } else if (offset != 0) {
         kfree (d);
     }
+
+    return true;
 }
 
 void mackapar_wait_until_ready (Mackapar_driver_data *data) {
@@ -164,13 +190,15 @@ void mackapar_wait_until_ready (Mackapar_driver_data *data) {
 
 void mackapar_poll_device (Mackapar_driver_data *data, Mackapar_state *state, Mackapar_error *error) {
     register u16 action __asm("A") = ACTION_POLL_DEVICE;
-    register u16 *arg1 __asm("B") = (u16 *)state;
-    register u16 *arg2 __asm("C") = (u16 *)error;
+    register u16 arg1 __asm("B");
+    register u16 arg2 __asm("C");
     __asm volatile("hwi %2"
                    : "=r"(arg1),
                      "=r"(arg2)
                    : "X"(data->mackapar),
                      "r"(action));
+    *state = (Mackapar_state)arg1;
+    *error = (Mackapar_error)arg2;
 }
 
 void mackapar_set_interrupt (Mackapar_driver_data *data, u16 interrupt) {

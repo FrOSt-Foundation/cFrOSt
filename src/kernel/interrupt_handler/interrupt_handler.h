@@ -1,6 +1,7 @@
 #pragma once
 
 #include "kernel/memory_manager/memory_manager.h"
+#include "stdbool.h"
 
 typedef enum {
     SOFTINT_PRINTF,
@@ -15,6 +16,8 @@ typedef enum {
     SOFTINT_ADDPROCESS,
     SOFTINT_KILL,
     SOFTINT_LSDRIVES,
+    SOFTINT_DRIVEREAD,
+    SOFTINT_DRIVEWRITE,
     SOFTINT_GET_PROCESSES_LIST,
     __SOFTINT_NB,
 } Soft_int;
@@ -27,3 +30,19 @@ Int_handler *int_handler_allocate (u16 nb_hardware);
 void int_handler_activate (void);
 void interrupt (u16 message, u16 arg_1, u16 arg_2, u16 arg_3);
 // We don't reference interrupt_handler() because it shouldn't ever be called directly.
+
+
+typedef struct {
+    void **return_location;
+    u16 drive;
+    u32 location;
+    u16 length;
+} Drive_read_arguments;
+
+typedef struct {
+    bool *return_value;
+    u16 drive;
+    u32 location;
+    u16 length;
+    u16 *data;
+} Drive_write_arguments;

@@ -22,6 +22,7 @@ void console_main () {
     console_commands[3] = "ps";
     console_commands[4] = "kill";
     console_commands[5] = "lsdrives";
+    console_commands[6] = "dd";
 
     console_commands_ptr = (Console_program *)malloc (__PROGRAMS_SIZE);
     console_commands_ptr[PROGRAM_HELP] = console_help;
@@ -30,6 +31,7 @@ void console_main () {
     console_commands_ptr[PROGRAM_PS] = console_ps;
     console_commands_ptr[PROGRAM_KILL] = console_kill;
     console_commands_ptr[PROGRAM_LSDRIVES] = console_lsdrives;
+    console_commands_ptr[PROGRAM_DD] = console_dd;
     console_commands_ptr[PROGRAM_NO_SUCH_COMMAND] = console_no_such_command;
 
     clear ();

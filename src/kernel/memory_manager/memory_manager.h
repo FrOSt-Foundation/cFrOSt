@@ -7,7 +7,7 @@
  */
 
 // Beggining of dynamically allocated memory by the kernel
-#define MEMORY_START ((void *)0x1000)
+#define MEMORY_START ((void *)0x1500)
 // End of dynamically allocated memory by the kernel (we don't want to interfere with the kernel stack, do we?)
 #define MEMORY_END ((void *)0xE999)
 #define TOTAL_MEMORY ((u16)MEMORY_END - (u16)MEMORY_START)

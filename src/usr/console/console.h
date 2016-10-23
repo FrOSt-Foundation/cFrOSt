@@ -16,6 +16,7 @@ typedef enum {
     PROGRAM_PS,
     PROGRAM_KILL,
     PROGRAM_LSDRIVES,
+    PROGRAM_DD,
     PROGRAM_NO_SUCH_COMMAND,
     __PROGRAMS_SIZE,
 } programs;

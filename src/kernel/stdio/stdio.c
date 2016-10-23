@@ -179,3 +179,23 @@ void stdio_init_drives_list (void) {
         stdio_drives_list->types[i] = type_m35fd;
     }
 }
+
+void *stdio_drive_read (u16 drive, u32 location, u16 length) {
+    if (drive < driver_m525hd.devices_list.n_devices) {
+        return mackapar_read (driver_m525hd.devices_list.data[drive], location, length);
+    } else if (drive < driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices) {
+        return mackapar_read (driver_m35fd.devices_list.data[drive - driver_m525hd.devices_list.n_devices], location, length);
+    } else {
+        return 0;
+    }
+}
+
+bool stdio_drive_write (u16 drive, u32 location, u16 length, u16 *data) {
+    if (drive < driver_m525hd.devices_list.n_devices) {
+        return mackapar_write (driver_m525hd.devices_list.data[drive], location, length, data);
+    } else if (drive < driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices) {
+        return mackapar_write (driver_m35fd.devices_list.data[drive - driver_m525hd.devices_list.n_devices], location, length, data);
+    } else {
+        return false;
+    }
+}

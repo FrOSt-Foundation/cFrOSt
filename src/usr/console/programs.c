@@ -4,7 +4,7 @@
 #include "std/string.h"
 
 void console_help (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
-    printf ("Commands: help, about, echo, ps, kill");
+    printf ("Commands: help, about, echo, ps, kill, lsdrives, dd");
 }
 
 void console_about (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
@@ -62,6 +62,40 @@ void console_lsdrives (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
     }
 
     free ((u16 *)buffer);
+}
+
+void console_dd (u16 n_arguments, char **arguments) {
+    if (n_arguments != 3) {
+        printf ("Usage:\ndd <input_drive> <output_drive> <n_sectors>");
+        return;
+    }
+
+    u16 input, output, n_sectors;
+    input = atoui (arguments[0]);
+    output = atoui (arguments[1]);
+    n_sectors = atoui (arguments[2]);
+    printf ("Confirm copy from disk ");
+    printf (arguments[0]);
+    printf (" to disk ");
+    printf (arguments[1]);
+    printf (" for ");
+    printf (arguments[2]);
+    printf (" sectors? (y/n)\n");
+
+    char c = getc ();
+    if (c != 'y') {
+        printf ("Aborting...\n");
+        return;
+    }
+
+    // This is not the most efficient algorithm; there is a lot of overhead in the read and write functions, and it could be improved by reading all the sectors at once. However, the current uses the least momory since it only saves one buffer at a time.
+    for (u16 i = 0; i < n_sectors; ++i) {
+        u16 *input_sector = drive_read (input, i * 512, 512);
+
+        drive_write (output, i * 512, 512, input_sector);
+
+        free (input_sector);
+    }
 }
 
 void console_no_such_command (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
