@@ -43,3 +43,13 @@ char getc () {
 
     return c;
 }
+
+/*
+ * DRIVES
+ */
+
+Stdio_drives_list *lsdrives (void) {
+    Stdio_drives_list *list = 0;
+    interrupt (SOFTINT_LSDRIVES, (u16)&list, 0, 0);
+    return list;
+}

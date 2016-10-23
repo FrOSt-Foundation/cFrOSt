@@ -18,6 +18,7 @@ static void stdio_getc_handler (u16 UNUSED (msg), u16 raw_ptr, u16 UNUSED (arg2)
 static void mm_malloc_handler (u16 UNUSED (msg), u16 size, u16 raw_ptr, u16 UNUSED (arg3));
 static void mm_free_handler (u16 UNUSED (msg), u16 raw_ptr, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_kill_handler (u16 UNUSED (msg), u16 pid, u16 return_value, u16 UNUSED (arg3));
+static void scheduler_lsdrives_handler (u16 UNUSED (msg), u16 drives_list, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_add_process_handler (u16 UNUSED (msg), u16 location, u16 name, u16 UNUSED (arg3));
 static void scheduler_get_processes_list_handler (u16 UNUSED (msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3);
 
@@ -37,6 +38,7 @@ Int_handler *int_handler_allocate (u16 nb_hardware) {
     int_table[SOFTINT_MALLOC] = mm_malloc_handler;
     int_table[SOFTINT_FREE] = mm_free_handler;
     int_table[SOFTINT_KILL] = scheduler_kill_handler;
+    int_table[SOFTINT_LSDRIVES] = scheduler_lsdrives_handler;
     int_table[SOFTINT_ADDPROCESS] = scheduler_add_process_handler;
     int_table[SOFTINT_GET_PROCESSES_LIST] = scheduler_get_processes_list_handler;
     return int_table + __SOFTINT_NB;
@@ -103,6 +105,11 @@ static void mm_free_handler (u16 UNUSED (msg), u16 raw_ptr, u16 UNUSED (arg2), u
 static void scheduler_kill_handler (u16 UNUSED (msg), u16 pid, u16 raw_ptr, u16 UNUSED (arg3)) {
     u16 *return_value = (u16 *)raw_ptr;
     *return_value = scheduler_kill (pid);
+}
+
+static void scheduler_lsdrives_handler (u16 UNUSED (msg), u16 drives_list, u16 UNUSED (arg2), u16 UNUSED (arg3)) {
+    Stdio_kdrives_list **list = (Stdio_kdrives_list **)drives_list;
+    *list = stdio_drives_list;
 }
 
 static void scheduler_add_process_handler (u16 UNUSED (msg), u16 location, u16 name, u16 UNUSED (arg3)) {

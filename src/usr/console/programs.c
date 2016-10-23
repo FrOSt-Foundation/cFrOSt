@@ -49,6 +49,21 @@ void console_kill (u16 n_arguments, char **arguments) {
     }
 }
 
+void console_lsdrives (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
+    char *buffer = (char *)malloc (6);
+
+    Stdio_drives_list *list = lsdrives ();
+    for (u16 i = 0; i < list->n_drives; ++i) {
+        uitoa (i, buffer);
+        printf (buffer);
+        printf (": ");
+        printf (list->types[i]);
+        printf ("\n");
+    }
+
+    free ((u16 *)buffer);
+}
+
 void console_no_such_command (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
     printf ("Error: No such command.");
 }

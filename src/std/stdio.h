@@ -14,3 +14,13 @@ void clear (void);
 //INPUT
 
 char getc (void);
+
+// DRIVES
+
+// Stdio_drives_list must be identical to Stdio_kdrives_list defined in src/kernel/stdio/stdio.h.
+typedef struct {
+    u16 n_drives;
+    char **types;
+} Stdio_drives_list;
+
+Stdio_drives_list *lsdrives (void);
