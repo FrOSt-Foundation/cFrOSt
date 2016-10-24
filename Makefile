@@ -64,7 +64,7 @@ run: all tools/DCPU-Toolchain.jar
 	cd tools && ./run.sh
 
 clean:
-	rm -rf bin/
+	rm -rf bin/ tools/assembler tools/emulator tools/DCPU-Toolchain* tools/native
 
 format:
 	find src -name "*.c" -exec clang-format -i --style=file {} \;
