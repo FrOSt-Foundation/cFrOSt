@@ -36,13 +36,14 @@ int main (void) {
 
     stdio_init_output (lem1802, &driver_lem1802);
     stdio_init_input (generic_keyboard, &driver_keyboard);
+    stdio_init_drives_list ();
 
     for (u16 i = 0; i < driver_lem1802.devices_list.n_devices; ++i) {
         stdio_set_current_output (i);
         clear ();
     }
 
-    add_process ((void*)&console_main, "console");
+    add_process ((void *)&console_main, "console");
 
     if (driver_lem1802.devices_list.n_devices > 1) {
         for (u16 i = 0; i < driver_lem1802.devices_list.n_devices; ++i) {
