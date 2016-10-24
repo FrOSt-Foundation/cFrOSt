@@ -13,10 +13,11 @@ __attribute__ ((noreturn)) void kpanic (char *data) {
     }
 
     asm_log ((u16)data);
-    asm_brk (0);
-    asm_iaq (1);
+    // Disable interrupts
+    asm_iaq (0);
+    asm_ias (0);
 
-    // TODO: replace by HLT when supported
-    while (1) {
+    while (true) {
+        asm_hlt ();
     }
 }
