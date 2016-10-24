@@ -4,36 +4,54 @@
 #include "std/stdlib.h"
 #include "std/string.h"
 #include "types.h"
-#include "types.h"
 #include <stdbool.h>
 
 #include "programs.h"
 
-static const char *console_commands[__PROGRAMS_SIZE];
+#define CURSOR_CHAR (char)0xDF
+#define INPUT_BUFFER_SIZE 29
 
-static Console_program *console_commands_ptr;
+typedef void (*ProgramMain) (u16 n_arguments, char **arguments);
 
-void console_main (void) __attribute__ ((noreturn));
+typedef struct {
+    const char *name;
+    ProgramMain main;
+} Program;
+
+static const Program builtins[] = {
+    {
+    .name = "help",
+    .main = console_help,
+    },
+    {
+    .name = "about",
+    .main = console_about,
+    },
+    {
+    .name = "echo",
+    .main = console_echo,
+    },
+    {
+    .name = "ps",
+    .main = console_ps,
+    },
+    {
+    .name = "kill",
+    .main = console_kill,
+    },
+    {
+    .name = "lsdrives",
+    .main = console_lsdrives,
+    },
+    {
+    .name = "dd",
+    .main = console_dd,
+    },
+};
+
+static const u16 NB_PROGRAMS = sizeof (builtins);
 
 void console_main () {
-    console_commands[0] = "help";
-    console_commands[1] = "about";
-    console_commands[2] = "echo";
-    console_commands[3] = "ps";
-    console_commands[4] = "kill";
-    console_commands[5] = "lsdrives";
-    console_commands[6] = "dd";
-
-    console_commands_ptr = (Console_program *)malloc (__PROGRAMS_SIZE);
-    console_commands_ptr[PROGRAM_HELP] = console_help;
-    console_commands_ptr[PROGRAM_ABOUT] = console_about;
-    console_commands_ptr[PROGRAM_ECHO] = console_echo;
-    console_commands_ptr[PROGRAM_PS] = console_ps;
-    console_commands_ptr[PROGRAM_KILL] = console_kill;
-    console_commands_ptr[PROGRAM_LSDRIVES] = console_lsdrives;
-    console_commands_ptr[PROGRAM_DD] = console_dd;
-    console_commands_ptr[PROGRAM_NO_SUCH_COMMAND] = console_no_such_command;
-
     clear ();
     printf ("Welcome to FrOSt. Type 'help' if you are lost.");
     move_cursor (0, 11);
@@ -101,16 +119,16 @@ void console_main () {
                 }
 
                 u16 command_found = false;
-                for (u16 i = 0; i < __PROGRAMS_SIZE - 1; ++i) {
-                    if (strcmp (input_buffer, console_commands[i]) == 0) {
-                        console_commands_ptr[i](n_arguments, arguments);
+                for (u16 i = 0; i < NB_PROGRAMS - 1; ++i) {
+                    if (strcmp (input_buffer, builtins[i].name) == 0) {
+                        builtins[i].main (n_arguments, arguments);
                         command_found = true;
                         break;
                     }
                 }
 
                 if (!command_found)
-                    console_commands_ptr[PROGRAM_NO_SUCH_COMMAND](0, NULL);
+                    console_no_such_command (0, NULL);
 
                 for (u16 i = 0; i < n_arguments; ++i) {
                     free ((u16 *)arguments[i]);

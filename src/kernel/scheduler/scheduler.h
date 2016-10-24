@@ -5,11 +5,18 @@
 
 #define STACK_SIZE 0x100
 
+typedef enum {
+    PROCESS_RUNNING,
+    PROCESS_READY,
+    PROCESS_WAITING,
+} Status;
+
 typedef struct {
     u16 sp;
     u16 *stack;
     char *name;
     u16 pid;
+    Status status;
 } Process;
 
 extern u16 running_process;
