@@ -64,6 +64,9 @@ run: all tools/DCPU-Toolchain.jar
 	cd tools && ./run.sh
 
 clean:
+	rm -rf bin/
+
+cleanall:
 	rm -rf bin/ tools/assembler tools/emulator tools/DCPU-Toolchain* tools/native
 
 format:
