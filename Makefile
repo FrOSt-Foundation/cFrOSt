@@ -5,6 +5,7 @@ ifeq ($(AS), as)
 	AS := tools/assembler
 endif
 
+ASFLAGS += --remove-unused
 CPPFLAGS += -MP -MD
 CFLAGS += -ccc-host-triple dcpu16 -Oz -Weverything -fcolor-diagnostics -std=c11 -I src -I include
 
