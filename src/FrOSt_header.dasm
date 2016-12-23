@@ -123,27 +123,6 @@ set PC, LOADER_LOCATION
 
 :os_length_plus_one .dat 0
 
-;;;FONCTION write (0x1)
-;;;DESCRIPTION Writes the text in arguments
-;;;ARG B Address of the string
-;;;ARG I Where to write (begins at 0x8000)
-;;;If Z = 0xABAB, then writing in highlighted mode.
-:write
-    set PUSH, I
-    :write_loop0
-        set [I], [B]
-        ifn Z, 0xABAB
-            bor [I], [color]
-        ife Z, 0xABAB
-            bor [I], [color_hl]
-        add I, 1
-        add B, 1
-        ifn [B], 0
-            set PC, write_loop0
-
-    set I, POP
-    set PC, POP
-
 :detect_peripherals
     HWN I
     SET J, 0
