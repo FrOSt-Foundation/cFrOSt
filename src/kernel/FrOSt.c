@@ -19,8 +19,8 @@
 #include "drivers/lem1802/lem1802.h"
 #include "drivers/mackapar/mackapar.h"
 
-#define N_DRIVERS 6
 static Driver *drivers[] = { &driver_iacm, &driver_lem1802, &driver_keyboard, &driver_clock, &driver_m35fd, &driver_m525hd };
+#define N_DRIVERS (sizeof(drivers) / sizeof(drivers[0]))
 
 int main (void) {
     mm_init ();
