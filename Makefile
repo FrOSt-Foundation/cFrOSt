@@ -49,6 +49,7 @@ bin/FrOSt.s: bin/FrOSt.c Makefile $(CC)
 	@$(COMPILE.c) -Wno-shadow -o $@ -S $<
 	@sed -i -re 's/rfi/rfi 0/i' $@
 	@sed -i -re "s/_L/_$(shell echo $@ | sed -re 's|/|_|g')/" $@
+	@sed -i -re 's/\b(_[a-zA-Z0-9_]+\.s[A-Z]+[0-9]+_[0-9]+)/.\1/g' $@
 
 bin/%.s: src/%.c Makefile $(CC)
 	@mkdir -p $(@D)
