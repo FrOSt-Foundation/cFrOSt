@@ -1,5 +1,6 @@
 #include "panic.h"
 #include "asm.h"
+#include "stdbool.h"
 
 __attribute__ ((noreturn)) void kpanic (char *data) {
     asm_log ((u16)data);
