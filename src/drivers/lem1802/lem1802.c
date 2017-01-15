@@ -72,12 +72,12 @@ u16 lem1802_update_function (void *data, u16 message, u16 arg1, u16 arg2) {
 
 void lem1802_load_buffer (Lem1802_driver_data *data, char *buffer) {
     for (u16 i = 0; i < 0x180; ++i) {
-        data->vram[i] = 0xF000 | buffer[i];
+        data->vram[i] = 0xF000 | (u16)buffer[i];
     }
 }
 
 void lem1802_putc (Lem1802_driver_data *data, char c, u16 offset) {
-    data->vram[offset] = 0xF000 | c;
+    data->vram[offset] = 0xF000 | (u16)c;
 }
 
 void lem1802_scroll (Lem1802_driver_data *data) {

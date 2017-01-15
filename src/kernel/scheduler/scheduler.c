@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "drivers/clock/clock.h"
+#include "drivers/iacm/iacm.h"
 #include "kernel/memory_manager/memory_manager.h"
 #include "kernel/panic/panic.h"
 #include "std/string.h"
@@ -12,8 +13,8 @@ Process **processes = NULL;
 
 void scheduler_start_asm ();
 
-void scheduler_start (Driver *driver_clock) {
-    clock_set_tickrate (driver_clock->devices_list.data[0], 2);
+void scheduler_start (Driver *clock) {
+    clock_set_tickrate (clock->devices_list.data[0], 2);
     if (n_processes == 0) {
         kpanic ("No processes added to scheduler!");
     }
@@ -96,6 +97,14 @@ u16 scheduler_kill (u16 pid) {
     }
 
     return false;
+}
+
+void scheduler_yield (void) {
+    if (n_processes == 1) {
+        asm_hlt ();
+    } else {
+        asm_int (0xFFFE, 0, 0, 0);
+    }
 }
 
 // Returns the number of processes, the list of PIDs in *p and the list of process names in *n

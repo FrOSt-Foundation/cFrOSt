@@ -1,4 +1,6 @@
 #include "stdio.h"
+#include "stdlib.h"
+
 #include "kernel/interrupt_handler/interrupt_handler.h"
 #include "types.h"
 
@@ -36,10 +38,53 @@ void clear () {
  */
 
 char getc () {
-    u16 c;
+    char c;
     do {
         interrupt (SOFTINT_GETC, (u16)&c, 0, 0);
+        if (c == '\0')
+            yield ();
     } while (c == '\0');
 
     return c;
+}
+
+/*
+ * DRIVES
+ */
+
+Stdio_drives_list *lsdrives (void) {
+    Stdio_drives_list *list = 0;
+    interrupt (SOFTINT_LSDRIVES, (u16)&list, 0, 0);
+    return list;
+}
+
+void *drive_read (u16 drive, u32 location, u16 length) {
+    void *return_value;
+    Drive_read_arguments *arguments = (Drive_read_arguments *)malloc (sizeof (Drive_read_arguments));
+    arguments->return_location = &return_value;
+    arguments->drive = drive;
+    arguments->location = location;
+    arguments->length = length;
+
+    interrupt (SOFTINT_DRIVEREAD, (u16)arguments, 0, 0);
+
+    free ((u16 *)arguments);
+
+    return return_value;
+}
+
+bool drive_write (u16 drive, u32 location, u16 length, u16 *data) {
+    bool return_value;
+    Drive_write_arguments *arguments = (Drive_write_arguments *)malloc (sizeof (Drive_write_arguments));
+    arguments->return_value = &return_value;
+    arguments->drive = drive;
+    arguments->location = location;
+    arguments->length = length;
+    arguments->data = data;
+
+    interrupt (SOFTINT_DRIVEWRITE, (u16)arguments, 0, 0);
+
+    free ((u16 *)arguments);
+
+    return return_value;
 }

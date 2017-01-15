@@ -2,6 +2,7 @@
 
 #include "drivers/keyboard/keyboard.h"
 #include "drivers/lem1802/lem1802.h"
+#include "drivers/mackapar/mackapar.h"
 #include "std/stdlib.h"
 #include "types.h"
 
@@ -12,6 +13,10 @@ static Stdio_input_type input_type = no_input;
 static u16 **output_data;
 static u16 current_output;
 static u16 current_input;
+
+char *type_m525hd = "m525hd";
+char *type_m35fd = "m35fd";
+Stdio_kdrives_list *stdio_drives_list;
 
 // You can init stdio with whatever output device you want!
 void stdio_init_output (Stdio_output_type t, Driver *d) {
@@ -154,4 +159,43 @@ char stdio_getc () {
     }
 
     return c;
+}
+
+
+/*
+ * Drive numbers are sequential. First, the m525hds, second, the m35fds. That way, we don't have to store a drives list, we can just find the mackapar data by reading the m525hds and m35fds Driver structs.
+ */
+
+void stdio_init_drives_list (void) {
+    stdio_drives_list = kmalloc (0, sizeof (Stdio_kdrives_list));
+
+    stdio_drives_list->n_drives = driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices;
+    stdio_drives_list->types = kmalloc (0, driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices);
+
+    for (u16 i = 0; i < driver_m525hd.devices_list.n_devices; ++i) {
+        stdio_drives_list->types[i] = type_m525hd;
+    }
+    for (u16 i = driver_m525hd.devices_list.n_devices; i < driver_m525hd.devices_list.n_devices + driver_m35fd.devices_list.n_devices; ++i) {
+        stdio_drives_list->types[i] = type_m35fd;
+    }
+}
+
+void *stdio_drive_read (u16 drive, u32 location, u16 length) {
+    if (drive < driver_m525hd.devices_list.n_devices) {
+        return mackapar_read (driver_m525hd.devices_list.data[drive], location, length);
+    } else if (drive < driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices) {
+        return mackapar_read (driver_m35fd.devices_list.data[drive - driver_m525hd.devices_list.n_devices], location, length);
+    } else {
+        return 0;
+    }
+}
+
+bool stdio_drive_write (u16 drive, u32 location, u16 length, u16 *data) {
+    if (drive < driver_m525hd.devices_list.n_devices) {
+        return mackapar_write (driver_m525hd.devices_list.data[drive], location, length, data);
+    } else if (drive < driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices) {
+        return mackapar_write (driver_m35fd.devices_list.data[drive - driver_m525hd.devices_list.n_devices], location, length, data);
+    } else {
+        return false;
+    }
 }

@@ -41,7 +41,7 @@ u16 keyboard_update_function (void *data, u16 message, u16 arg1, u16 UNUSED (arg
             keyboard_get_next (data);
             break;
         case KEYBOARD_IS_PRESSED:
-            return keyboard_is_pressed (data, arg1);
+            return keyboard_is_pressed (data, (char)arg1);
         case KEYBOARD_SET_INT_MSG:
             keyboard_set_int_msg (data, arg1);
             break;
