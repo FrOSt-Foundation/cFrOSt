@@ -25,7 +25,8 @@ void *clock_init (u16 clock, u16 UNUSED (int_number), Int_handler *UNUSED (int_h
     Clock_driver_data *data = kmalloc (0, sizeof (Clock_driver_data));
     data->clock = clock;
 
-    clock_set_int_msg (data, 0xFFFE);
+    // Uncomment this line to make the scheduler preemptive (but this prevents the clock interrupt to be used for anything else)
+    // clock_set_int_msg (data, 0xFFFE);
 
     return data;
 }
