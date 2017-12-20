@@ -101,7 +101,7 @@ u16 scheduler_kill (u16 pid) {
 
 void scheduler_yield (void) {
     if (n_processes == 1) {
-        asm_hlt ();
+        // asm_hlt (); // Uncomment when HLT fixed in emulator
     } else {
         asm_int (0xFFFE, 0, 0, 0);
     }
