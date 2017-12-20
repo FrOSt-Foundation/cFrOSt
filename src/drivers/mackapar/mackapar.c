@@ -94,10 +94,9 @@ void *mackapar_read (Mackapar_driver_data *data, u32 location, u16 length) {
     u16 sector = (u16) (location / WORDS_PER_SECTOR);
     u16 offset = (u16) (location % WORDS_PER_SECTOR);
 
-    u16 buffer_size = length + offset + ((length + offset) % WORDS_PER_SECTOR);
-    u16 n_sectors = buffer_size / WORDS_PER_SECTOR;
+    u16 n_sectors = (length + offset) / WORDS_PER_SECTOR + ((length + offset) % WORDS_PER_SECTOR == 0 ? 0 : 1);
 
-    u16 *buffer = kmalloc (0, buffer_size);
+    u16 *buffer = kmalloc (0, n_sectors * 512);
 
     for (u16 i = 0; i < n_sectors; ++i) {
         mackapar_read_sector (data, sector + i, buffer + i * WORDS_PER_SECTOR);

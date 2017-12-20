@@ -5,6 +5,7 @@
 #include "kernel/panic/panic.h"
 #include "kernel/scheduler/scheduler.h"
 #include "kernel/stdio/stdio.h"
+#include "kernel/fs/bbfs/bbfs.h"
 #include "types.h"
 
 #include "std/stdio.h"
@@ -37,6 +38,8 @@ int main (void) {
     stdio_init_output (lem1802, &driver_lem1802);
     stdio_init_input (generic_keyboard, &driver_keyboard);
     stdio_init_drives_list ();
+
+    bbfs_init ();
 
     for (u16 i = 0; i < driver_lem1802.devices_list.n_devices; ++i) {
         stdio_set_current_output (i);

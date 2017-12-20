@@ -23,9 +23,15 @@ typedef enum {
     __OUTPUTDATA_SIZE
 } Output_data;
 
+typedef enum {
+    M35FD,
+    M525HD
+} Stdio_kdrive_type;
+
 typedef struct {
     u16 n_drives;
-    char **types;
+    Stdio_kdrive_type *types;
+    u16 *length_sectors;
 } Stdio_kdrives_list;
 
 extern char *type_m525hd;
