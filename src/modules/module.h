@@ -1,14 +1,15 @@
 
 #ifndef _MODULE_H_
-# define _MODULE_H_
+#define _MODULE_H_
 
 #include "stdbool.h"
+#include "types.h"
 
 #define MODULE_LEN_NAME 8
 
 typedef struct {
-    void (*init)(void);
-    void (*clean)(void);
+    void (*init) (void);
+    void (*clean) (void);
     char name[MODULE_LEN_NAME];
 } Module;
 
@@ -19,10 +20,10 @@ typedef struct {
  *
  */
 
-bool module_load(const char name[MODULE_LEN_NAME], void (*init)(void), void (*clean)(void));
-void module_unload(const char name[MODULE_LEN_NAME]);
-void module_reload(const char name[MODULE_LEN_NAME]);
-void module_delete();
-char **module_get_names();
+bool module_load (const char name[MODULE_LEN_NAME], void (*init) (void), void (*clean) (void));
+void module_unload (const char name[MODULE_LEN_NAME]);
+void module_reload (const char name[MODULE_LEN_NAME]);
+void module_delete ();
+char **module_get_names ();
 
 #endif /* !_MODULE_H_ */

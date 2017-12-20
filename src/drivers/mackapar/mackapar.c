@@ -10,27 +10,27 @@ typedef enum {
 } Mackapar_action;
 
 Driver driver_m35fd = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0x24c5,
-                                     .hardware_id_b = 0x4fd5,
-                                     .hardware_version = 0xb,
-                                     .manufacturer_a = 0x7e91,
-                                     .manufacturer_b = 0x1eb3 },
+    .hardware_info = (Hardware_info){ .hardware_id_a = 0x24c5,
+                                      .hardware_id_b = 0x4fd5,
+                                      .hardware_version = 0xb,
+                                      .manufacturer_a = 0x7e91,
+                                      .manufacturer_b = 0x1eb3 },
     .update_function = mackapar_update_function,
     .init_function = mackapar_init_m35fd,
     .destroy_function = mackapar_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
+    .devices_list = (Devices_list){ .n_devices = 0 }
 };
 
 Driver driver_m525hd = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0x525d,
-                                     .hardware_id_b = 0x4ac5,
-                                     .hardware_version = 1,
-                                     .manufacturer_a = 0x7e91,
-                                     .manufacturer_b = 0x1eb3 },
+    .hardware_info = (Hardware_info){ .hardware_id_a = 0x525d,
+                                      .hardware_id_b = 0x4ac5,
+                                      .hardware_version = 1,
+                                      .manufacturer_a = 0x7e91,
+                                      .manufacturer_b = 0x1eb3 },
     .update_function = mackapar_update_function,
     .init_function = mackapar_init_m525hd,
     .destroy_function = mackapar_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
+    .devices_list = (Devices_list){ .n_devices = 0 }
 };
 void *mackapar_init_m35fd (u16 mackapar, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {
     return mackapar_init (mackapar, MACKAPAR_M35FD);

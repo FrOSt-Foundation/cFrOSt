@@ -13,15 +13,15 @@ typedef enum {
 void iacm_int_handler (u16 message, u16 UNUSED (arg1), u16 arg2, u16 arg3);
 
 Driver driver_iacm = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0xdacc,
-                                     .hardware_id_b = 0x11e0,
-                                     .hardware_version = 0x0004,
-                                     .manufacturer_a = 0x0000, // Vendor code is defined as "(Various)"
-                                     .manufacturer_b = 0x0000 },
+    .hardware_info = (Hardware_info){ .hardware_id_a = 0xdacc,
+                                      .hardware_id_b = 0x11e0,
+                                      .hardware_version = 0x0004,
+                                      .manufacturer_a = 0x0000, // Vendor code is defined as "(Various)"
+                                      .manufacturer_b = 0x0000 },
     .update_function = iacm_update_function,
     .init_function = iacm_init,
     .destroy_function = iacm_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
+    .devices_list = (Devices_list){ .n_devices = 0 }
 };
 
 void iacm_int_handler (u16 message, u16 UNUSED (arg1), u16 UNUSED (arg2), u16 UNUSED (arg3)) {

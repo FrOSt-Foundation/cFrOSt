@@ -90,7 +90,7 @@ void kfree_pid (u16 pid) {
 
     do {
         if (chunk->user == pid)
-            kfree(chunk);
-        chunk = next(chunk);
-    } while (chunk < (Kmalloc_header*)MEMORY_END);
+            kfree (chunk);
+        chunk = next (chunk);
+    } while (chunk < (Kmalloc_header *)MEMORY_END);
 }

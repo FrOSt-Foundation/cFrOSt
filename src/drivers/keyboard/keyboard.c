@@ -11,15 +11,15 @@ typedef enum {
 } keyboard_action;
 
 Driver driver_keyboard = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0x7406,
-                                     .hardware_id_b = 0x30cf,
-                                     .hardware_version = 1,
-                                     .manufacturer_a = 0x8b36,
-                                     .manufacturer_b = 0x1c6c },
+    .hardware_info = (Hardware_info){ .hardware_id_a = 0x7406,
+                                      .hardware_id_b = 0x30cf,
+                                      .hardware_version = 1,
+                                      .manufacturer_a = 0x8b36,
+                                      .manufacturer_b = 0x1c6c },
     .update_function = keyboard_update_function,
     .init_function = keyboard_init,
     .destroy_function = keyboard_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
+    .devices_list = (Devices_list){ .n_devices = 0 }
 };
 
 void *keyboard_init (u16 keyboard, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {

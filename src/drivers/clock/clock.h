@@ -2,7 +2,6 @@
 
 #include "drivers/hardware.h"
 #include "kernel/interrupt_handler/interrupt_handler.h"
-#include "kernel/interrupt_handler/interrupt_handler.h"
 #include "types.h"
 
 typedef enum {

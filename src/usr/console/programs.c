@@ -57,8 +57,17 @@ void console_lsdrives (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
         uitoa (i, buffer);
         printf (buffer);
         printf (": ");
-        printf (list->types[i]);
-        printf ("\n");
+        switch (list->types[i]) {
+            case STDIO_DRIVE_TYPE_M35FD:
+                printf ("M35FD (");
+                break;
+            case STDIO_DRIVE_TYPE_M525HD:
+                printf ("M525HD (");
+                break;
+        }
+        uitoa (list->length_sectors[i], buffer);
+        printf (buffer);
+        printf (" sectors)\n");
     }
 
     free ((u16 *)buffer);

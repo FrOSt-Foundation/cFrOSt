@@ -1,11 +1,11 @@
 #include "asm.h"
 #include "drivers/hardware.h"
 #include "interrupt_handler/interrupt_handler.h"
+#include "kernel/fs/bbfs/bbfs.h"
 #include "kernel/memory_manager/memory_manager.h"
 #include "kernel/panic/panic.h"
 #include "kernel/scheduler/scheduler.h"
 #include "kernel/stdio/stdio.h"
-#include "kernel/fs/bbfs/bbfs.h"
 #include "types.h"
 
 #include "std/stdio.h"
@@ -21,7 +21,7 @@
 #include "drivers/mackapar/mackapar.h"
 
 static Driver *drivers[] = { &driver_iacm, &driver_lem1802, &driver_keyboard, &driver_clock, &driver_m35fd, &driver_m525hd };
-#define N_DRIVERS (sizeof(drivers) / sizeof(drivers[0]))
+#define N_DRIVERS (sizeof (drivers) / sizeof (drivers[0]))
 
 int main (void) {
     mm_init ();

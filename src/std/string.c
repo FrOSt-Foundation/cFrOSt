@@ -86,7 +86,7 @@ void reverse (char *s) {
     }
 }
 
-char *strdup(const char *s) {
-    char *tmp = malloc(strlen(s));
-    return strcpy(tmp, s);
+char *strdup (const char *s) {
+    char *tmp = malloc (strlen (s));
+    return strcpy (tmp, s);
 }

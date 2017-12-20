@@ -1,9 +1,9 @@
 
 #ifndef _TTY_H_
-# define _TTY_H_
+#define _TTY_H_
 
-#include "types.h"
 #include "kernel/scheduler/scheduler.h"
+#include "types.h"
 #define TERMINAL_MAX_BUF_SIZE 16
 
 typedef struct {
@@ -26,6 +26,6 @@ typedef struct VConsole {
 
 extern Terminal *current_term;
 
-void putc_console(char);
+void putc_console (char);
 
 #endif /* !_TTY_H_ */

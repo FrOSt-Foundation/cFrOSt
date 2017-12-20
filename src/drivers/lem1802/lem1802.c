@@ -10,15 +10,15 @@ typedef enum {
 } lem1802_action;
 
 Driver driver_lem1802 = (Driver){
-    .hardware_info = (Hardware_info){.hardware_id_a = 0xf615,
-                                     .hardware_id_b = 0x7349,
-                                     .hardware_version = 0x1802,
-                                     .manufacturer_a = 0x8b36,
-                                     .manufacturer_b = 0x1c6c },
+    .hardware_info = (Hardware_info){ .hardware_id_a = 0xf615,
+                                      .hardware_id_b = 0x7349,
+                                      .hardware_version = 0x1802,
+                                      .manufacturer_a = 0x8b36,
+                                      .manufacturer_b = 0x1c6c },
     .update_function = lem1802_update_function,
     .init_function = lem1802_init,
     .destroy_function = lem1802_destroy,
-    .devices_list = (Devices_list){.n_devices = 0 }
+    .devices_list = (Devices_list){ .n_devices = 0 }
 };
 
 void *lem1802_init (u16 monitor, u16 UNUSED (int_number), Int_handler *UNUSED (int_handler_location)) {

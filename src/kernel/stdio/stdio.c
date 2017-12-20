@@ -174,17 +174,16 @@ void stdio_init_drives_list (void) {
     stdio_drives_list->length_sectors = kmalloc (0, driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices);
 
     for (u16 i = 0; i < driver_m525hd.devices_list.n_devices; ++i) {
-        stdio_drives_list->types[i] = M525HD;
+        stdio_drives_list->types[i] = STDIO_KDRIVE_TYPE_M525HD;
         stdio_drives_list->length_sectors[i] = 5120;
     }
     for (u16 i = driver_m525hd.devices_list.n_devices; i < driver_m525hd.devices_list.n_devices + driver_m35fd.devices_list.n_devices; ++i) {
-        stdio_drives_list->types[i] = M35FD;
+        stdio_drives_list->types[i] = STDIO_KDRIVE_TYPE_M35FD;
         stdio_drives_list->length_sectors[i] = 1440;
     }
 }
 
 void *stdio_drive_read (u16 drive, u32 location, u16 length) {
-    asm_log(0xcafe); asm_log(location); asm_log(length);
     if (drive < driver_m525hd.devices_list.n_devices) {
         return mackapar_read (driver_m525hd.devices_list.data[drive], location, length);
     } else if (drive < driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices) {

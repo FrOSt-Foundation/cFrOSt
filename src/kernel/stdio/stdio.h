@@ -1,7 +1,6 @@
 #pragma once
 
 #include "drivers/hardware.h"
-#include "drivers/hardware.h"
 #include "stdbool.h"
 #include "types.h"
 
@@ -24,8 +23,8 @@ typedef enum {
 } Output_data;
 
 typedef enum {
-    M35FD,
-    M525HD
+    STDIO_KDRIVE_TYPE_M35FD,
+    STDIO_KDRIVE_TYPE_M525HD
 } Stdio_kdrive_type;
 
 typedef struct {

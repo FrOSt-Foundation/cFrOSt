@@ -11,7 +11,7 @@ typedef struct {
 
 typedef struct {
     u16 id;
-    Bbfs_header* header;
+    Bbfs_header *header;
 } Bbfs_drive;
 
 typedef struct {
@@ -21,4 +21,4 @@ typedef struct {
 
 extern Bbfs_drives_list bbfs_drives_list;
 
-void bbfs_init(void);
+void bbfs_init (void);
