@@ -172,14 +172,17 @@ void stdio_init_drives_list (void) {
     stdio_drives_list->n_drives = driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices;
     stdio_drives_list->types = kmalloc (0, driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices);
     stdio_drives_list->length_sectors = kmalloc (0, driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices);
+    stdio_drives_list->filesystems = kmalloc (0, driver_m35fd.devices_list.n_devices + driver_m525hd.devices_list.n_devices);
 
     for (u16 i = 0; i < driver_m525hd.devices_list.n_devices; ++i) {
         stdio_drives_list->types[i] = STDIO_KDRIVE_TYPE_M525HD;
         stdio_drives_list->length_sectors[i] = 5120;
+        stdio_drives_list->filesystems[i] = KFS_NONE;
     }
     for (u16 i = driver_m525hd.devices_list.n_devices; i < driver_m525hd.devices_list.n_devices + driver_m35fd.devices_list.n_devices; ++i) {
         stdio_drives_list->types[i] = STDIO_KDRIVE_TYPE_M35FD;
         stdio_drives_list->length_sectors[i] = 1440;
+        stdio_drives_list->filesystems[i] = KFS_NONE;
     }
 }
 

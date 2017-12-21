@@ -22,15 +22,22 @@ typedef enum {
     __OUTPUTDATA_SIZE
 } Output_data;
 
+// Stdio_kdrives_list, Stdio_kfs and Stdio_kdrive_type must be identical to Stdio_drives_list, Stdio_fs and Stdio_drive_type defined in src/std/stdio/stdio.h.
 typedef enum {
     STDIO_KDRIVE_TYPE_M35FD,
     STDIO_KDRIVE_TYPE_M525HD
 } Stdio_kdrive_type;
 
+typedef enum {
+    KFS_NONE,
+    KFS_BBFS
+} Stdio_kfs;
+
 typedef struct {
     u16 n_drives;
     Stdio_kdrive_type *types;
     u16 *length_sectors;
+    Stdio_kfs *filesystems;
 } Stdio_kdrives_list;
 
 extern char *type_m525hd;

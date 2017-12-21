@@ -67,7 +67,16 @@ void console_lsdrives (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
         }
         uitoa (list->length_sectors[i], buffer);
         printf (buffer);
-        printf (" sectors)\n");
+        printf (" sec, fs: ");
+        switch (list->filesystems[i]) {
+            case FS_NONE:
+                printf ("None");
+                break;
+            case FS_BBFS:
+                printf ("BBFS");
+                break;
+        }
+        printf (")\n");
     }
 
     free ((u16 *)buffer);

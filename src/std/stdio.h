@@ -18,16 +18,22 @@ char getc (void);
 
 // DRIVES
 
-// Stdio_drives_list and Stdio_drive_type must be identical to Stdio_kdrives_list and Stdio_kdrive_type defined in src/kernel/stdio/stdio.h.
+// Stdio_drives_list, Stdio_fs and Stdio_drive_type must be identical to Stdio_kdrives_list, Stdio_kfs and Stdio_kdrive_type defined in src/kernel/stdio/stdio.h.
 typedef enum {
     STDIO_DRIVE_TYPE_M35FD,
     STDIO_DRIVE_TYPE_M525HD
 } Stdio_drive_type;
 
+typedef enum {
+    FS_NONE,
+    FS_BBFS
+} Stdio_fs;
+
 typedef struct {
     u16 n_drives;
     Stdio_drive_type *types;
     u16 *length_sectors;
+    Stdio_fs *filesystems;
 } Stdio_drives_list;
 
 Stdio_drives_list *lsdrives (void);

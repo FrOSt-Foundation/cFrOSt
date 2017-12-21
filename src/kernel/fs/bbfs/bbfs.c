@@ -44,5 +44,7 @@ void bbfs_init (void) {
             .header = bbfs_header
         };
         bbfs_drives_list.drives[bbfs_drives_list.n_drives - 1] = bbfs_drive;
+
+        stdio_drives_list->filesystems[drive] = KFS_BBFS;
     }
 }
