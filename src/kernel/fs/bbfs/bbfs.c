@@ -41,10 +41,22 @@ void bbfs_init (void) {
 
         Bbfs_drive bbfs_drive = {
             .id = drive,
-            .header = bbfs_header
+            .header = bbfs_header,
+            .n_sectors = n_sectors
         };
         bbfs_drives_list.drives[bbfs_drives_list.n_drives - 1] = bbfs_drive;
 
         stdio_drives_list->filesystems[drive] = KFS_BBFS;
     }
+}
+
+void bbfs_shutdown (void) {
+    for (u16 i = 0; i < bbfs_drives_list.n_drives; ++i) {
+        bbfs_sync (&bbfs_drives_list.drives[i]);
+    }
+}
+
+void bbfs_sync (Bbfs_drive *drive) {
+    stdio_drive_write (drive->id, 512 + 6, drive->n_sectors / 16, drive->header->free_mask);
+    stdio_drive_write (drive->id, 512 + 6 + drive->n_sectors / 16, drive->n_sectors, drive->header->fat);
 }

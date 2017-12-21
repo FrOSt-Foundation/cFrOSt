@@ -1,8 +1,9 @@
 #include "scheduler.h"
 #include <stdbool.h>
 
-#include "drivers/clock/clock.h"
 #include "drivers/iacm/iacm.h"
+#include "drivers/lem1802/lem1802.h"
+#include "kernel/fs/bbfs/bbfs.h"
 #include "kernel/memory_manager/memory_manager.h"
 #include "kernel/panic/panic.h"
 #include "std/string.h"
@@ -11,16 +12,7 @@ u16 running_process = 0;
 u16 n_processes = 0;
 Process **processes = NULL;
 
-void scheduler_start_asm ();
-
-void scheduler_start (Driver *clock) {
-    clock_set_tickrate (clock->devices_list.data[0], 2);
-    if (n_processes == 0) {
-        kpanic ("No processes added to scheduler!");
-    }
-
-    scheduler_start_asm ();
-}
+void scheduler_start ();
 
 void scheduler_add_process (void *location, char *name) {
     static u16 pid = 1;
@@ -54,7 +46,18 @@ void scheduler_add_process (void *location, char *name) {
 // You can use PID 0 to kill your own program
 u16 scheduler_kill (u16 pid) {
     if (n_processes == 1) {
-        kpanic ("Last process killed");
+        bbfs_shutdown ();
+
+        if (driver_lem1802.devices_list.n_devices != 0) {
+            for (u16 i = 0; i < driver_lem1802.devices_list.n_devices; ++i) {
+                stdio_set_current_output (i);
+                stdio_clear ();
+                stdio_printf ("You can safely shut down the system.");
+            }
+        }
+        while (1) {
+            asm_hlt ();
+        }
     }
 
     if (pid == 0)

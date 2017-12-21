@@ -73,14 +73,5 @@ int main (void) {
         stdio_set_current_output ((u16) (c - '0' - 1));
     }
 
-    scheduler_start (&driver_clock);
-
-    if (driver_lem1802.devices_list.n_devices != 0) {
-        for (u16 i = 0; i < driver_lem1802.devices_list.n_devices; ++i) {
-            stdio_set_current_output (i);
-            printf ("You can safely shut down the system.");
-        }
-    }
-    while (1) {
-    }
+    scheduler_start ();
 }

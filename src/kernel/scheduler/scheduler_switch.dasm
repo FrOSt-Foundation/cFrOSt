@@ -23,7 +23,7 @@
 
     add [running_process], 1
 
-    :scheduler_start_asm
+    :scheduler_start
     ife [running_process], [n_processes]
         set [running_process], 0
     set A, [processes]

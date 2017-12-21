@@ -26,7 +26,9 @@ extern u16 running_process;
 extern u16 n_processes;
 extern Process **processes;
 
-void scheduler_start (Driver *driver_clock);
+extern void *scheduler_end;
+
+void scheduler_start ();
 void scheduler_add_process (void *location, char *name);
 void scheduler_switch (void);
 void scheduler_abort (void);
