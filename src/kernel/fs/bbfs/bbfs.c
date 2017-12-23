@@ -63,6 +63,7 @@ void bbfs_expand_list (void) {
 }
 
 void bbfs_format (u16 d) {
+    // Find out if a BBFS structure already exists for this drive
     bool drive_already_formatted = false;
     Bbfs_drive *drive = NULL;
     for (u16 i = 0; i < bbfs_drives_list.n_drives; ++i) {
@@ -72,6 +73,7 @@ void bbfs_format (u16 d) {
         }
     }
 
+    // Allocate new structures
     if (!drive_already_formatted) {
         bbfs_expand_list ();
         drive = &bbfs_drives_list.drives[bbfs_drives_list.n_drives - 1];
@@ -82,6 +84,7 @@ void bbfs_format (u16 d) {
         drive->header->fat = kmalloc (0, drive->n_sectors);
     }
 
+    // Set FAT and free mask to free
     drive->header->version = 0xBF55;
     for (u16 i = 0; i < drive->n_sectors / 16; ++i) {
         drive->header->free_mask[i] = 0xFFFF;
@@ -90,6 +93,10 @@ void bbfs_format (u16 d) {
         drive->header->fat[i] = 0xFFFF;
     }
 
+    // Update drives list
+    stdio_drives_list->filesystems[d] = KFS_BBFS;
+
+    // Save to disk
     if (!bbfs_sync (drive))
         kpanic ("Could not sync new BBFS drive");
 }
