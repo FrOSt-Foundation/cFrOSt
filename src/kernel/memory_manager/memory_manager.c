@@ -76,11 +76,14 @@ void kfree (void *addr) {
     Kmalloc_header *chunk = get_header (addr);
     chunk->user = MEMORY_OWNER_FREE;
 
+    free_mem += chunk->size;
+
     Kmalloc_header *other;
     do {
         other = next (chunk);
         if (other->user == MEMORY_OWNER_FREE) {
             chunk->size += get_real_size (other->size);
+            free_mem += 2;
         }
     } while (other < (Kmalloc_header *)MEMORY_END && other->user == MEMORY_OWNER_FREE);
 }
