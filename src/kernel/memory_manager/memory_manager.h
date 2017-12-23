@@ -23,6 +23,7 @@ typedef struct {
 } Kmalloc_header;
 
 void mm_init (void);
+u16 kget_free_memory(void);
 void *kmalloc (u16 owner, u16 size);
 void kfree (void *block);
 void kfree_pid (u16 pid);

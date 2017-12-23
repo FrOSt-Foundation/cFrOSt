@@ -1,5 +1,7 @@
 #include "bbfs.h"
 
+#include "kernel/panic/panic.h"
+
 Bbfs_drives_list bbfs_drives_list = {
     .n_drives = 0,
     .drives = NULL
@@ -12,31 +14,23 @@ void bbfs_init (void) {
 
     for (u16 drive = 0; drive < stdio_drives_list->n_drives; ++drive) {
         u16 n_sectors = stdio_drives_list->length_sectors[drive];
-        u16 header_length = 6 + n_sectors / 16 + n_sectors;
-        u16 header_length_sectors = header_length / 512 + (header_length % 512 == 0 ? 0 : 1);
 
         // We read the BBFS version into a fresh struct to minimize kmallocs.
         Bbfs_header *bbfs_header = (Bbfs_header *)stdio_drive_read (drive, 512, sizeof (Bbfs_header));
 
         if (bbfs_header->version != 0xBF55) {
+            kfree (bbfs_header);
             continue;
         }
 
         bbfs_header->free_mask = stdio_drive_read (drive, 512 + 6, n_sectors / 16);
-        bbfs_header->fat = stdio_drive_read (drive, 512 + 6 + n_sectors / 16, header_length_sectors * 512 - 6 - n_sectors / 16);
+        bbfs_header->fat = stdio_drive_read (drive, 512 + 6 + n_sectors / 16, n_sectors);
 
         bbfs_drives_list.n_drives += 1;
         if (bbfs_drives_list.n_drives == 1) {
             bbfs_drives_list.drives = kmalloc (0, sizeof (Bbfs_drive));
         } else {
-            Bbfs_drive *old_drives = bbfs_drives_list.drives;
-            bbfs_drives_list.drives = kmalloc (0, bbfs_drives_list.n_drives * sizeof (Bbfs_drive));
-
-            for (u16 i = 0; i < (bbfs_drives_list.n_drives - 1) * sizeof (Bbfs_drive); i++) {
-                bbfs_drives_list.drives[i] = old_drives[i];
-            }
-
-            kfree (old_drives);
+            bbfs_expand_list ();
         }
 
         Bbfs_drive bbfs_drive = {
@@ -56,7 +50,52 @@ void bbfs_shutdown (void) {
     }
 }
 
-void bbfs_sync (Bbfs_drive *drive) {
-    stdio_drive_write (drive->id, 512 + 6, drive->n_sectors / 16, drive->header->free_mask);
-    stdio_drive_write (drive->id, 512 + 6 + drive->n_sectors / 16, drive->n_sectors, drive->header->fat);
+// Returns new size
+void bbfs_expand_list (void) {
+    Bbfs_drive *old_drives = bbfs_drives_list.drives;
+    bbfs_drives_list.drives = kmalloc (0, bbfs_drives_list.n_drives * sizeof (Bbfs_drive));
+
+    for (u16 i = 0; i < (bbfs_drives_list.n_drives - 1); i++) {
+        bbfs_drives_list.drives[i] = old_drives[i];
+    }
+
+    kfree (old_drives);
+}
+
+void bbfs_format (u16 d) {
+    bool drive_already_formatted = false;
+    Bbfs_drive *drive = NULL;
+    for (u16 i = 0; i < bbfs_drives_list.n_drives; ++i) {
+        if (bbfs_drives_list.drives[i].id == d) {
+            drive_already_formatted = true;
+            drive = &bbfs_drives_list.drives[i];
+        }
+    }
+
+    if (!drive_already_formatted) {
+        bbfs_expand_list ();
+        drive = &bbfs_drives_list.drives[bbfs_drives_list.n_drives - 1];
+        drive->id = d;
+        drive->n_sectors = stdio_drives_list->length_sectors[d];
+        drive->header = kmalloc (0, sizeof (Bbfs_header));
+        drive->header->free_mask = kmalloc (0, drive->n_sectors / 16);
+        drive->header->fat = kmalloc (0, drive->n_sectors);
+    }
+
+    drive->header->version = 0xBF55;
+    for (u16 i = 0; i < drive->n_sectors / 16; ++i) {
+        drive->header->free_mask[i] = 0xFFFF;
+    }
+    for (u16 i = 0; i < drive->n_sectors; ++i) {
+        drive->header->fat[i] = 0xFFFF;
+    }
+
+    if (!bbfs_sync (drive))
+        kpanic ("Could not sync new BBFS drive");
+}
+
+bool bbfs_sync (Bbfs_drive *drive) {
+    if (!stdio_drive_write (drive->id, 512, 1, &drive->header->version) || !stdio_drive_write (drive->id, 512 + 6, drive->n_sectors / 16, drive->header->free_mask) || !stdio_drive_write (drive->id, 512 + 6 + drive->n_sectors / 16, drive->n_sectors, drive->header->fat))
+        return false;
+    return true;
 }

@@ -28,8 +28,11 @@ void mm_init () {
     };
 }
 
-void *kmalloc (u16 owner, u16 size) {
+u16 kget_free_memory (void) {
+    return free_mem;
+}
 
+void *kmalloc (u16 owner, u16 size) {
     u16 real_size = get_real_size (size);
 
     free_mem -= real_size;
@@ -41,7 +44,7 @@ void *kmalloc (u16 owner, u16 size) {
     Kmalloc_header *chunk = MEMORY_START;
     while (true) {
         if ((void *)chunk >= MEMORY_END) {
-            kpanic ("Out of memory");
+            kpanic ("Out of memory (please make sure no memory corrruption occured)");
         }
 
         if (chunk->user == MEMORY_OWNER_FREE && chunk->size == real_size) {

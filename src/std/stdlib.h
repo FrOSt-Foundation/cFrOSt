@@ -3,6 +3,7 @@
 #include "types.h"
 
 void memcpy (const void *from, void *to, u16 size);
+u16 get_free_memory(void);
 void *malloc (u16 size);
 void free (u16 *block);
 void mclear (u16 *block);

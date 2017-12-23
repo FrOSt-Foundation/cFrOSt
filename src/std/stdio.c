@@ -88,3 +88,13 @@ bool drive_write (u16 drive, u32 location, u16 length, u16 *data) {
 
     return return_value;
 }
+
+bool drive_format (Stdio_fs filesystem, u16 drive) {
+    switch (filesystem) {
+        case FS_BBFS:
+            interrupt (SOFTINT_FORMAT_BBFS, drive, 0, 0);
+            return true;
+        case FS_NONE:
+            return false;
+    }
+}

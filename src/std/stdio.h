@@ -39,3 +39,4 @@ typedef struct {
 Stdio_drives_list *lsdrives (void);
 void *drive_read (u16 drive, u32 location, u16 length);
 bool drive_write (u16 drive, u32 location, u16 length, u16 *data);
+bool drive_format(Stdio_fs filesystem, u16 drive);

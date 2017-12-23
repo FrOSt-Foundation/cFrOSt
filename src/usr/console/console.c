@@ -32,6 +32,10 @@ static const Program builtins[] = {
     .main = console_echo,
     },
     {
+    .name = "mem",
+    .main = console_mem,
+    },
+    {
     .name = "ps",
     .main = console_ps,
     },
@@ -46,6 +50,10 @@ static const Program builtins[] = {
     {
     .name = "dd",
     .main = console_dd,
+    },
+    {
+    .name = "mkfs.bbfs",
+    .main = console_mkfs_bbfs,
     },
 };
 
@@ -130,9 +138,6 @@ void console_main () {
                 if (!command_found)
                     console_no_such_command (0, NULL);
 
-                for (u16 i = 0; i < n_arguments; ++i) {
-                    free ((u16 *)arguments[i]);
-                }
                 free ((u16 *)arguments);
 
                 printf ("\n");

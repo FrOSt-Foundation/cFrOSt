@@ -4,7 +4,7 @@
 #include "std/string.h"
 
 void console_help (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
-    printf ("Commands: help, about, echo, ps, kill, lsdrives, dd");
+    printf ("Commands: help, about, echo, mem, ps, kill, lsdrives, dd, mkfs.bbfs");
 }
 
 void console_about (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
@@ -18,6 +18,17 @@ void console_echo (u16 n_arguments, char **arguments) {
             printc (' ');
         }
     }
+}
+
+void console_mem (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
+    char *buffer = (char *)malloc (6);
+
+    u16 mem = get_free_memory ();
+    uitoa (mem, buffer);
+    printf (buffer);
+    printf (" words free");
+
+    free ((u16 *)buffer);
 }
 
 void console_ps (u16 UNUSED (n_arguments), char **UNUSED (arguments)) {
@@ -113,6 +124,40 @@ void console_dd (u16 n_arguments, char **arguments) {
         drive_write (output, i * 512, 512, input_sector);
 
         free (input_sector);
+    }
+}
+
+void console_mkfs_bbfs (u16 n_arguments, char **arguments) {
+    if (n_arguments != 1) {
+        printf ("Usage:\nmkfs.bbfs <drive>");
+        return;
+    }
+
+    u16 drive = atoui (arguments[0]);
+
+    Stdio_drives_list *list = lsdrives ();
+    if (drive >= list->n_drives) {
+        printf ("Error: No such drive.");
+        return;
+    }
+
+    printf ("Confirm you want to format disk ");
+    printf (arguments[0]);
+    printf ("? (y/n)\n");
+
+    char c = getc ();
+    if (c != 'y') {
+        printf ("Aborting...\n");
+        return;
+    } else {
+        printf ("Formatting... ");
+    }
+
+    bool success = drive_format (FS_BBFS, drive);
+    if (!success) {
+        printf ("Error!");
+    } else {
+        printf ("Success!");
     }
 }
 

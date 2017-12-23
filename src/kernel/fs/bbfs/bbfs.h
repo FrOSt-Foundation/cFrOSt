@@ -24,4 +24,6 @@ extern Bbfs_drives_list bbfs_drives_list;
 
 void bbfs_init (void);
 void bbfs_shutdown (void);
-void bbfs_sync (Bbfs_drive *drive);
+void bbfs_expand_list(void);
+void bbfs_format (u16 drive);
+bool bbfs_sync (Bbfs_drive *drive);
