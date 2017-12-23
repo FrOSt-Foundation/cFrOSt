@@ -149,7 +149,7 @@ bool mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *
 
         if ((length + offset) % WORDS_PER_SECTOR != 0) { // Like before, if we are writing to a partial sector, we need to save the rest
             previousData = mackapar_read (data, sector * WORDS_PER_SECTOR + length + offset, WORDS_PER_SECTOR - ((length + offset) % WORDS_PER_SECTOR));
-            for (u16 i = 0; i < WORDS_PER_SECTOR - ((length + offset) % WORDS_PER_SECTOR); ++i) {
+            for (u16 i = 0; i < ((length + offset) % WORDS_PER_SECTOR); ++i) {
                 md[length + offset + i] = previousData[i];
             }
             kfree (previousData);
@@ -159,7 +159,7 @@ bool mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *
         length = length + offset + ((length + offset) % WORDS_PER_SECTOR);
     }
 
-    for (u16 i = 0; i < length / WORDS_PER_SECTOR; ++i) {
+    for (u16 i = 0; i < length / WORDS_PER_SECTOR + (length % WORDS_PER_SECTOR != 0 ? 1 : 0); ++i) {
         mackapar_write_sector (data, sector + i, d + i * WORDS_PER_SECTOR);
         mackapar_wait_until_ready (data);
     }
@@ -172,7 +172,7 @@ bool mackapar_write (Mackapar_driver_data *data, u32 location, u16 length, u16 *
         mackapar_write_sector (data, sector + (length / WORDS_PER_SECTOR), msector);
         mackapar_wait_until_ready (data);
         kfree (msector);
-    } else if (offset != 0) {
+    } else if (offset != 0) { // If we allocated a new destination ourselves because of the offset
         kfree (d);
     }
 
