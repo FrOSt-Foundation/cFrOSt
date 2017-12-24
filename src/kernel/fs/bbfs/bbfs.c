@@ -245,7 +245,8 @@ Bbfs_error_code bbfs_write (Bbfs_file *file, u16 *from, u16 length) {
             file->drive->header->fat[file->sector] = 0x8000 | (length + file->offset);
         }
 
-        bbfs_sync (file->drive);
+        if (!bbfs_sync (file->drive))
+            return BBFS_ERROR_DISK;
     }
 
     while (length > 0) {
@@ -268,6 +269,46 @@ Bbfs_error_code bbfs_write (Bbfs_file *file, u16 *from, u16 length) {
             file->offset += length;
         }
     }
+
+    return BBFS_ERROR_NONE;
+}
+
+Bbfs_error_code bbfs_create (Bbfs_drive *drive, Bbfs_file *file) {
+    u16 sector = bbfs_find_free_sector (drive);
+    if (sector == 0xFFFF)
+        return BBFS_ERROR_DISK_FULL;
+
+    drive->header->fat[sector] = BBFS_END_OF_FILE_SENTINEL;
+    drive->header->free_mask[sector / 16] &= ~(1 << sector % 16);
+
+    file->drive = drive;
+    file->root_sector = sector;
+    file->mode = BBFS_MODE_READ;
+    file->sector = file->root_sector;
+    file->offset = 0;
+
+    if (!bbfs_sync (drive))
+        return BBFS_ERROR_DISK;
+
+    return BBFS_ERROR_NONE;
+}
+
+// Please note that deleting only deletes the reference from the FAT, not the file contents!
+Bbfs_error_code bbfs_delete (Bbfs_file *file) {
+    if (file->root_sector < file->drive->reserved_length)
+        return BBFS_ERROR_INVALID;
+
+    do {
+        u16 next_sector = file->drive->header->fat[file->sector];
+
+        file->drive->header->fat[file->sector] = 0xFFFF;
+        file->drive->header->free_mask[file->sector / 16] |= 1 << file->sector % 16;
+
+        file->sector = next_sector;
+    } while ((file->sector & BBFS_END_OF_FILE_SENTINEL) == 0);
+
+    if (!bbfs_sync (file->drive))
+        return BBFS_ERROR_DISK;
 
     return BBFS_ERROR_NONE;
 }

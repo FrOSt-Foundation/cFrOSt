@@ -28,6 +28,7 @@ typedef enum {
     BBFS_ERROR_NONE,
     BBFS_ERROR_WRONG_MODE,
     BBFS_ERROR_EOF,
+    BBFS_ERROR_INVALID,
     BBFS_ERROR_DISK,
     BBFS_ERROR_DISK_FULL,
 } Bbfs_error_code;
@@ -59,3 +60,5 @@ Bbfs_file bbfs_get_root_file(Bbfs_drive* drive);
 Bbfs_error_code bbfs_seek(Bbfs_file *file, u16 distance);
 Bbfs_error_code bbfs_read(Bbfs_file *file, u16* d, u16 length);
 Bbfs_error_code bbfs_write(Bbfs_file *file, u16* f, u16 length);
+Bbfs_error_code bbfs_create(Bbfs_drive *drive, Bbfs_file *file);
+Bbfs_error_code bbfs_delete(Bbfs_file *file);
