@@ -73,5 +73,6 @@ cleanall:
 
 format:
 	find src -name "*.c" -exec clang-format -i --style=file {} \;
+	find src -name "*.h" -exec clang-format -i --style=file {} \;
 
 .PHONY: all clean run

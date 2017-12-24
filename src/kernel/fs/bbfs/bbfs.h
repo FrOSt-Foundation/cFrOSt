@@ -34,8 +34,8 @@ typedef enum {
 } Bbfs_error_code;
 
 typedef u16 Bbfs_mode;
-#define BBFS_MODE_READ ((Bbfs_mode) 1)
-#define BBFS_MODE_WRITE ((Bbfs_mode) 2)
+#define BBFS_MODE_READ ((Bbfs_mode)1)
+#define BBFS_MODE_WRITE ((Bbfs_mode)2)
 
 typedef struct {
     Bbfs_drive *drive;
@@ -49,16 +49,16 @@ typedef struct {
 
 void bbfs_init (void);
 void bbfs_shutdown (void);
-void bbfs_expand_list(void);
+void bbfs_expand_list (void);
 void bbfs_format (u16 drive);
 bool bbfs_sync (Bbfs_drive *drive);
 
-u16 bbfs_find_free_sector(Bbfs_drive *drive);
+u16 bbfs_find_free_sector (Bbfs_drive *drive);
 
 u16 bbfs_file_size (Bbfs_file *file);
-Bbfs_file bbfs_get_root_file(Bbfs_drive* drive);
-Bbfs_error_code bbfs_seek(Bbfs_file *file, u16 distance);
-Bbfs_error_code bbfs_read(Bbfs_file *file, u16* d, u16 length);
-Bbfs_error_code bbfs_write(Bbfs_file *file, u16* f, u16 length);
-Bbfs_error_code bbfs_create(Bbfs_drive *drive, Bbfs_file *file);
-Bbfs_error_code bbfs_delete(Bbfs_file *file);
+Bbfs_file bbfs_get_root_file (Bbfs_drive *drive);
+Bbfs_error_code bbfs_seek (Bbfs_file *file, u16 distance);
+Bbfs_error_code bbfs_read (Bbfs_file *file, u16 *d, u16 length);
+Bbfs_error_code bbfs_write (Bbfs_file *file, u16 *f, u16 length);
+Bbfs_error_code bbfs_create (Bbfs_drive *drive, Bbfs_file *file);
+Bbfs_error_code bbfs_delete (Bbfs_file *file);
