@@ -1,5 +1,6 @@
 #pragma once
 
+#include "drivers/mackapar/mackapar.h"
 #include "kernel/stdio/stdio.h"
 #include "types.h"
 
@@ -13,6 +14,7 @@ typedef struct {
     u16 id;
     Bbfs_header *header;
     u16 n_sectors;
+    u16 reserved_length;
 } Bbfs_drive;
 
 typedef struct {
@@ -22,8 +24,33 @@ typedef struct {
 
 extern Bbfs_drives_list bbfs_drives_list;
 
+typedef enum {
+    BBFS_ERROR_NONE,
+    BBFS_ERROR_WRONG_MODE,
+    BBFS_ERROR_EOF,
+} Bbfs_error_code;
+
+typedef u16 Bbfs_mode;
+#define BBFS_MODE_READ ((Bbfs_mode) 1)
+#define BBFS_MODE_WRITE ((Bbfs_mode) 2)
+
+typedef struct {
+    Bbfs_drive *drive;
+    u16 root_sector; // First sector of the file
+    Bbfs_mode mode;
+
+    u16 sector;
+    u16 offset;
+} Bbfs_file;
+
+
 void bbfs_init (void);
 void bbfs_shutdown (void);
 void bbfs_expand_list(void);
 void bbfs_format (u16 drive);
 bool bbfs_sync (Bbfs_drive *drive);
+
+u16 bbfs_file_size (Bbfs_file *file);
+Bbfs_file bbfs_get_root_file(Bbfs_drive* drive);
+Bbfs_error_code bbfs_seek(Bbfs_file *file, u16 distance);
+Bbfs_error_code bbfs_read(Bbfs_file *file, u16* d, u16 length);
