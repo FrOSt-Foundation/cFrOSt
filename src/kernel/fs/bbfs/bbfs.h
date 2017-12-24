@@ -28,6 +28,8 @@ typedef enum {
     BBFS_ERROR_NONE,
     BBFS_ERROR_WRONG_MODE,
     BBFS_ERROR_EOF,
+    BBFS_ERROR_DISK,
+    BBFS_ERROR_DISK_FULL,
 } Bbfs_error_code;
 
 typedef u16 Bbfs_mode;
@@ -50,7 +52,10 @@ void bbfs_expand_list(void);
 void bbfs_format (u16 drive);
 bool bbfs_sync (Bbfs_drive *drive);
 
+u16 bbfs_find_free_sector(Bbfs_drive *drive);
+
 u16 bbfs_file_size (Bbfs_file *file);
 Bbfs_file bbfs_get_root_file(Bbfs_drive* drive);
 Bbfs_error_code bbfs_seek(Bbfs_file *file, u16 distance);
 Bbfs_error_code bbfs_read(Bbfs_file *file, u16* d, u16 length);
+Bbfs_error_code bbfs_write(Bbfs_file *file, u16* f, u16 length);

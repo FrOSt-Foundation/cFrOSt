@@ -119,6 +119,23 @@ bool bbfs_sync (Bbfs_drive *drive) {
 }
 
 
+// Returns 0xFFFF if none could be found (disk full)
+u16 bbfs_find_free_sector (Bbfs_drive *drive) {
+    for (u16 i = 0; i < drive->n_sectors / 16; ++i) {
+        if (drive->header->free_mask[i] != 0x0000) {
+            for (u16 bit = 0; bit < 16; ++bit) {
+                u16 mask = 1 << bit;
+
+                if ((drive->header->free_mask[i] & mask) != 0)
+                    return (i * 16) + bit;
+            }
+        }
+    }
+
+    return 0xFFFF;
+}
+
+
 u16 bbfs_file_size (Bbfs_file *file) {
     u16 sector = file->drive->header->fat[file->root_sector];
     u16 sectors_scanned = 0;
@@ -134,7 +151,7 @@ u16 bbfs_file_size (Bbfs_file *file) {
     return (sectors_scanned * WORDS_PER_SECTOR) + (sector & 0x7FFF);
 }
 
-Bbfs_file bbfs_get_root_file(Bbfs_drive* drive) {
+Bbfs_file bbfs_get_root_file (Bbfs_drive *drive) {
     Bbfs_file file;
     file.drive = drive;
     file.root_sector = drive->reserved_length - 1;
@@ -145,7 +162,10 @@ Bbfs_file bbfs_get_root_file(Bbfs_drive* drive) {
     return file;
 }
 
-Bbfs_error_code bbfs_seek(Bbfs_file *file, u16 distance) {
+Bbfs_error_code bbfs_seek (Bbfs_file *file, u16 distance) {
+    file->offset = 0;
+    file->sector = file->root_sector;
+
     while (file->offset + distance > WORDS_PER_SECTOR) {
         if ((file->sector & BBFS_END_OF_FILE_SENTINEL) != 0)
             return BBFS_ERROR_EOF;
@@ -166,7 +186,7 @@ Bbfs_error_code bbfs_seek(Bbfs_file *file, u16 distance) {
     return BBFS_ERROR_NONE;
 }
 
-Bbfs_error_code bbfs_read(Bbfs_file *file, u16* d, u16 length) {
+Bbfs_error_code bbfs_read (Bbfs_file *file, u16 *d, u16 length) {
     if ((file->mode & BBFS_MODE_READ) == 0) {
         return BBFS_ERROR_WRONG_MODE;
     }
@@ -178,17 +198,66 @@ Bbfs_error_code bbfs_read(Bbfs_file *file, u16* d, u16 length) {
                 return BBFS_ERROR_EOF;
         }
 
-        asm_log(0xcafe);
-        asm_log(file->sector);
-        asm_log(file->sector * WORDS_PER_SECTOR);
-        u16* read = stdio_drive_read(file->drive->id, file->sector * WORDS_PER_SECTOR, WORDS_PER_SECTOR);
+        u16 *read = stdio_drive_read (file->drive->id, file->sector * WORDS_PER_SECTOR, WORDS_PER_SECTOR);
         read += file->offset;
-        for(u16 i = 0; i < (length >= WORDS_PER_SECTOR ? WORDS_PER_SECTOR : length); ++i) {
-            *((u16*)d) = *read;
+        for (u16 i = 0; i < (length >= WORDS_PER_SECTOR ? WORDS_PER_SECTOR : length); ++i) {
+            *((u16 *)d) = *read;
             d++;
             read++;
         }
-        kfree(read);
+        kfree (read);
+
+        if (length >= WORDS_PER_SECTOR) {
+            length -= length % WORDS_PER_SECTOR - file->offset;
+            file->sector = file->drive->header->fat[file->sector];
+            file->offset = 0;
+        } else {
+            length = 0;
+            file->offset += length;
+        }
+    }
+
+    return BBFS_ERROR_NONE;
+}
+
+Bbfs_error_code bbfs_write (Bbfs_file *file, u16 *from, u16 length) {
+    if ((file->mode & BBFS_MODE_WRITE) == 0) {
+        return BBFS_ERROR_WRONG_MODE;
+    }
+
+    if (file->offset + length > bbfs_file_size (file)) {
+        u16 sectors_to_add = (length + file->offset) / WORDS_PER_SECTOR;
+
+        if (sectors_to_add > 0) {
+            for (u16 i = 0; i < sectors_to_add; ++i) { // We need to extend the file size
+                u16 new_sector = bbfs_find_free_sector (file->drive);
+                if (new_sector == 0xFFFF)
+                    return BBFS_ERROR_DISK_FULL;
+
+                file->drive->header->free_mask[new_sector / 16] |= 1 << new_sector % 16;
+                file->drive->header->fat[file->sector + i] = new_sector;
+
+                if (i == sectors_to_add - 1) {
+                    file->drive->header->fat[new_sector] = 0x8000 | ((length + file->offset) % WORDS_PER_SECTOR);
+                }
+            }
+        } else {
+            file->drive->header->fat[file->sector] = 0x8000 | (length + file->offset);
+        }
+
+        bbfs_sync (file->drive);
+    }
+
+    while (length > 0) {
+        if ((file->sector & BBFS_END_OF_FILE_SENTINEL) != 0) {
+            u16 sector_length = file->sector & 0x7FFF;
+            if (length > sector_length)
+                kpanic ("Did not extend file correctly");
+        }
+
+        if (!stdio_drive_write (file->drive->id, file->sector * WORDS_PER_SECTOR + file->offset, length >= WORDS_PER_SECTOR ? WORDS_PER_SECTOR : length, from))
+            return BBFS_ERROR_DISK;
+        from += length >= WORDS_PER_SECTOR ? WORDS_PER_SECTOR : length;
 
         if (length >= WORDS_PER_SECTOR) {
             length -= length % WORDS_PER_SECTOR - file->offset;
