@@ -5,6 +5,10 @@
 // A sector is the last of its file if its high bit is set
 #define BBFS_END_OF_FILE_SENTINEL 0x8000
 
+/*
+ * DRIVES API
+ */
+
 Bbfs_drives_list bbfs_drives_list = {
     .n_drives = 0,
     .drives = NULL
@@ -29,8 +33,8 @@ void bbfs_init (void) {
         bbfs_header->free_mask = stdio_drive_read (drive, 512 + 6, n_sectors / 16);
         bbfs_header->fat = stdio_drive_read (drive, 512 + 6 + n_sectors / 16, n_sectors);
 
-        bbfs_drives_list.n_drives += 1;
         if (bbfs_drives_list.n_drives == 1) {
+            bbfs_drives_list.n_drives++;
             bbfs_drives_list.drives = kmalloc (0, sizeof (Bbfs_drive));
         } else {
             bbfs_expand_list ();
@@ -56,9 +60,9 @@ void bbfs_shutdown (void) {
 
 // Returns new size
 void bbfs_expand_list (void) {
+    bbfs_drives_list.n_drives++;
     Bbfs_drive *old_drives = bbfs_drives_list.drives;
     bbfs_drives_list.drives = kmalloc (0, bbfs_drives_list.n_drives * sizeof (Bbfs_drive));
-
     for (u16 i = 0; i < (bbfs_drives_list.n_drives - 1); i++) {
         bbfs_drives_list.drives[i] = old_drives[i];
     }
@@ -104,6 +108,41 @@ void bbfs_format (u16 d) {
         drive->header->fat[i] = 0x8000;
     }
 
+    // We create the root directory
+    Bbfs_directory_header_raw root_directory;
+    root_directory.version = 1;
+    root_directory.n_entries = 0;
+    Bbfs_file *root_file = bbfs_get_root_file (drive);
+    root_file->mode = BBFS_MODE_WRITE | BBFS_MODE_READ;
+    Bbfs_error_code status = bbfs_write (root_file, (u16 *)&root_directory, sizeof (Bbfs_directory_header_raw));
+    if (status != BBFS_ERROR_NONE) {
+        asm_log (status);
+        kpanic ("Could not create root directory");
+    }
+
+    // Create info.txt
+    Bbfs_directory *directory = kmalloc (0, sizeof (Bbfs_directory));
+    status = bbfs_open_directory (root_file, directory);
+    if (status != BBFS_ERROR_NONE) {
+        asm_log (status);
+        kpanic ("Could not open root directory");
+    }
+    status = bbfs_create_in_directory (directory, BBFS_FILE_TYPE_FILE, "info.txt", 8);
+    if (status != BBFS_ERROR_NONE) {
+        asm_log (status);
+        kpanic ("Could not create info.txt");
+    }
+
+    directory->entries[0].file.mode = BBFS_MODE_WRITE;
+    status = bbfs_write (&directory->entries[0].file, (u16 *)"This file was created using FrOSt.", 35);
+    if (status != BBFS_ERROR_NONE) {
+        asm_log (status);
+        kpanic ("Could not create info.txt");
+    }
+    kfree (directory->entries);
+    kfree (directory);
+    kfree (root_file);
+
     // Update drives list
     stdio_drives_list->filesystems[d] = KFS_BBFS;
 
@@ -118,6 +157,10 @@ bool bbfs_sync (Bbfs_drive *drive) {
     return true;
 }
 
+
+/*
+ * FILES API
+ */
 
 // Returns 0xFFFF if none could be found (disk full)
 u16 bbfs_find_free_sector (Bbfs_drive *drive) {
@@ -151,13 +194,13 @@ u16 bbfs_file_size (Bbfs_file *file) {
     return (sectors_scanned * WORDS_PER_SECTOR) + (sector & 0x7FFF);
 }
 
-Bbfs_file bbfs_get_root_file (Bbfs_drive *drive) {
-    Bbfs_file file;
-    file.drive = drive;
-    file.root_sector = drive->reserved_length - 1;
-    file.mode = BBFS_MODE_READ;
-    file.sector = file.root_sector;
-    file.offset = 0;
+Bbfs_file *bbfs_get_root_file (Bbfs_drive *drive) {
+    Bbfs_file *file = kmalloc (0, sizeof (Bbfs_file));
+    file->drive = drive;
+    file->root_sector = drive->reserved_length - 1;
+    file->mode = BBFS_MODE_READ;
+    file->sector = file->root_sector;
+    file->offset = 0;
 
     return file;
 }
@@ -212,8 +255,8 @@ Bbfs_error_code bbfs_read (Bbfs_file *file, u16 *d, u16 length) {
             file->sector = file->drive->header->fat[file->sector];
             file->offset = 0;
         } else {
-            length = 0;
             file->offset += length;
+            length = 0;
         }
     }
 
@@ -265,8 +308,8 @@ Bbfs_error_code bbfs_write (Bbfs_file *file, u16 *from, u16 length) {
             file->sector = file->drive->header->fat[file->sector];
             file->offset = 0;
         } else {
-            length = 0;
             file->offset += length;
+            length = 0;
         }
     }
 
@@ -311,4 +354,101 @@ Bbfs_error_code bbfs_delete (Bbfs_file *file) {
         return BBFS_ERROR_DISK;
 
     return BBFS_ERROR_NONE;
+}
+
+
+/*
+ * DIRECTORIES API
+ */
+
+Bbfs_error_code bbfs_open_directory (Bbfs_file *file, Bbfs_directory *directory) {
+    u16 size = bbfs_file_size (file);
+    if (size == 0) {
+        return BBFS_ERROR_INVALID;
+    }
+
+    u16 *buf = kmalloc (0, size);
+    bbfs_read (file, buf, size);
+
+    directory->file = file;
+    directory->version = buf[0];
+    directory->n_entries = buf[1];
+    if (buf[1] != (size - 2) / sizeof (Bbfs_directory_entry_raw)) {
+        asm_log (buf[1]);
+        asm_log (size);
+        asm_log ((size - 2) / sizeof (Bbfs_directory_entry_raw));
+        asm_brk (0);
+        return BBFS_ERROR_CORRUPTED_FS;
+    }
+    directory->entries = kmalloc (0, buf[1] * sizeof (Bbfs_directory_entry));
+
+    for (u16 i = 0; i < buf[1]; ++i) {
+        directory->entries[i].file.drive = file->drive;
+        directory->entries[i].file.root_sector = buf[3 + i * sizeof (Bbfs_directory_entry)];
+        directory->entries[i].file.mode = BBFS_MODE_READ;
+        directory->entries[i].file.sector = directory->entries[i].file.root_sector;
+        directory->entries[i].file.offset = 0;
+
+        directory->entries[i].type = buf[2 + i * sizeof (Bbfs_directory_entry)];
+        for (u16 j = 0; j < 8; ++j) {
+            directory->entries[i].name[j * 2] = buf[4 + j + i * sizeof (Bbfs_directory_entry)] >> 8;
+            directory->entries[i].name[j * 2 + 1] = buf[4 + j + i * sizeof (Bbfs_directory_entry)] & 0x00FF;
+        }
+    }
+
+    kfree (buf);
+
+    return BBFS_ERROR_NONE;
+}
+
+Bbfs_error_code bbfs_save_directory (Bbfs_directory *directory) {
+    Bbfs_directory_header_raw directory_raw;
+
+    directory_raw.version = directory->version;
+    directory_raw.n_entries = directory->n_entries;
+
+    Bbfs_directory_entry_raw *entries = kmalloc (0, directory_raw.n_entries * sizeof (Bbfs_directory_entry_raw));
+    for (u16 i = 0; i < directory_raw.n_entries; ++i) {
+        entries[i].type = directory->entries[i].type;
+        entries[i].root_sector = directory->entries[i].file.root_sector;
+        for (u16 j = 0; j < 8; ++j) {
+            entries[i].name[j] = (u16) (directory->entries[i].name[2 * j] << 8 | directory->entries[i].name[2 * j + 1]);
+        }
+    }
+
+    bbfs_seek (directory->file, 0);
+    bbfs_write (directory->file, (u16 *)&directory_raw, sizeof (Bbfs_directory_header_raw));
+    bbfs_write (directory->file, (u16 *)entries, directory->n_entries * sizeof (Bbfs_directory_entry_raw));
+
+    kfree (entries);
+
+    return BBFS_ERROR_NONE;
+}
+
+Bbfs_error_code bbfs_create_in_directory (Bbfs_directory *directory, Bbfs_file_type type, char name[], u16 name_length) {
+    if (name_length > 16)
+        return BBFS_ERROR_INVALID;
+
+    directory->n_entries++;
+    Bbfs_directory_entry *old_entries = directory->entries;
+    directory->entries = kmalloc (0, directory->n_entries * sizeof (Bbfs_directory_entry));
+    for (u16 i = 0; i < directory->n_entries - 1; ++i) {
+        directory->entries[i] = old_entries[i];
+    }
+    kfree (old_entries);
+
+    Bbfs_error_code status = bbfs_create (directory->file->drive, &directory->entries[directory->n_entries - 1].file);
+    if (status != BBFS_ERROR_NONE) {
+        return status;
+    }
+
+    directory->entries[directory->n_entries - 1].type = type;
+    for (u16 i = 0; i < name_length; ++i) {
+        directory->entries[directory->n_entries - 1].name[i] = name[i];
+    }
+    for (u16 i = name_length; i < 17; ++i) {
+        directory->entries[directory->n_entries - 1].name[i] = 0;
+    }
+
+    return bbfs_save_directory (directory);
 }
