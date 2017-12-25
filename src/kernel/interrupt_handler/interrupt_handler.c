@@ -25,6 +25,7 @@ static void scheduler_lsdrives_handler (u16 UNUSED (msg), u16 drives_list, u16 U
 static void scheduler_driveread_handler (u16 UNUSED (msg), u16 drive_read_arguments, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_drivewrite_handler (u16 UNUSED (msg), u16 drive_write_arguments, u16 UNUSED (arg2), u16 UNUSED (arg3));
 static void scheduler_format_bbfs_handler (u16 UNUSED (msg), u16 drive, u16 UNUSED (arg2), u16 UNUSED (arg3));
+static void scheduler_ls_handler (u16 UNUSED (msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3);
 static void scheduler_add_process_handler (u16 UNUSED (msg), u16 location, u16 name, u16 UNUSED (arg3));
 static void scheduler_get_processes_list_handler (u16 UNUSED (msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3);
 
@@ -50,6 +51,7 @@ Int_handler *int_handler_allocate (u16 nb_hardware) {
     int_table[SOFTINT_DRIVEREAD] = scheduler_driveread_handler;
     int_table[SOFTINT_DRIVEWRITE] = scheduler_drivewrite_handler;
     int_table[SOFTINT_FORMAT_BBFS] = scheduler_format_bbfs_handler;
+    int_table[SOFTINT_LS] = scheduler_ls_handler;
     int_table[SOFTINT_ADDPROCESS] = scheduler_add_process_handler;
     int_table[SOFTINT_GET_PROCESSES_LIST] = scheduler_get_processes_list_handler;
     return int_table + __SOFTINT_NB;
@@ -144,6 +146,13 @@ static void scheduler_drivewrite_handler (u16 UNUSED (msg), u16 drive_write_argu
 
 static void scheduler_format_bbfs_handler (u16 UNUSED (msg), u16 drive, u16 UNUSED (arg2), u16 UNUSED (arg3)) {
     bbfs_format (drive);
+}
+
+static void scheduler_ls_handler (u16 UNUSED (msg), u16 raw_ptr1, u16 raw_ptr2, u16 raw_ptr3) {
+    i16* n_files = (i16 *)raw_ptr1;
+    const char* path = (const char *)raw_ptr2;
+    char*** out = (char ***)raw_ptr3;
+    *n_files = stdio_ls (path, out);
 }
 
 static void scheduler_add_process_handler (u16 UNUSED (msg), u16 location, u16 name, u16 UNUSED (arg3)) {

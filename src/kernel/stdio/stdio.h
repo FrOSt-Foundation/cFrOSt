@@ -60,3 +60,5 @@ char stdio_getc (void);
 void stdio_init_drives_list (void);
 void *stdio_drive_read (u16 drive, u32 location, u16 length);
 bool stdio_drive_write (u16 drive, u32 location, u16 length, u16 *data);
+
+i16 stdio_ls (const char* path, char*** out);

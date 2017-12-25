@@ -98,3 +98,9 @@ bool drive_format (Stdio_fs filesystem, u16 drive) {
             return false;
     }
 }
+
+i16 ls (const char* path, char*** out) {
+    i16 n = -1;
+    interrupt(SOFTINT_LS, (u16) &n, (u16) path, (u16) out);
+    return n;
+}

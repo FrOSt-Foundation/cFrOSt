@@ -3,7 +3,9 @@
 #include "drivers/keyboard/keyboard.h"
 #include "drivers/lem1802/lem1802.h"
 #include "drivers/mackapar/mackapar.h"
+#include "kernel/fs/bbfs/bbfs.h"
 #include "std/stdlib.h"
+#include "std/string.h"
 #include "types.h"
 
 static Stdio_output_type output_type = no_output;
@@ -204,4 +206,35 @@ bool stdio_drive_write (u16 drive, u32 location, u16 length, u16 *data) {
     } else {
         return false;
     }
+}
+
+i16 stdio_ls (const char* path, char*** out) {
+    if (bbfs_drives_list.n_drives == 0)
+        return -1;
+
+    Bbfs_file *file;
+    Bbfs_directory *directory = kmalloc(0, sizeof(Bbfs_directory));
+    if (strcmp(path, "/") == 0) {
+        file = bbfs_get_root_file(&bbfs_drives_list.drives[0]);
+    } else {
+        // TODO
+        file = bbfs_get_root_file(&bbfs_drives_list.drives[0]);
+    }
+    Bbfs_error_code status = bbfs_open_directory(file, directory);
+    if (status != BBFS_ERROR_NONE) {
+        kfree(directory);
+        return -1;
+    }
+
+    *out = kmalloc(0, directory->n_entries);
+    for (u16 i = 0; i < directory->n_entries; ++i) {
+        *out[i] = kmalloc(0, strlen(directory->entries[i].name) + 1);
+        strcpy(*out[i], directory->entries[i].name);
+    }
+
+    kfree(directory->entries);
+    kfree(directory);
+    kfree(file);
+
+    return (i16) directory->n_entries;
 }

@@ -55,6 +55,10 @@ static const Program builtins[] = {
     .name = "mkfs.bbfs",
     .main = console_mkfs_bbfs,
     },
+    {
+    .name = "ls",
+    .main = console_ls,
+    },
 };
 
 static const u16 NB_PROGRAMS = sizeof (builtins);
