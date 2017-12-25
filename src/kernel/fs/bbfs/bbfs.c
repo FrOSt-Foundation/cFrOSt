@@ -241,14 +241,15 @@ Bbfs_error_code bbfs_read (Bbfs_file *file, u16 *d, u16 length) {
                 return BBFS_ERROR_EOF;
         }
 
-        u16 *read = stdio_drive_read (file->drive->id, file->sector * WORDS_PER_SECTOR, WORDS_PER_SECTOR);
+        u16 *read_bak = stdio_drive_read (file->drive->id, file->sector * WORDS_PER_SECTOR, WORDS_PER_SECTOR);
+        u16 *read = read_bak;
         read += file->offset;
         for (u16 i = 0; i < (length >= WORDS_PER_SECTOR ? WORDS_PER_SECTOR : length); ++i) {
             *((u16 *)d) = *read;
             d++;
             read++;
         }
-        kfree (read);
+        kfree (read_bak);
 
         if (length >= WORDS_PER_SECTOR) {
             length -= length % WORDS_PER_SECTOR - file->offset;
@@ -374,10 +375,6 @@ Bbfs_error_code bbfs_open_directory (Bbfs_file *file, Bbfs_directory *directory)
     directory->version = buf[0];
     directory->n_entries = buf[1];
     if (buf[1] != (size - 2) / sizeof (Bbfs_directory_entry_raw)) {
-        asm_log (buf[1]);
-        asm_log (size);
-        asm_log ((size - 2) / sizeof (Bbfs_directory_entry_raw));
-        asm_brk (0);
         return BBFS_ERROR_CORRUPTED_FS;
     }
     directory->entries = kmalloc (0, buf[1] * sizeof (Bbfs_directory_entry));
