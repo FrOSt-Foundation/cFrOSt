@@ -387,9 +387,8 @@ Bbfs_error_code bbfs_open_directory (Bbfs_file *file, Bbfs_directory *directory)
         directory->entries[i].file.offset = 0;
 
         directory->entries[i].type = buf[2 + i * sizeof (Bbfs_directory_entry)];
-        asm_log(0xcafe);
         for (u16 j = 0; j < 8; ++j) {
-            char c = buf[4 + j + i * sizeof (Bbfs_directory_entry)];
+            char c = (char) buf[4 + j + i * sizeof (Bbfs_directory_entry)];
             directory->entries[i].name[j * 2] = c >> 8;
             directory->entries[i].name[j * 2 + 1] =  c & 0xFF;
         }
